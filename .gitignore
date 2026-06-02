@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Tool caches / generated indexes (not part of the framework distribution)
+.gitnexus/
+
+# Skills are installed per-project via the `skills` CLI (reference & auto-install),
+# not redistributed by hero-vibe-kit:
+.agents/
+
+# hero-vibe-kit per-project runtime config (created by `init` in a consumer repo)
+.hero-vibe-kit/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.bak
+*.log

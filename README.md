@@ -1,93 +1,165 @@
-# HEROMagicBox
+# hero-vibe-kit
 
+> An opinionated, AI-assisted software-development workflow for **Claude Code** — a task-type router, real gates, enforcement hooks, a human↔AI communication protocol, and security/performance standards. Works for **new** and **existing (brownfield)** projects.
 
+*(English below · [Tiếng Việt ở dưới](#tiếng-việt))*
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## What it is
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+`hero-vibe-kit` drops a complete, lightweight development process into your repo so any AI agent (Claude Code first) works the way a disciplined team would:
 
-## Add your files
+- **Task-type router** — every request is classified (Q&A · chore · bugfix · hotfix · change · refactor · feature · spike) and routed to the right *path* (Read-only / Fast / Standard / Full). No heavy ceremony for small tasks.
+- **Real gates** — "wait for approval" is enforced via Claude Code **Plan Mode**, not prose.
+- **Enforcement hooks** — `git-guard` blocks force-push, `--no-verify`, `reset --hard`, and direct pushes to `main`; `stop-reminder` nudges you to keep state updated.
+- **Human↔AI communication protocol** — no silent assumptions, blocking vs non-blocking questions, decision/assumption logs — tuned for building AI products.
+- **Standards** — a measurable Definition of Done, branching model, and **Security** (incl. OWASP LLM Top 10) + **Performance** (incl. prompt caching) baselines.
+- **AI-feature PRD template** + **interaction patterns** for how your product talks to its end-users.
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+It is **documentation + hooks + a CLI** — it does not bundle third-party tools; it integrates with them and degrades gracefully when they're absent.
+
+## Quick start
+
+```bash
+# In your project root (new or existing):
+npx hero-vibe-kit init
+
+# Then restart Claude Code (or run /hooks) to activate the hooks, and:
+npx hero-vibe-kit doctor
+```
+
+Non-interactive / CI:
+
+```bash
+npx hero-vibe-kit init --yes --preset small-team --lang en --skip-integrations
+```
+
+## What `init` installs
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/hero9985321/heromagicbox.git
-git branch -M main
-git push -uf origin main
+your-project/
+  CLAUDE.md          # hero-vibe-kit managed block (your other content preserved)
+  AGENTS.md          # cross-agent entry pointer
+  docs/              # AGENCY_WORKFLOW (SSOT) + DEFINITION_OF_DONE, BRANCHING, TEAM_ROSTER,
+                     # ACTIVE_STATE, COMMUNICATION_PROTOCOL, INTERACTION_PATTERNS,
+                     # SECURITY_STANDARDS, PERFORMANCE_STANDARDS, templates/PRD_AI_FEATURE
+  .claude/
+    settings.json    # hooks merged into your existing settings (not clobbered)
+    hooks/           # git-guard.cjs, stop-reminder.cjs
+  .hero-vibe-kit/
+    config.json      # your choices (team size, branching, language, integrations)
 ```
 
-## Integrate with your tools
+- **New project**: scaffolds everything.
+- **Brownfield**: never overwrites your `CLAUDE.md`/`AGENTS.md`/`settings.json` — it inserts a marked managed block and deep-merges hooks. Your `docs/ACTIVE_STATE.md` is never overwritten. Re-running is idempotent; touched files are backed up to `*.bak`.
 
-* [Set up project integrations](https://gitlab.com/hero9985321/heromagicbox/-/settings/integrations)
+## The task router (heart of it)
 
-## Collaborate with your team
+| Task | Path | Gate | Branch |
+|------|------|------|--------|
+| Q&A / explain / find code | Read-only | — | — |
+| chore / docs / config | Fast | — | `chore/` `docs/` |
+| small bugfix | Fast | — (repro test) | `fix/` |
+| hotfix | Fast | — | `hotfix/` |
+| change existing logic | Standard | ✅ | `change/` |
+| refactor | Standard | ✅ | `refactor/` |
+| new feature | Full (5-phase) | ✅✅ | `feat/` |
+| spike / research | Timeboxed | — | `spike/` |
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Full details in `docs/AGENCY_WORKFLOW.md` (the single source of truth).
 
-## Test and Deploy
+## Integrations (optional — reference & auto-install)
 
-Use the built-in continuous integration in GitLab.
+hero-vibe-kit **does not redistribute** third-party tools. `init` offers to set them up from their original sources and degrades gracefully if they're missing.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+| Tool | What it is | What init does | Tier |
+|------|-----------|----------------|------|
+| **superpowers** | process skills (brainstorming, TDD, debugging…) from `obra/superpowers` | offers `npx skills add obra/superpowers` | recommended |
+| **taste-skill** | UI/design skills from `Leonxlnx/taste-skill` | offers to install; pick ONE direction | optional |
+| **GitNexus** | code-intelligence CLI/MCP | offers `npx gitnexus analyze` | optional |
+| **Serena** | MCP memory server | seeds pointer-memories if present | optional |
 
-***
+**Required:** Node ≥ 18 and Claude Code. Everything else is optional.
 
-# Editing this README
+## Commands
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+| Command | Purpose |
+|---------|---------|
+| `init` | Install into the current project |
+| `update` | Re-render managed regions, preserving your edits & working files |
+| `doctor` | Validate hooks, settings.json, doc links, tool presence |
+| `version` | Print version |
 
-## Suggestions for a good README
+Flags: `--dir <path>` · `--preset solo|small-team|enterprise` · `--lang en|vi` · `--name <name>` · `--yes` · `--skip-integrations`.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Update & customize
 
-## Name
-Choose a self-explaining name for your project.
+- Edit anything **outside** the `<!-- hero-vibe-kit:start/end -->` markers freely — `update` won't touch it.
+- Fill the `<TBD>` placeholders in DEFINITION_OF_DONE / SECURITY / PERFORMANCE once you pick a stack.
+- `npx hero-vibe-kit update` refreshes the managed docs/hooks to the latest version, backing up changes.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Uninstall
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Remove `docs/` framework files, the `.claude/hooks/*` + the hooks block in `settings.json`, the
+`<!-- hero-vibe-kit:* -->` block in `CLAUDE.md`/`AGENTS.md`, and `.hero-vibe-kit/`.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## License & attribution
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+MIT (see [LICENSE](./LICENSE)). hero-vibe-kit references but does not redistribute
+[obra/superpowers](https://github.com/obra/superpowers) and [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill);
+they are installed from source via the `skills` CLI under their own licenses.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+---
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+# Tiếng Việt
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+> Một quy trình phát triển phần mềm có AI hỗ trợ, dùng cho **Claude Code** — bảng phân loại task, gate thật, hook cưỡng chế, giao thức giao tiếp Human↔AI, và chuẩn bảo mật/hiệu năng. Chạy tốt cho **project mới** lẫn **code cũ (brownfield)**.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Là gì
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+`hero-vibe-kit` cài một quy trình phát triển hoàn chỉnh, tinh gọn vào repo của bạn để mọi AI agent (Claude Code trước) làm việc kỷ luật như một team thực thụ:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- **Bảng phân loại task** → chọn đúng *path* (Read-only / Fast / Standard / Full). Việc nhỏ không phải chạy quy trình nặng.
+- **Gate thật** qua **Plan Mode** của Claude Code, không phải lời hứa văn xuôi.
+- **Hook cưỡng chế** — `git-guard` chặn force-push, `--no-verify`, `reset --hard`, push thẳng `main`; `stop-reminder` nhắc cập nhật trạng thái.
+- **Giao thức giao tiếp Human↔AI** — no silent assumptions, câu hỏi blocking/non-blocking, decision/assumption log — thiết kế cho việc xây sản phẩm AI.
+- **Chuẩn** — Definition of Done đo được, branching model, và baseline **Security** (gồm OWASP LLM Top 10) + **Performance** (gồm prompt caching).
+- **Template PRD cho feature AI** + **interaction patterns** cho cách sản phẩm giao tiếp với end-user.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Đây là **tài liệu + hook + CLI** — không đóng gói tool bên thứ ba; chỉ tích hợp và degrade mượt khi thiếu.
 
-## License
-For open source projects, say how it is licensed.
+## Bắt đầu nhanh
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```bash
+# Ở thư mục gốc project (mới hoặc đã có code):
+npx hero-vibe-kit init
+
+# Khởi động lại Claude Code (hoặc /hooks) để bật hook, rồi:
+npx hero-vibe-kit doctor
+```
+
+Không tương tác / CI:
+
+```bash
+npx hero-vibe-kit init --yes --preset small-team --lang vi --skip-integrations
+```
+
+## init cài gì
+
+Như sơ đồ ở phần English: `docs/` (AGENCY_WORKFLOW là single source of truth + các chuẩn), `CLAUDE.md`/`AGENTS.md` (chèn **block có marker**, giữ nguyên nội dung của bạn), `.claude/` (hook + settings deep-merge), `.hero-vibe-kit/config.json`.
+
+- **Project mới**: scaffold đầy đủ.
+- **Brownfield**: KHÔNG đè `CLAUDE.md`/`AGENTS.md`/`settings.json` — chỉ chèn block + merge hook. `docs/ACTIVE_STATE.md` không bị ghi đè. Chạy lại idempotent; file bị đụng được sao lưu `*.bak`.
+
+## Tích hợp (tùy chọn — reference & auto-install)
+
+hero-vibe-kit **không redistribute** tool bên thứ ba. `init` mời cài từ nguồn gốc và degrade nếu thiếu: **superpowers** (`npx skills add obra/superpowers`, khuyến nghị), **taste-skill** (tùy chọn, chọn 1 hướng), **GitNexus** (`npx gitnexus analyze`, tùy chọn), **Serena** (seed pointer-memories, tùy chọn). **Bắt buộc:** Node ≥ 18 + Claude Code.
+
+## Lệnh & cập nhật
+
+`init` · `update` (giữ chỉnh sửa ngoài marker + file làm việc) · `doctor` · `version`. Sửa thoải mái phần **ngoài** marker `<!-- hero-vibe-kit:start/end -->`. Điền `<TBD>` khi chốt tech stack.
+
+## Giấy phép
+
+MIT (xem [LICENSE](./LICENSE)). Tham chiếu chứ không redistribute `obra/superpowers` và `Leonxlnx/taste-skill` — cài từ nguồn qua `skills` CLI theo license riêng của chúng.

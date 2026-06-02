@@ -1,0 +1,39 @@
+{
+  "$comment": "Skills the hero-vibe-kit workflow references. hero-vibe-kit does NOT bundle these — it records them here and (optionally, with consent) installs them via the `skills` CLI from their ORIGINAL sources. This avoids redistribution and keeps skills up to date. See docs: TEAM_ROSTER / AGENCY_WORKFLOW.",
+  "schema": 1,
+  "installer": "skills",
+  "groups": {
+    "process": {
+      "tier": "recommended",
+      "description": "Core process skills the workflow invokes by name. Without them the workflow still runs (gates/hooks/router intact) but loses skill-guided depth.",
+      "skills": [
+        { "name": "using-superpowers", "source": "obra/superpowers" },
+        { "name": "brainstorming", "source": "obra/superpowers" },
+        { "name": "writing-plans", "source": "obra/superpowers" },
+        { "name": "executing-plans", "source": "obra/superpowers" },
+        { "name": "test-driven-development", "source": "obra/superpowers" },
+        { "name": "systematic-debugging", "source": "obra/superpowers" },
+        { "name": "verification-before-completion", "source": "obra/superpowers" },
+        { "name": "requesting-code-review", "source": "obra/superpowers" },
+        { "name": "receiving-code-review", "source": "obra/superpowers" },
+        { "name": "dispatching-parallel-agents", "source": "obra/superpowers" },
+        { "name": "subagent-driven-development", "source": "obra/superpowers" },
+        { "name": "using-git-worktrees", "source": "obra/superpowers" },
+        { "name": "finishing-a-development-branch", "source": "obra/superpowers" },
+        { "name": "writing-skills", "source": "obra/superpowers" }
+      ]
+    },
+    "design": {
+      "tier": "optional",
+      "description": "Design/UI skills. Pick ONE design direction per project (see TEAM_ROSTER §design). init asks which to install; it does NOT install the whole set.",
+      "pickOne": true,
+      "skills": [
+        { "name": "design-taste-frontend", "source": "Leonxlnx/taste-skill" },
+        { "name": "minimalist-ui", "source": "Leonxlnx/taste-skill" },
+        { "name": "industrial-brutalist-ui", "source": "Leonxlnx/taste-skill" },
+        { "name": "high-end-visual-design", "source": "Leonxlnx/taste-skill" },
+        { "name": "brandkit", "source": "Leonxlnx/taste-skill" }
+      ]
+    }
+  }
+}

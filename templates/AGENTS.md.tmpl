@@ -1,0 +1,9 @@
+# Agent Instructions — {{PROJECT_NAME}}
+
+> Canonical development process: **[docs/AGENCY_WORKFLOW.md](docs/AGENCY_WORKFLOW.md)** (single source of truth). Applies to any AI agent working in this repo.
+>
+> 1. **Classify the request** via the router table → Read-only / Fast / Standard / Full. Don't run the heavy process for small tasks.
+> 2. **Gate paths** require plan/approval before writing code (Claude Code: Plan Mode).
+> 3. Follow [DEFINITION_OF_DONE](docs/DEFINITION_OF_DONE.md), [BRANCHING](docs/BRANCHING.md), [SECURITY_STANDARDS](docs/SECURITY_STANDARDS.md), [PERFORMANCE_STANDARDS](docs/PERFORMANCE_STANDARDS.md); keep [ACTIVE_STATE](docs/ACTIVE_STATE.md) updated.
+> 4. Clarify requirements per [COMMUNICATION_PROTOCOL](docs/COMMUNICATION_PROTOCOL.md); for AI features use the [PRD_AI_FEATURE template](docs/templates/PRD_AI_FEATURE.md) and [INTERACTION_PATTERNS](docs/INTERACTION_PATTERNS.md).
+> 5. Delegate sub-agents with **self-contained** prompts ([TEAM_ROSTER](docs/TEAM_ROSTER.md)).

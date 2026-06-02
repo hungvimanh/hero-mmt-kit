@@ -1,0 +1,6 @@
+{
+  "teamSize": "small-team",
+  "branchingModel": "github-flow",
+  "enforceLevel": "mixed",
+  "lang": "en"
+}

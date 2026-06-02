@@ -1,0 +1,35 @@
+{
+  "name": "hero-vibe-kit",
+  "version": "0.1.0",
+  "description": "An opinionated, AI-assisted software development workflow for Claude Code — task-type router, gates, enforcement hooks, human↔AI communication protocol, and security/performance standards. Works for new and existing (brownfield) projects.",
+  "keywords": [
+    "claude-code",
+    "ai-workflow",
+    "agentic-development",
+    "scaffolding",
+    "developer-workflow",
+    "ai-assistant"
+  ],
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "hero-vibe-kit": "bin/hero-vibe-kit.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "presets",
+    "skills.manifest.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}

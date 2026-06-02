@@ -1,0 +1,89 @@
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+const { log, exists, ensureDir, readJSON, writeJSON } = require('./util.cjs');
+
+function uniqueSources(group) {
+  return Array.from(new Set((group && group.skills || []).map((s) => s.source)));
+}
+
+function runCmd(cmd, args, cwd) {
+  try {
+    const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
+    return r.status === 0;
+  } catch (_) { return false; }
+}
+
+const SERENA_MEMOS = {
+  'agency_workflow.md':
+    'Canonical development process (single source of truth): **docs/AGENCY_WORKFLOW.md**.\n\n' +
+    'Summary: classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). ' +
+    'Do NOT run the full 5-phase process for small tasks. A "Gate" means real Plan Mode (ExitPlanMode), not a promise.\n\n' +
+    'Details (always read the source files, do not duplicate here): docs/AGENCY_WORKFLOW.md, docs/DEFINITION_OF_DONE.md, ' +
+    'docs/BRANCHING.md, docs/TEAM_ROSTER.md, docs/ACTIVE_STATE.md, docs/COMMUNICATION_PROTOCOL.md, ' +
+    'docs/SECURITY_STANDARDS.md, docs/PERFORMANCE_STANDARDS.md.\n',
+  'delegation_rules.md':
+    'Sub-agent delegation rules (canonical): **docs/TEAM_ROSTER.md**.\n\n' +
+    'Summary: large work (Standard/Full path) → the Main Agent delegates via the Agent tool. Sub-agents do NOT inherit the ' +
+    'conversation/skills/context → prompts must be SELF-CONTAINED (PRD/TDD links, skills to invoke, Done criteria, relevant files). ' +
+    'Parallelize FE/BE only after the API contract is locked in Phase 2; use isolation: "worktree" for overlapping edits.\n',
+};
+
+async function run(ctx) {
+  const { target, cfg, detect, ask, pkgRoot } = ctx;
+  const manifest = readJSON(path.join(pkgRoot, 'skills.manifest.json'), { groups: {} });
+  cfg.integrations = cfg.integrations || {};
+
+  log.title('Integrations (optional — Enter to accept default)');
+
+  // ---- Skills (process — recommended) ----
+  const procSources = uniqueSources(manifest.groups && manifest.groups.process);
+  if (procSources.length && await ask.yesno(`Install recommended process skills via the \`skills\` CLI? (${procSources.join(', ')})`, true)) {
+    let ok = true;
+    for (const src of procSources) {
+      log.step(`npx skills add ${src}`);
+      if (!runCmd('npx', ['--yes', 'skills', 'add', src, '--yes'], target)) ok = false;
+    }
+    cfg.integrations.skills = ok ? 'installed' : 'partial';
+    if (!ok) log.warn('Some skills did not install. Install manually: ' + procSources.map((s) => `npx skills add ${s}`).join(' ; '));
+    else log.ok('Process skills installed.');
+  } else {
+    cfg.integrations.skills = 'skipped';
+    log.warn('Skills skipped. Later: ' + procSources.map((s) => `npx skills add ${s}`).join(' ; '));
+  }
+
+  // ---- Skills (design — optional, pick one) ----
+  const designSources = uniqueSources(manifest.groups && manifest.groups.design);
+  if (designSources.length && await ask.yesno('Install a design/UI skill pack? (pick your ONE direction afterwards)', false)) {
+    for (const src of designSources) runCmd('npx', ['--yes', 'skills', 'add', src, '--yes'], target);
+    cfg.integrations.design = 'installed';
+    log.ok('Design pack installed — set ONE direction in docs/TEAM_ROSTER.md §3.');
+  }
+
+  // ---- GitNexus (optional) ----
+  if (await ask.yesno('Index this repo with GitNexus now? (npx gitnexus analyze — enables impact analysis)', detect.hasGitnexus)) {
+    log.step('npx gitnexus analyze');
+    cfg.integrations.gitnexus = runCmd('npx', ['--yes', 'gitnexus', 'analyze'], target) ? 'indexed' : 'failed';
+    if (cfg.integrations.gitnexus === 'failed') log.warn('GitNexus not run. Install/retry later: npx gitnexus analyze');
+  } else {
+    cfg.integrations.gitnexus = 'skipped';
+  }
+
+  // ---- Serena (optional — seed pointer memories) ----
+  if (detect.hasSerena || await ask.yesno('Seed Serena pointer-memories? (only if you use the Serena MCP server)', detect.hasSerena)) {
+    const memDir = path.join(target, '.serena', 'memories', 'project');
+    ensureDir(memDir);
+    for (const [name, content] of Object.entries(SERENA_MEMOS)) {
+      fs.writeFileSync(path.join(memDir, name), content);
+    }
+    cfg.integrations.serena = 'seeded';
+    log.ok('Serena pointer-memories seeded (.serena/memories/project/).');
+  } else {
+    cfg.integrations.serena = 'skipped';
+  }
+
+  writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
+}
+
+module.exports = { run };

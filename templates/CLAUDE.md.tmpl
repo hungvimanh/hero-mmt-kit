@@ -1,0 +1,11 @@
+## 🧭 hero-vibe-kit workflow
+
+> **READ BEFORE DOING ANYTHING:** [`docs/AGENCY_WORKFLOW.md`](docs/AGENCY_WORKFLOW.md) is the **single source of truth** for the {{PROJECT_NAME}} development process. Classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). Don't run the heavy process for small tasks.
+
+Docs: [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md) · [DEFINITION_OF_DONE](docs/DEFINITION_OF_DONE.md) · [BRANCHING](docs/BRANCHING.md) · [TEAM_ROSTER](docs/TEAM_ROSTER.md) · [ACTIVE_STATE](docs/ACTIVE_STATE.md) · [COMMUNICATION_PROTOCOL](docs/COMMUNICATION_PROTOCOL.md) · [INTERACTION_PATTERNS](docs/INTERACTION_PATTERNS.md) · [SECURITY_STANDARDS](docs/SECURITY_STANDARDS.md) · [PERFORMANCE_STANDARDS](docs/PERFORMANCE_STANDARDS.md) · [PRD_AI_FEATURE template](docs/templates/PRD_AI_FEATURE.md).
+
+- **Workflow state:** read `docs/ACTIVE_STATE.md` at the start of every session and keep it updated.
+- **Gates:** when a path requires a Gate, use Plan Mode (`EnterPlanMode` → `ExitPlanMode`) for real sign-off — not a prose promise.
+- **Enforcement:** `git-guard` (PreToolUse) + `stop-reminder` (Stop) hooks are installed under `.claude/`. Don't bypass them.
+- **GitNexus (if installed):** impact analysis is **conditional** — skip on an empty repo; apply once real code exists (Standard/Full paths) or per the escalation rule. If the index is stale, run `npx gitnexus analyze`.
+- **Skills (if installed):** the workflow references process skills (brainstorming, writing-plans, test-driven-development, systematic-debugging, verification-before-completion, …). Invoke them via the `Skill` tool when relevant.
