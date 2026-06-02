@@ -19,7 +19,7 @@
 
 ## Session Resume Protocol
 *AI khởi tạo session mới ĐỌC mục này:*
-1. Đọc [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) để nắm router & path.
+1. Đọc [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) để nắm router & path, rồi đọc [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) để biết nơi lưu artifact.
 2. Xem bảng "Active Features" ở trên + các **GitLab MR đang mở** (`git branch`, MR list) — KHÔNG dựa vào TaskList của session cũ (đã mất).
 3. Theo path & phase của từng feature:
    - **Read-only/Fast**: tiếp tục/hoàn tất rồi mở MR.

@@ -1,6 +1,6 @@
 # Agency Workflow — Single Source of Truth
 
-> **This is the ONLY canonical process document.** Every other file (CLAUDE.md, AGENTS.md, TEAM_ROSTER.md, Serena memories) only **links** here — it must NOT copy the content. To change the process, edit only this file.
+> **This is the ONLY canonical process document.** Every other file (CLAUDE.md, AGENTS.md, TEAM_ROSTER.md, optional Serena notes) only **links** here — it must NOT copy the content. To change the process, edit only this file.
 
 The AI acts as a lean software agency. Operating scale: **{{TEAM_SIZE}} + AI**, following **{{BRANCHING_MODEL}}** (see [BRANCHING.md](./BRANCHING.md)). Completion criteria: see [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md).
 
@@ -76,7 +76,7 @@ See §3.
 1. Trigger the `brainstorming` skill. **Apply [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md)** throughout (how to ask, label assumptions, close each round with a summary + open questions + assumptions).
 2. Clarify: User Personas, Business Flows, Edge Cases, goals, acceptance criteria.
 3. **If it's an AI/assistant feature:** use the **[PRD_AI_FEATURE.md template](./templates/PRD_AI_FEATURE.md)** — it forces the AI-specific dimensions (behavior under ambiguity, guardrails/refusal, definition of "correct" + golden examples, eval strategy, fallback/HITL), and references [INTERACTION_PATTERNS.md](./INTERACTION_PATTERNS.md) for how the assistant talks to end-users.
-4. Output: **PRD / Scope Document** (copy to `docs/specs/YYYY-MM-DD-<feature>.md`, link in ACTIVE_STATE) — including a Decision Log + Assumptions Register.
+4. Output: **PRD / Scope Document** under `docs/specs/` per [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md), linked from ACTIVE_STATE — including a Decision Log + Assumptions Register.
 5. **GATE 1 (Plan Mode):** present the PRD → `ExitPlanMode` → wait for the user (Product Owner) to approve.
 
 ### Phase 2 — Architecture & Planning (lens: System Architect)
@@ -86,7 +86,7 @@ See §3.
 4. **Set the performance budget:** decide target latency/throughput/token-cost per [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) (fill the `<TBD>`s).
 5. **Lock the API/interface contract** between components (FE↔BE, module↔module). *This is a prerequisite for parallelizing in Phase 3.*
 6. Trigger `writing-plans` to break down the work → create tasks with `TaskCreate` (session-scoped) + record in ACTIVE_STATE (durable).
-7. Output: **Technical Design Document (TDD)** + task list.
+7. Output: **Technical Design Document (TDD)** under `docs/plans/` + task list, with report artifacts under `docs/reports/` as required by [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md).
 8. **GATE 2 (Plan Mode):** present the TDD → `ExitPlanMode` → wait for approval of the technical approach.
 
 ### Phase 3 — Implementation (lens: Developer, possibly a sub-agent)
@@ -105,8 +105,8 @@ See §3.
 ### Phase 5 — Handover & Retro (lens: DevOps / Scrum Master)
 1. Trigger `finishing-a-development-branch` → open/merge the MR per [BRANCHING.md](./BRANCHING.md).
 2. Update **CLAUDE.md** if there are new architectural decisions (record only what's new, don't duplicate).
-3. **Light retro (3 lines):** what went well / what was painful / one improvement for next time — record in ACTIVE_STATE or the MR.
-4. Save project context to Serena memory (pointers, no content duplication).
+3. **Light retro (3 lines):** what went well / what was painful / one improvement for next time — record it in ACTIVE_STATE, the MR, or `docs/reports/<slug>/retro.md` per [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md).
+4. If Serena is configured, use it for semantic code navigation and keep any optional notes as pointers only, with no content duplication.
 5. Mark tasks `completed` + update ACTIVE_STATE.
 
 ---
@@ -119,6 +119,7 @@ See §3.
 | [BRANCHING.md](./BRANCHING.md) | Branching model, branch naming, Conventional Commits |
 | [TEAM_ROSTER.md](./TEAM_ROSTER.md) | Personas + sub-agent delegation rules + design direction |
 | [ACTIVE_STATE.md](./ACTIVE_STATE.md) | Pipeline state + resume protocol |
+| [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) | Output artifacts, docs/specs/plans/reports layout, storage rules |
 | [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) | Human↔AI communication protocol (requirements clarification) |
 | [templates/PRD_AI_FEATURE.md](./templates/PRD_AI_FEATURE.md) | PRD template for AI features (dimensions to clarify) |
 | [INTERACTION_PATTERNS.md](./INTERACTION_PATTERNS.md) | How the product (assistant) talks to end-users |

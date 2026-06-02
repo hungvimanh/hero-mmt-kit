@@ -6,7 +6,7 @@
 Holds the session, talks to the user, orchestrates sub-agents. Rotates hats:
 - **BA** — `brainstorming`: clarify requirements, write the PRD, get sign-off (Gate 1).
 - **System Architect** — `gitnexus_exploring` + `gitnexus_impact`: design, write the TDD, lock the API contract + threat model, split tasks (Gate 2).
-- **Scrum Master** — manages [ACTIVE_STATE.md](./ACTIVE_STATE.md), updates CLAUDE.md & Serena memory.
+- **Scrum Master** — manages [ACTIVE_STATE.md](./ACTIVE_STATE.md), updates CLAUDE.md, and uses Serena for semantic code navigation when configured.
 
 ## 2. Sub-agents (Dev / QA)
 Spawned via the `Agent` tool when the work is large enough (Standard/Full path).

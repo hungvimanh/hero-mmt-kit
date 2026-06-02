@@ -19,7 +19,7 @@
 
 ## Session Resume Protocol
 *An AI starting a new session READS this section:*
-1. Read [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) for the router & paths.
+1. Read [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) for the router & paths, then [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) for artifact locations.
 2. Look at the "Active Features" table above + any **open MRs** (`git branch`, MR list) — do NOT rely on the previous session's TaskList (it's gone).
 3. By each feature's path & phase:
    - **Read-only/Fast**: continue/finish then open the MR.

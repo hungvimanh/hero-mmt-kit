@@ -50,7 +50,7 @@ Includes all of Standard path, plus:
 - [ ] `security-review` ran, no unresolved new findings.
 - [ ] **Security standards (Full):** meets [SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md) §5; AI features checked against OWASP LLM Top 10 (§2) including abuse cases.
 - [ ] **Performance standards (Full):** meets the [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) §1 budget; AI features meet the token/latency ceiling §2; load measurement exists for the main flow.
-- [ ] **Handover:** CLAUDE.md updated with new architectural decisions (if any); 3-line retro recorded; Serena memory updated (pointers); task `completed` + ACTIVE_STATE updated.
+- [ ] **Handover:** CLAUDE.md updated with new architectural decisions (if any); 3-line retro recorded; optional Serena notes updated as pointers; task `completed` + ACTIVE_STATE updated.
 
 ---
 

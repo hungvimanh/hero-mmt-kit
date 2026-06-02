@@ -70,15 +70,15 @@ async function run(ctx) {
     cfg.integrations.gitnexus = 'skipped';
   }
 
-  // ---- Serena (optional — seed pointer memories) ----
-  if (detect.hasSerena || await ask.yesno('Seed Serena pointer-memories? (only if you use the Serena MCP server)', detect.hasSerena)) {
+  // ---- Serena (optional — semantic code intelligence; notes are pointers only) ----
+  if (detect.hasSerena || await ask.yesno('Add lightweight Serena pointer notes? (Serena is primarily for semantic code intelligence)', detect.hasSerena)) {
     const memDir = path.join(target, '.serena', 'memories', 'project');
     ensureDir(memDir);
     for (const [name, content] of Object.entries(SERENA_MEMOS)) {
       fs.writeFileSync(path.join(memDir, name), content);
     }
     cfg.integrations.serena = 'seeded';
-    log.ok('Serena pointer-memories seeded (.serena/memories/project/).');
+    log.ok('Serena pointer notes seeded (.serena/memories/project/).');
   } else {
     cfg.integrations.serena = 'skipped';
   }

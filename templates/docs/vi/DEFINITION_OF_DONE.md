@@ -50,7 +50,7 @@ Bao gồm toàn bộ Standard path, cộng thêm:
 - [ ] `security-review` đã chạy, không có finding mới chưa xử lý.
 - [ ] **Security standards (Full):** đạt [SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md) §5; feature AI đã kiểm OWASP LLM Top 10 (§2) gồm ca lạm dụng.
 - [ ] **Performance standards (Full):** đạt budget [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) §1; feature AI đạt token/latency ceiling §2; có số đo tải cho luồng chính.
-- [ ] **Handover:** CLAUDE.md cập nhật quyết định kiến trúc mới (nếu có); retro 3 dòng đã ghi; Serena memory cập nhật (con trỏ); task `completed` + ACTIVE_STATE cập nhật.
+- [ ] **Handover:** CLAUDE.md cập nhật quyết định kiến trúc mới (nếu có); retro 3 dòng đã ghi; ghi chú Serena tùy chọn cập nhật dạng con trỏ; task `completed` + ACTIVE_STATE cập nhật.
 
 ---
 

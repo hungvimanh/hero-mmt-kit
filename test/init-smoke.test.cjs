@@ -16,10 +16,13 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.strictEqual(r.status, 0, r.stderr);
 
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
-    '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/SECURITY_STANDARDS.md',
-    'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md', 'docs/templates/PRD_AI_FEATURE.md']) {
+    '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
+    'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
+    'docs/templates/PRD_AI_FEATURE.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
+  assert.ok(!fs.existsSync(path.join(dir, 'docs', 'en')), 'consumer docs should not include duplicate en tree');
+  assert.ok(!fs.existsSync(path.join(dir, 'docs', 'vi')), 'consumer docs should not include duplicate vi tree');
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /SmokeApp/);
   assert.match(claude, /hero-vibe-kit:start/);

@@ -41,9 +41,10 @@ npx hero-vibe-kit init --yes --preset small-team --lang en --skip-integrations
 your-project/
   CLAUDE.md          # hero-vibe-kit managed block (your other content preserved)
   AGENTS.md          # cross-agent entry pointer
-  docs/              # AGENCY_WORKFLOW (SSOT) + DEFINITION_OF_DONE, BRANCHING, TEAM_ROSTER,
-                     # ACTIVE_STATE, COMMUNICATION_PROTOCOL, INTERACTION_PATTERNS,
-                     # SECURITY_STANDARDS, PERFORMANCE_STANDARDS, templates/PRD_AI_FEATURE
+  docs/              # AGENCY_WORKFLOW (SSOT) + ARTIFACTS_AND_STORAGE, DEFINITION_OF_DONE,
+                     # BRANCHING, TEAM_ROSTER, ACTIVE_STATE, COMMUNICATION_PROTOCOL,
+                     # INTERACTION_PATTERNS, SECURITY_STANDARDS, PERFORMANCE_STANDARDS,
+                     # templates/PRD_AI_FEATURE; later specs/, plans/, reports/ as needed
   .claude/
     settings.json    # hooks merged into your existing settings (not clobbered)
     hooks/           # git-guard.cjs, stop-reminder.cjs
@@ -52,6 +53,7 @@ your-project/
 ```
 
 - **New project**: scaffolds everything.
+- **Language selection**: `--lang en|vi` renders exactly one active docs set into `docs/`; agents read `docs/AGENCY_WORKFLOW.md`, not duplicate `docs/en` + `docs/vi` trees.
 - **Brownfield**: never overwrites your `CLAUDE.md`/`AGENTS.md`/`settings.json` — it inserts a marked managed block and deep-merges hooks. Your `docs/ACTIVE_STATE.md` is never overwritten. Re-running is idempotent; touched files are backed up to `*.bak`.
 
 ## The task router (heart of it)
@@ -78,7 +80,7 @@ hero-vibe-kit **does not redistribute** third-party tools. `init` offers to set 
 | **superpowers** | process skills (brainstorming, TDD, debugging…) from `obra/superpowers` | offers `npx skills add obra/superpowers` | recommended |
 | **taste-skill** | UI/design skills from `Leonxlnx/taste-skill` | offers to install; pick ONE direction | optional |
 | **GitNexus** | code-intelligence CLI/MCP | offers `npx gitnexus analyze` | optional |
-| **Serena** | MCP memory server | seeds pointer-memories if present | optional |
+| **Serena** | semantic code-intelligence MCP | detects existing `.serena/` setup and can seed lightweight pointer notes | optional |
 
 **Required:** Node ≥ 18 and Claude Code. Everything else is optional.
 
@@ -147,14 +149,15 @@ npx hero-vibe-kit init --yes --preset small-team --lang vi --skip-integrations
 
 ## init cài gì
 
-Như sơ đồ ở phần English: `docs/` (AGENCY_WORKFLOW là single source of truth + các chuẩn), `CLAUDE.md`/`AGENTS.md` (chèn **block có marker**, giữ nguyên nội dung của bạn), `.claude/` (hook + settings deep-merge), `.hero-vibe-kit/config.json`.
+Như sơ đồ ở phần English: `docs/` (AGENCY_WORKFLOW là single source of truth, ARTIFACTS_AND_STORAGE quy định output/storage + các chuẩn), `CLAUDE.md`/`AGENTS.md` (chèn **block có marker**, giữ nguyên nội dung của bạn), `.claude/` (hook + settings deep-merge), `.hero-vibe-kit/config.json`.
 
 - **Project mới**: scaffold đầy đủ.
+- **Chọn ngôn ngữ**: `--lang en|vi` chỉ render một bộ docs active vào `docs/`; agent đọc `docs/AGENCY_WORKFLOW.md`, không load trùng cây `docs/en` + `docs/vi`.
 - **Brownfield**: KHÔNG đè `CLAUDE.md`/`AGENTS.md`/`settings.json` — chỉ chèn block + merge hook. `docs/ACTIVE_STATE.md` không bị ghi đè. Chạy lại idempotent; file bị đụng được sao lưu `*.bak`.
 
 ## Tích hợp (tùy chọn — reference & auto-install)
 
-hero-vibe-kit **không redistribute** tool bên thứ ba. `init` mời cài từ nguồn gốc và degrade nếu thiếu: **superpowers** (`npx skills add obra/superpowers`, khuyến nghị), **taste-skill** (tùy chọn, chọn 1 hướng), **GitNexus** (`npx gitnexus analyze`, tùy chọn), **Serena** (seed pointer-memories, tùy chọn). **Bắt buộc:** Node ≥ 18 + Claude Code.
+hero-vibe-kit **không redistribute** tool bên thứ ba. `init` mời cài từ nguồn gốc và degrade nếu thiếu: **superpowers** (`npx skills add obra/superpowers`, khuyến nghị), **taste-skill** (tùy chọn, chọn 1 hướng), **GitNexus** (`npx gitnexus analyze`, tùy chọn), **Serena** (semantic code-intelligence MCP; pointer notes chỉ là phụ, tùy chọn). **Bắt buộc:** Node ≥ 18 + Claude Code.
 
 ## Lệnh & cập nhật
 

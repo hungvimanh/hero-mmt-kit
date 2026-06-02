@@ -1,13 +1,13 @@
 # Contributing to hero-vibe-kit
 
-Thanks for helping improve hero-vibe-kit! It eats its own dog food — contributions follow the workflow in `templates/docs/en/AGENCY_WORKFLOW.md`.
+Thanks for helping improve hero-vibe-kit! It eats its own dog food — contributions follow the workflow template in `templates/docs/en/AGENCY_WORKFLOW.md`, mirrored in Vietnamese.
 
 ## Repo layout
 ```
 bin/        CLI entry (hero-vibe-kit.js)
 src/        CLI logic (detect, config, render, merge, init, update, doctor, integrations, links)
 templates/  what gets installed into a consumer project
-  docs/{en,vi}/   bilingual docs (keep BOTH in sync)
+  docs/{en,vi}/   bilingual docs (keep BOTH in sync, including ARTIFACTS_AND_STORAGE)
   common/.claude/ hooks + settings.json
   CLAUDE.md.tmpl AGENTS.md.tmpl
 presets/    solo | small-team | enterprise

@@ -3,7 +3,7 @@
 This repository **is** the hero-vibe-kit framework — not a consumer project. (It dogfoods its own workflow.)
 
 - **Contributor guide:** [CONTRIBUTING.md](CONTRIBUTING.md)
-- **The workflow this framework ships:** [templates/docs/en/AGENCY_WORKFLOW.md](templates/docs/en/AGENCY_WORKFLOW.md) (EN) · [templates/docs/vi/AGENCY_WORKFLOW.md](templates/docs/vi/AGENCY_WORKFLOW.md) (VI)
+- **Workflow template sources:** `templates/docs/{en,vi}/AGENCY_WORKFLOW.md`; consumer projects receive one active `docs/AGENCY_WORKFLOW.md` for the selected language.
 - **CLI:** `bin/hero-vibe-kit.js` · logic in `src/` · what gets installed into a consumer lives in `templates/`
 - **Tests:** `npm test` (hook self-tests + bilingual doc-link integrity + init/brownfield smoke)
 

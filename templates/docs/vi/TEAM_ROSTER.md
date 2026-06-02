@@ -6,7 +6,7 @@
 Giữ session, nói chuyện với User, điều phối sub-agent. Luân phiên đội mũ:
 - **BA** — `brainstorming`: làm rõ yêu cầu, viết PRD, lấy sign-off (Gate 1).
 - **System Architect** — `gitnexus_exploring` + `gitnexus_impact`: thiết kế, viết TDD, chốt API contract + threat model, chia task (Gate 2).
-- **Scrum Master** — quản lý [ACTIVE_STATE.md](./ACTIVE_STATE.md), cập nhật CLAUDE.md & Serena memory.
+- **Scrum Master** — quản lý [ACTIVE_STATE.md](./ACTIVE_STATE.md), cập nhật CLAUDE.md, và dùng Serena cho semantic code navigation khi đã cấu hình.
 
 ## 2. Sub-agents (Dev / QA)
 Spawn qua `Agent` tool khi việc đủ lớn (Standard/Full path).

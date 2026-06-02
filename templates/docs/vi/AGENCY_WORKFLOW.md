@@ -1,6 +1,6 @@
 # Agency Workflow — Single Source of Truth
 
-> **Đây là tài liệu quy trình DUY NHẤT (canonical).** Mọi tài liệu khác (CLAUDE.md, AGENTS.md, TEAM_ROSTER.md, Serena memories) chỉ được **trỏ link** tới đây, KHÔNG được sao chép nội dung. Sửa quy trình → chỉ sửa file này.
+> **Đây là tài liệu quy trình DUY NHẤT (canonical).** Mọi tài liệu khác (CLAUDE.md, AGENTS.md, TEAM_ROSTER.md, ghi chú Serena tùy chọn) chỉ được **trỏ link** tới đây, KHÔNG được sao chép nội dung. Sửa quy trình → chỉ sửa file này.
 
 AI đóng vai một software agency tinh gọn. Quy mô vận hành: **{{TEAM_SIZE}} + AI**, theo **{{BRANCHING_MODEL}}** (xem [BRANCHING.md](./BRANCHING.md)). Tiêu chí hoàn thành: xem [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md).
 
@@ -76,7 +76,7 @@ Xem §3.
 1. Trigger skill `brainstorming`. **Áp dụng [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md)** xuyên suốt (cách hỏi, gắn nhãn giả định, kết mỗi vòng bằng tóm tắt + câu hỏi mở + giả định).
 2. Làm rõ: User Personas, Business Flows, Edge Cases, mục tiêu, tiêu chí chấp nhận (acceptance criteria).
 3. **Nếu là feature AI/assistant:** dùng **[template PRD_AI_FEATURE.md](./templates/PRD_AI_FEATURE.md)** — bắt buộc làm rõ các chiều đặc thù (hành vi khi mơ hồ, guardrails/refusal, định nghĩa "đúng" + golden examples, eval strategy, fallback/HITL), tham chiếu [INTERACTION_PATTERNS.md](./INTERACTION_PATTERNS.md) cho cách assistant giao tiếp với end-user.
-4. Output: **PRD / Scope Document** (copy vào `docs/specs/YYYY-MM-DD-<feature>.md`, link vào ACTIVE_STATE) — gồm Decision Log + Assumptions Register.
+4. Output: **PRD / Scope Document** trong `docs/specs/` theo [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md), link vào ACTIVE_STATE — gồm Decision Log + Assumptions Register.
 5. **GATE 1 (Plan Mode):** trình PRD → `ExitPlanMode` → chờ User (Product Owner) duyệt.
 
 ### Phase 2 — Architecture & Planning (lăng kính: System Architect)
@@ -86,7 +86,7 @@ Xem §3.
 4. **Đặt performance budget:** chốt latency/throughput/token-cost mục tiêu theo [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) (điền `<TBD>`).
 5. **Chốt API/interface contract** giữa các thành phần (FE↔BE, module↔module). *Đây là điều kiện tiên quyết để được phép parallelize ở Phase 3.*
 6. Trigger `writing-plans` để chia nhỏ công việc → tạo task bằng `TaskCreate` (session-scoped) + ghi vào ACTIVE_STATE (bền vững).
-7. Output: **Technical Design Document (TDD)** + Task list.
+7. Output: **Technical Design Document (TDD)** trong `docs/plans/` + Task list, kèm report artifact trong `docs/reports/` theo [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md).
 8. **GATE 2 (Plan Mode):** trình TDD → `ExitPlanMode` → chờ User duyệt cách tiếp cận kỹ thuật.
 
 ### Phase 3 — Implementation (lăng kính: Developer, có thể là sub-agent)
@@ -105,8 +105,8 @@ Xem §3.
 ### Phase 5 — Handover & Retro (lăng kính: DevOps / Scrum Master)
 1. Trigger `finishing-a-development-branch` → mở/merge MR theo [BRANCHING.md](./BRANCHING.md).
 2. Cập nhật **CLAUDE.md** nếu có quyết định kiến trúc mới (chỉ ghi cái mới, không lặp).
-3. **Retro nhẹ (3 dòng):** cái gì chạy tốt / cái gì vướng / 1 cải tiến cho lần sau — ghi vào ACTIVE_STATE hoặc MR.
-4. Lưu ngữ cảnh dự án vào Serena memory (con trỏ, không lặp nội dung).
+3. **Retro nhẹ (3 dòng):** cái gì chạy tốt / cái gì vướng / 1 cải tiến cho lần sau — ghi vào ACTIVE_STATE, MR, hoặc `docs/reports/<slug>/retro.md` theo [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md).
+4. Nếu đã cấu hình Serena, dùng nó cho semantic code navigation và chỉ giữ ghi chú tùy chọn dạng con trỏ, không lặp nội dung.
 5. Đánh dấu task `completed` + cập nhật ACTIVE_STATE.
 
 ---
@@ -119,6 +119,7 @@ Xem §3.
 | [BRANCHING.md](./BRANCHING.md) | GitLab flow, đặt tên nhánh, Conventional Commits |
 | [TEAM_ROSTER.md](./TEAM_ROSTER.md) | Persona + quy tắc delegate sub-agent + design direction |
 | [ACTIVE_STATE.md](./ACTIVE_STATE.md) | Trạng thái pipeline + resume protocol |
+| [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) | Output artifact, layout docs/specs/plans/reports, quy tắc lưu trữ |
 | [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) | Giao thức giao tiếp Human↔AI (làm rõ yêu cầu) |
 | [templates/PRD_AI_FEATURE.md](./templates/PRD_AI_FEATURE.md) | Template PRD cho feature AI (các chiều cần làm rõ) |
 | [INTERACTION_PATTERNS.md](./INTERACTION_PATTERNS.md) | Cách sản phẩm (assistant) giao tiếp với end-user |

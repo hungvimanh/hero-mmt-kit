@@ -3,7 +3,7 @@
 This repository is the hero-vibe-kit framework itself. Any agent working here:
 
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md) first.
-- The shipped workflow lives in `templates/docs/{en,vi}/AGENCY_WORKFLOW.md` (single source of truth for consumers).
+- Workflow template sources live in `templates/docs/{en,vi}/AGENCY_WORKFLOW.md`; consumer projects receive one active `docs/AGENCY_WORKFLOW.md` for the selected language.
 - CLI entry: `bin/hero-vibe-kit.js`; logic in `src/`; installable content in `templates/`.
 - Run `npm test` before proposing changes. Keep EN/VI docs in sync. Zero runtime deps.
 
