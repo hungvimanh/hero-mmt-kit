@@ -18,7 +18,7 @@ Chọn **một** profile cho mỗi dự án (quyết định trong PRD/TDD đầ
 Mặc định khi chưa rõ loại sản phẩm: **branded-product**, xác nhận tại cổng kiểm.
 
 ## §3 Định tuyến skill thiết kế — công việc → skill
-> Cài đặt qua CLI `skills` theo các nhóm trong [skills.manifest.json](../../skills.manifest.json). **Chọn đúng MỘT hướng thị giác** và khóa lại.
+> Cài đặt qua CLI `skills` theo các nhóm trong `skills.manifest.json`. **Chọn đúng MỘT hướng thị giác** và khóa lại.
 
 | Nhu cầu | Skill | Khi nào |
 |---|---|---|

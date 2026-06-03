@@ -18,7 +18,7 @@ Pick **one** profile per project (decided in the first PRD/TDD), record it in `d
 Default when the product type is unknown: **branded-product**, confirmed at the gate.
 
 ## §3 Design skill routing — job → skill
-> Install via the `skills` CLI per [skills.manifest.json](../../skills.manifest.json) groups. **Pick exactly ONE visual direction** and lock it.
+> Install via the `skills` CLI per `skills.manifest.json` groups. **Pick exactly ONE visual direction** and lock it.
 
 | Need | Skill | When |
 |---|---|---|

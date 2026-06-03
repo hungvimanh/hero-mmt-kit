@@ -66,7 +66,7 @@ async function run(ctx) {
 
   // ---- Skills (design — optional, grouped) ----
   const designGroups = ['brand', 'design-direction', 'design-tools'];
-  const designSources = designGroups.flatMap((name) => installableSources(manifest.groups && manifest.groups[name]));
+  const designSources = Array.from(new Set(designGroups.flatMap((name) => installableSources(manifest.groups && manifest.groups[name]))));
   if (designSources.length && await ask.yesno('Install design/UI skill packs? (pick your ONE direction afterwards)', false)) {
     for (const src of designSources) runCmd('npx', ['--yes', 'skills', 'add', src, '--yes'], target);
     cfg.integrations.design = 'installed';
