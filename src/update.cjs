@@ -29,6 +29,7 @@ async function update(opts) {
   for (const f of renderTree(srcDocs, vars)) {
     if (path.basename(f.rel) === 'ACTIVE_STATE.md') continue;
     const dest = path.join(target, 'docs', f.rel);
+    if (path.basename(f.rel) === 'BROWNFIELD_DISCOVERY.md' && exists(dest)) continue;
     ensureDir(path.dirname(dest));
     if (exists(dest)) backup(dest);
     fs.writeFileSync(dest, f.content);

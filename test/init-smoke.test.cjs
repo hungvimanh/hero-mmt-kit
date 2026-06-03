@@ -18,7 +18,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
     '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
-    'docs/DESIGN_STANDARDS.md', 'docs/templates/PRD_AI_FEATURE.md',
+    'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/templates/PRD_AI_FEATURE.md',
     'docs/templates/DESIGN_BRIEF.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
@@ -43,12 +43,14 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   fs.writeFileSync(path.join(dir, 'CLAUDE.md'), '# Mine\n\nPRESERVE ME\n');
   fs.writeFileSync(path.join(dir, 'src', 'a.ts'), 'export const a = 1;\n');
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE\n');
+  fs.writeFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'CUSTOM DISCOVERY\n');
 
   assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy']).status, 0);
   let claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
   assert.strictEqual((claude.match(/hero-vibe-kit:start/g) || []).length, 1);
   assert.match(fs.readFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'utf8'), /CUSTOM STATE/);
+  assert.match(fs.readFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'utf8'), /CUSTOM DISCOVERY/);
 
   // idempotent second run
   assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy']).status, 0);

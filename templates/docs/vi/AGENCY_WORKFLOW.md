@@ -15,6 +15,7 @@ Persona (BA / Architect / Developer / QA / Scrum Master) là **lăng kính tư d
 3. **Gate = Plan Mode thật, không phải lời hứa.** Khi một path yêu cầu "Gate", dùng `EnterPlanMode` → trình kế hoạch → `ExitPlanMode` để User duyệt. Đây là cơ chế chặn được harness enforce, thay cho câu chữ "chờ sign-off".
 4. **Cập nhật [ACTIVE_STATE.md](./ACTIVE_STATE.md)** khi bắt đầu / kết thúc một đơn vị công việc. Đây là backlog bền vững xuyên session (TaskCreate chỉ sống trong session hiện tại).
 5. **Tuân [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) trong mọi tương tác** — đặc biệt khi làm rõ yêu cầu: no silent assumptions, phân tầng độ chắc chắn, phân loại câu hỏi blocking/non-blocking, đóng vòng khi hiểu sai.
+6. **Với codebase cũ, chạy brownfield discovery trước** sau khi cài: `hero-vibe-kit init` → `hero-vibe-kit discover` → `hero-vibe-kit doctor`. Đọc [BROWNFIELD_DISCOVERY.md](./BROWNFIELD_DISCOVERY.md) trước khi sửa code.
 
 ---
 

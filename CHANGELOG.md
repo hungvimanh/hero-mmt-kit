@@ -3,6 +3,14 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [0.4.0] - 2026-06-03
+### Added
+- `discover` / `brownfield` command to scan old codebases and generate `docs/BROWNFIELD_DISCOVERY.md` without assuming docs live in `docs/`.
+- Bilingual `BROWNFIELD_DISCOVERY.md` template and workflow guidance for old projects: `init` → `discover` → `doctor`.
+
+### Changed
+- `init` and `update` preserve an existing `docs/BROWNFIELD_DISCOVERY.md` so human/AI discovery notes are not overwritten.
+
 ## [0.3.0] - 2026-06-03
 ### Added
 - Design UI/UX sub-workflow: bilingual `DESIGN_STANDARDS.md` with 3 product-fit profiles, UX↔UI split, job→skill routing, platform scope, media production, visual QA, and in-product help/onboarding standards.

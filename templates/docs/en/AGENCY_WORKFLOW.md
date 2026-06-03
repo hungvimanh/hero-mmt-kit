@@ -15,6 +15,7 @@ The personas (BA / Architect / Developer / QA / Scrum Master) are **thinking len
 3. **A gate is real Plan Mode, not a promise.** When a path requires a "Gate", use `EnterPlanMode` → present the plan → `ExitPlanMode` for the user to approve. This is a harness-enforced block, replacing the prose "wait for sign-off".
 4. **Update [ACTIVE_STATE.md](./ACTIVE_STATE.md)** when starting / finishing a unit of work. It is the durable cross-session backlog (TaskCreate only lives within the current session).
 5. **Follow [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) in every interaction** — especially when clarifying requirements: no silent assumptions, layered certainty, blocking/non-blocking question classification, close the loop on misunderstandings.
+6. **For old codebases, run brownfield discovery first** after install: `hero-vibe-kit init` → `hero-vibe-kit discover` → `hero-vibe-kit doctor`. Read [BROWNFIELD_DISCOVERY.md](./BROWNFIELD_DISCOVERY.md) before changing code.
 
 ---
 

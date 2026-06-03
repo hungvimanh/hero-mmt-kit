@@ -27,6 +27,8 @@ Usage: npx hero-vibe-kit <command> [flags]
 Commands:
   init      Install the workflow into the current project (new or brownfield)
   update    Re-render managed regions, preserving your edits
+  discover  Scan a brownfield project and create an AI discovery report
+  brownfield Alias for discover
   doctor    Validate the install (hooks, settings.json, doc links, tools)
   version   Print the version
   help      Show this help
@@ -51,6 +53,7 @@ async function main() {
   switch (cmd) {
     case 'init': await require('../src/init.cjs').init(opts); break;
     case 'update': await require('../src/update.cjs').update(opts); break;
+    case 'discover': case 'brownfield': await require('../src/discover.cjs').discover(opts); break;
     case 'doctor': await require('../src/doctor.cjs').doctor(opts); break;
     case 'version': version(); break;
     case 'help': case undefined: printHelp(); break;

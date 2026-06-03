@@ -25,6 +25,9 @@ It is **documentation + hooks + a CLI** — it does not bundle third-party tools
 # In your project root (new or existing):
 npx hero-vibe-kit init
 
+# For old codebases, create the first AI discovery map:
+npx hero-vibe-kit discover
+
 # Then restart Claude Code (or run /hooks) to activate the hooks, and:
 npx hero-vibe-kit doctor
 ```
@@ -90,6 +93,8 @@ hero-vibe-kit **does not redistribute** third-party tools. `init` offers to set 
 |---------|---------|
 | `init` | Install into the current project |
 | `update` | Re-render managed regions, preserving your edits & working files |
+| `discover` | Scan a brownfield codebase and create `docs/BROWNFIELD_DISCOVERY.md` |
+| `brownfield` | Alias for `discover` |
 | `doctor` | Validate hooks, settings.json, doc links, tool presence |
 | `version` | Print version |
 
@@ -137,6 +142,9 @@ they are installed from source via the `skills` CLI under their own licenses.
 # Ở thư mục gốc project (mới hoặc đã có code):
 npx hero-vibe-kit init
 
+# Với codebase cũ, tạo bản đồ khám phá ban đầu cho AI:
+npx hero-vibe-kit discover
+
 # Khởi động lại Claude Code (hoặc /hooks) để bật hook, rồi:
 npx hero-vibe-kit doctor
 ```
@@ -161,7 +169,7 @@ hero-vibe-kit **không redistribute** tool bên thứ ba. `init` mời cài từ
 
 ## Lệnh & cập nhật
 
-`init` · `update` (giữ chỉnh sửa ngoài marker + file làm việc) · `doctor` · `version`. Sửa thoải mái phần **ngoài** marker `<!-- hero-vibe-kit:start/end -->`. Điền `<TBD>` khi chốt tech stack.
+`init` · `update` (giữ chỉnh sửa ngoài marker + file làm việc) · `discover` / `brownfield` (quét codebase cũ và tạo `docs/BROWNFIELD_DISCOVERY.md`) · `doctor` · `version`. Sửa thoải mái phần **ngoài** marker `<!-- hero-vibe-kit:start/end -->`. Điền `<TBD>` khi chốt tech stack.
 
 ## Giấy phép
 
