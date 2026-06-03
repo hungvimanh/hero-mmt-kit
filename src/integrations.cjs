@@ -8,6 +8,17 @@ function uniqueSources(group) {
   return Array.from(new Set((group && group.skills || []).map((s) => s.source)));
 }
 
+function installableSources(group) {
+  return uniqueSources(group).filter((src) => src && src !== '<TBD>');
+}
+
+function buildMediaGenConfig(ans) {
+  if (!ans || !ans.enabled) return 'skipped';
+  const cfg = { provider: ans.provider, apiKeyEnv: ans.apiKeyEnv };
+  if (ans.model) cfg.model = ans.model;
+  return cfg;
+}
+
 function runCmd(cmd, args, cwd) {
   try {
     const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
@@ -53,12 +64,27 @@ async function run(ctx) {
     log.warn('Skills skipped. Later: ' + procSources.map((s) => `npx skills add ${s}`).join(' ; '));
   }
 
-  // ---- Skills (design — optional, pick one) ----
-  const designSources = uniqueSources(manifest.groups && manifest.groups.design);
-  if (designSources.length && await ask.yesno('Install a design/UI skill pack? (pick your ONE direction afterwards)', false)) {
+  // ---- Skills (design — optional, grouped) ----
+  const designGroups = ['brand', 'design-direction', 'design-tools'];
+  const designSources = designGroups.flatMap((name) => installableSources(manifest.groups && manifest.groups[name]));
+  if (designSources.length && await ask.yesno('Install design/UI skill packs? (pick your ONE direction afterwards)', false)) {
     for (const src of designSources) runCmd('npx', ['--yes', 'skills', 'add', src, '--yes'], target);
     cfg.integrations.design = 'installed';
-    log.ok('Design pack installed — set ONE direction in docs/TEAM_ROSTER.md §3.');
+    log.ok('Design packs installed — set ONE direction + profile in docs/TEAM_ROSTER.md §3.');
+  } else {
+    cfg.integrations.design = 'skipped';
+  }
+
+  // ---- AI media generation provider (optional; no secrets stored) ----
+  if (await ask.yesno('Configure an AI media-generation provider? (stores provider + env-var name only, never the key)', false)) {
+    const provider = await ask.text('Media-generation provider', '');
+    const apiKeyEnv = await ask.text('API key environment variable name', 'MEDIA_GEN_API_KEY');
+    const model = await ask.text('Media-generation model', '');
+    cfg.integrations.mediaGen = buildMediaGenConfig({ enabled: true, provider, apiKeyEnv, model });
+    log.ok(`Media-generation provider configured (${provider || 'provider TBD'}, key env: ${apiKeyEnv}).`);
+  } else {
+    cfg.integrations.mediaGen = 'skipped';
+    log.warn('Media generation provider skipped. Fallback: use Claude subagents for media prompts/specs.');
   }
 
   // ---- GitNexus (optional) ----
@@ -86,4 +112,4 @@ async function run(ctx) {
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
 }
 
-module.exports = { run };
+module.exports = { run, buildMediaGenConfig };
