@@ -17,6 +17,10 @@
 | Session task tracking | `TaskCreate` / `TaskList` | Current-session execution checklist | Not durable; recreate from `ACTIVE_STATE.md` + linked artifacts after restart. |
 | Semantic code understanding | Serena MCP | Symbol lookup, references, implementations, diagnostics, semantic edits | Not the primary storage layer. |
 | Optional Serena notes | `.serena/memories/project/*.md` | Lightweight pointers back to repo docs | Never duplicate canonical process, PRD, plans, or reports here. |
+| Design system | `docs/design/DESIGN_SYSTEM.md` | Locked profile + direction, tokens reference, component inventory, platform notes | Durable; create on the first UI work. |
+| Design assets | `docs/design/assets/` | Source/reference media (small, reviewable) | Production-ready assets live in the app's asset dir. |
+| In-product help content | `docs/help/` | Markdown/MDX help source rendered in-app | Keep in sync with features (DESIGN_STANDARDS §8). |
+| Visual QA | `docs/reports/YYYY-MM-DD-<slug>/design-qa.md` | Responsive/a11y/states/media-weight + help accuracy | Required for UI work on Standard/Full. |
 
 ## 2. Directory layout
 
@@ -32,6 +36,11 @@ docs/
   SECURITY_STANDARDS.md
   PERFORMANCE_STANDARDS.md
   INTERACTION_PATTERNS.md
+
+  design/
+    DESIGN_SYSTEM.md
+    assets/
+  help/
 
   specs/
     YYYY-MM-DD-feature-name.md
@@ -49,6 +58,7 @@ docs/
 
   templates/
     PRD_AI_FEATURE.md
+    DESIGN_BRIEF.md
 ```
 
 Create `specs/`, `plans/`, and `reports/` only when the first artifact of that type is needed.
@@ -62,6 +72,7 @@ Create `specs/`, `plans/`, and `reports/` only when the first artifact of that t
 | Standard | `ACTIVE_STATE.md`, `plans/*.md`, `reports/.../impact.md`, and `reports/.../qa.md`. Add security/performance reports when the touched surface requires them. |
 | Full | `ACTIVE_STATE.md`, `specs/*.md`, `plans/*.md`, `reports/.../impact.md`, `security.md`, `performance.md`, `qa.md`, and `retro.md`. |
 | Spike | `docs/reports/YYYY-MM-DD-<slug>/recommendation.md`; do not merge throwaway POC code into main. |
+| Design (router #9) | `docs/design/DESIGN_SYSTEM.md` (when first UI work), `docs/help/<area>.md`, `reports/.../design-qa.md`. Media source in `docs/design/assets/`. |
 
 ## 4. Naming rules
 

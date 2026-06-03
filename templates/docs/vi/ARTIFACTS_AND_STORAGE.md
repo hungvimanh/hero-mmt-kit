@@ -17,6 +17,10 @@
 | Task tracking trong session | `TaskCreate` / `TaskList` | Checklist thực thi của session hiện tại | Không bền vững; sau restart tạo lại từ `ACTIVE_STATE.md` + artifact đã link. |
 | Semantic code understanding | Serena MCP | Symbol lookup, references, implementations, diagnostics, semantic edits | Không phải lớp storage chính. |
 | Ghi chú Serena tùy chọn | `.serena/memories/project/*.md` | Pointer nhẹ trỏ về docs trong repo | Không bao giờ duplicate process, PRD, plan, hoặc report canonical ở đây. |
+| Design system | `docs/design/DESIGN_SYSTEM.md` | Profile + direction đã chốt, tham chiếu token, danh mục component, ghi chú nền tảng | Bền vững; tạo khi có việc UI đầu tiên. |
+| Tài nguyên thiết kế | `docs/design/assets/` | Media nguồn/tham chiếu (nhỏ, review được) | Asset production sẵn sàng nằm ở asset dir của app. |
+| Nội dung help trong sản phẩm | `docs/help/` | Source help dạng Markdown/MDX render trong app | Giữ đồng bộ với feature (DESIGN_STANDARDS §8). |
+| Visual QA | `docs/reports/YYYY-MM-DD-<slug>/design-qa.md` | Responsive/a11y/states/media-weight + độ chính xác của help | Bắt buộc cho việc UI ở Standard/Full. |
 
 ## 2. Cấu trúc thư mục
 
@@ -32,6 +36,11 @@ docs/
   SECURITY_STANDARDS.md
   PERFORMANCE_STANDARDS.md
   INTERACTION_PATTERNS.md
+
+  design/
+    DESIGN_SYSTEM.md
+    assets/
+  help/
 
   specs/
     YYYY-MM-DD-feature-name.md
@@ -49,6 +58,7 @@ docs/
 
   templates/
     PRD_AI_FEATURE.md
+    DESIGN_BRIEF.md
 ```
 
 Chỉ tạo `specs/`, `plans/`, và `reports/` khi cần artifact đầu tiên thuộc loại đó.
@@ -62,6 +72,7 @@ Chỉ tạo `specs/`, `plans/`, và `reports/` khi cần artifact đầu tiên t
 | Standard | `ACTIVE_STATE.md`, `plans/*.md`, `reports/.../impact.md`, và `reports/.../qa.md`. Thêm security/performance report nếu bề mặt chạm tới yêu cầu. |
 | Full | `ACTIVE_STATE.md`, `specs/*.md`, `plans/*.md`, `reports/.../impact.md`, `security.md`, `performance.md`, `qa.md`, và `retro.md`. |
 | Spike | `docs/reports/YYYY-MM-DD-<slug>/recommendation.md`; không merge code POC vứt đi vào main. |
+| Design (router #9) | `docs/design/DESIGN_SYSTEM.md` (khi có việc UI đầu tiên), `docs/help/<area>.md`, `reports/.../design-qa.md`. Media nguồn ở `docs/design/assets/`. |
 
 ## 4. Quy tắc đặt tên
 
