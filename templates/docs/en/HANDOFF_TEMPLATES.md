@@ -21,7 +21,7 @@ Done criteria:
 
 Keep prompts short. Include only the context needed for the assigned scope.
 
-Default context budget: do not return full transcripts, full diffs, full logs, or full file contents unless explicitly requested. If evidence is long, summarize it and cite the source path or command.
+Default context budget: minimum words, maximum signal, result first. Do not return full transcripts, full diffs, full logs, or full file contents unless explicitly requested. If evidence is long, summarize it and cite the source path or command.
 
 ## 2. BA Discovery Prompt
 

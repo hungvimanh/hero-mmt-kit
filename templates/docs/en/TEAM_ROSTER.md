@@ -32,6 +32,7 @@ Sub-agent delegation reduces main-thread context and enforces specialist review.
 ### Context budget for sub-agents
 - Sub-agents may read broadly, but must report narrowly.
 - Return conclusions, evidence, risks, decisions, next actions, and file/path citations — not transcripts, full file contents, full diffs, or full logs.
+- Use the concise response style from [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): minimum words, maximum signal, result first.
 - If a sub-agent output is long, the Main Agent should summarize it into a report artifact before continuing.
 
 ## 3. Sub-agent prompt contract

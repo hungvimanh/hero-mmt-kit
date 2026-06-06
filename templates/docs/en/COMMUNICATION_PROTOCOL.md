@@ -9,6 +9,10 @@
 - Prefer plain language over hard technical terms. When a technical term is necessary, keep it in English and add a short everyday explanation the first time.
 - Explain from the user's goal first, then mention implementation details only when needed or when the user asks.
 - Concise and direct, no rambling. Present important options with a clear recommendation.
+- Default response style: minimum words, maximum signal. Put the most important result first.
+- Prefer compact markers when clear: `=` for meaning/result, `->` for flow/result, `:` for explanation, `-` for bullets, `|` for comparisons.
+- Avoid long introductions, repeated context, polite filler, motivational text, and unnecessary transitions.
+- Expand only when the user asks, the gate requires detail, or the artifact type needs it.
 - Cite `file:line` when discussing code.
 
 ## 2. Core principles

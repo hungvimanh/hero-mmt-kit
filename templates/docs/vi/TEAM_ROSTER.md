@@ -32,6 +32,7 @@ Delegate sub-agent giúp giảm context ở main thread và bảo đảm có rev
 ### Context budget cho sub-agent
 - Sub-agent có thể đọc rộng, nhưng phải báo cáo hẹp.
 - Trả về kết luận, bằng chứng, rủi ro, quyết định, bước tiếp theo, và trích dẫn file/path — không trả transcript, toàn bộ nội dung file, toàn bộ diff, hoặc toàn bộ log.
+- Dùng concise response style từ [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): ít chữ nhất, nhiều tín hiệu nhất, kết quả trước.
 - Nếu output của sub-agent dài, Main Agent nên tóm tắt nó vào report artifact trước khi tiếp tục.
 
 ## 3. Hợp đồng prompt cho sub-agent

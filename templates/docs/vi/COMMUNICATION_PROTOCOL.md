@@ -9,6 +9,10 @@
 - Ưu tiên lời giải thích dễ hiểu, hạn chế thuật ngữ kỹ thuật khó. Khi bắt buộc dùng thuật ngữ, giữ thuật ngữ tiếng Anh và giải thích ngắn bằng ngôn ngữ đời thường ở lần đầu xuất hiện.
 - Giải thích từ mục tiêu của User trước, chỉ nói chi tiết triển khai khi cần hoặc khi User yêu cầu.
 - Ngắn gọn, trực diện, không vòng vo. Trình bày phương án quan trọng kèm khuyến nghị rõ ràng.
+- Response style mặc định: ít chữ nhất, nhiều tín hiệu nhất. Đưa kết quả quan trọng nhất lên đầu.
+- Ưu tiên ký hiệu gọn khi rõ nghĩa: `=` cho nghĩa/kết quả, `->` cho luồng/kết quả, `:` cho giải thích, `-` cho bullet, `|` cho so sánh.
+- Tránh mở bài dài, lặp context, lời lịch sự dư thừa, câu động viên và chuyển ý không cần thiết.
+- Chỉ mở rộng khi User yêu cầu, gate cần chi tiết, hoặc loại artifact cần đủ nội dung.
 - Trích dẫn `file:line` khi nói về code.
 
 ## 2. Nguyên tắc cốt lõi

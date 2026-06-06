@@ -21,7 +21,7 @@ Tiêu chí Done:
 
 Giữ prompt ngắn. Chỉ đưa context cần thiết cho phạm vi được giao.
 
-Context budget mặc định: không trả transcript đầy đủ, toàn bộ diff, toàn bộ log, hoặc toàn bộ nội dung file trừ khi được yêu cầu rõ. Nếu bằng chứng dài, hãy tóm tắt và trích dẫn source path hoặc command.
+Context budget mặc định: ít chữ nhất, nhiều tín hiệu nhất, kết quả trước. Không trả transcript đầy đủ, toàn bộ diff, toàn bộ log, hoặc toàn bộ nội dung file trừ khi được yêu cầu rõ. Nếu bằng chứng dài, hãy tóm tắt và trích dẫn source path hoặc command.
 
 ## 2. Prompt khám phá BA
 

@@ -3,6 +3,11 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [0.6.1] - 2026-06-06
+### Changed
+- Added concise response-style guidance to the bilingual communication protocol: minimum words, maximum signal, result first, compact markers, and no filler by default.
+- Linked the concise style into bilingual sub-agent reporting and handoff prompt context budgets.
+
 ## [0.6.0] - 2026-06-06
 ### Added
 - Process-first self-prompting workflow guidance so the Main Agent classifies task type, selects the workflow path, generates bounded handoff prompts, verifies gates, updates artifacts, and chooses the next prompt from workflow state.
