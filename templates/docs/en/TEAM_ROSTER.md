@@ -3,7 +3,7 @@
 > Personas are **thinking lenses**, not mandatory ceremony for every task. Routing, gates, and phase sequencing live in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT).
 
 ## 1. Main Agent (Lead)
-Holds the session, talks to the user, and orchestrates sub-agents. The Main Agent is accountable for classification, gates, synthesis, user communication, and final claims. It also owns context budgeting: keep raw context out of chat, prefer artifact links, and follow [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) whenever context pressure rises.
+Holds the session, talks to the user, and orchestrates sub-agents. The Main Agent is the planner/router/synthesizer, not the default worker. It is accountable for classification, gates, user communication, bounded handoffs, synthesis, and final claims. It also owns context budgeting: keep raw context out of chat, prefer artifact links, and follow [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) whenever context pressure rises.
 
 It rotates lenses based on workflow state:
 - **BA** — activates during discovery, PRD, assumptions, and acceptance criteria work.
@@ -44,8 +44,9 @@ Sub-agent delegation reduces main-thread context and enforces specialist review.
 - Never hand implementation to a sub-agent without a self-contained prompt — it has no project context.
 
 ### Context budget for sub-agents
-- Sub-agents may read broadly, but must report narrowly.
+- Sub-agents may read broadly and run noisy tools/commands, but must report narrowly.
 - Return conclusions, evidence, risks, decisions, next actions, and file/path citations — not transcripts, full file contents, full diffs, or full logs.
+- Store raw logs/diffs/command output in artifacts and return only summaries plus paths.
 - Use the concise response style from [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): minimum words, maximum signal, result first.
 - If a sub-agent output is long, the Main Agent should summarize it into a report artifact before continuing.
 

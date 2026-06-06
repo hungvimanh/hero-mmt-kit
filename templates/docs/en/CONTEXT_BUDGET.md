@@ -58,7 +58,28 @@ Prefer:
 - report artifacts,
 - bounded sub-agent findings.
 
-## 5. Mandatory checkpoint triggers
+## 5. Bounded command-output protocol
+
+Run noisy commands in bounded mode:
+
+1. redirect raw output to a log artifact,
+2. print only exit code, pass/fail, counts, top errors, and log path,
+3. read the full log only when debugging,
+4. delegate long log analysis to a sub-agent when it protects the main context.
+
+Examples of noisy commands: `git diff`, `npm test`, `dotnet build`, `dotnet test`, MCP exploration, broad search, and generated transcripts.
+
+Use summary commands by default:
+
+```text
+git diff --stat
+git diff --name-status
+git diff --check
+```
+
+Store raw command output under `docs/reports/YYYY-MM-DD-<slug>/logs/` when a durable artifact is useful.
+
+## 6. Mandatory checkpoint triggers
 
 Checkpoint before moving through these boundaries:
 
@@ -72,7 +93,7 @@ Also checkpoint whenever context pressure is high.
 
 For Standard and Full paths, create or update `docs/reports/YYYY-MM-DD-<slug>/resume.md` when the work is long-running or context pressure is high. For small Fast path work, updating `ACTIVE_STATE.md` is enough unless context pressure is high.
 
-## 6. Resume packet
+## 7. Resume packet
 
 A resume packet is concise restart state, not a copied transcript.
 
@@ -133,7 +154,7 @@ Use this format:
 - Prefer:
 ```
 
-## 7. Compact prompt
+## 8. Compact prompt
 
 When staying in the same session, use:
 
@@ -141,7 +162,7 @@ When staying in the same session, use:
 /compact Summarize only durable state for continuing this task. Include: goal, approved decisions, current path/phase, files changed, artifacts, verification evidence, open risks/blockers, next action, and what not to reread. Drop transcripts, full file contents, full diffs, full logs, and conversational detail.
 ```
 
-## 8. Fresh-session prompt
+## 9. Fresh-session prompt
 
 When the current session is bloated or hit by API 400, start fresh with:
 
@@ -160,7 +181,7 @@ Current goal: <next action from resume packet>.
 Start by confirming path, phase, current status, and next action in no more than 5 lines.
 ```
 
-## 9. Sub-agent output limits
+## 10. Sub-agent output limits
 
 Sub-agents may read broadly, but must report narrowly.
 
@@ -181,7 +202,7 @@ Sub-agents must not return:
 - full logs,
 - broad unrelated commentary.
 
-## 10. Tool-output hygiene
+## 11. Tool-output hygiene
 
 Before running tools that may emit large output:
 
@@ -191,7 +212,7 @@ Before running tools that may emit large output:
 4. prefer pass/fail summaries for tests,
 5. write long evidence to reports instead of chat.
 
-## 11. API 400 recovery
+## 12. API 400 recovery
 
 If Claude Code returns a context-window API 400 error:
 

@@ -3,7 +3,7 @@
 > Persona là **lăng kính tư duy**, không phải nghi thức bắt buộc cho mọi task. Router, gate và thứ tự phase nằm trong [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT).
 
 ## 1. Main Agent (Lead)
-Giữ session, nói chuyện với User, và điều phối sub-agent. Main Agent chịu trách nhiệm phân loại task, gate, tổng hợp, giao tiếp với User và mọi claim cuối cùng. Main Agent cũng chịu trách nhiệm context budgeting: không đưa raw context dài vào chat, ưu tiên link artifact, và tuân [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) khi context pressure tăng.
+Giữ session, nói chuyện với User, và điều phối sub-agent. Main Agent là planner/router/synthesizer, không phải worker mặc định. Main Agent chịu trách nhiệm phân loại task, gate, giao tiếp với User, handoff có biên rõ, tổng hợp và mọi claim cuối cùng. Main Agent cũng chịu trách nhiệm context budgeting: không đưa raw context dài vào chat, ưu tiên link artifact, và tuân [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) khi context pressure tăng.
 
 Main Agent luân phiên lăng kính theo trạng thái workflow:
 - **BA** — kích hoạt khi discovery, PRD, giả định và acceptance criteria.
@@ -44,8 +44,9 @@ Delegate sub-agent giúp giảm context ở main thread và bảo đảm có rev
 - Không bao giờ giao phần implementation cho sub-agent mà thiếu prompt self-contained — nó không có context của project.
 
 ### Context budget cho sub-agent
-- Sub-agent có thể đọc rộng, nhưng phải báo cáo hẹp.
+- Sub-agent có thể đọc rộng và chạy tool/command ồn, nhưng phải báo cáo hẹp.
 - Trả về kết luận, bằng chứng, rủi ro, quyết định, bước tiếp theo, và trích dẫn file/path — không trả transcript, toàn bộ nội dung file, toàn bộ diff, hoặc toàn bộ log.
+- Lưu raw log/diff/command output vào artifact và chỉ trả summary kèm path.
 - Dùng concise response style từ [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): ít chữ nhất, nhiều tín hiệu nhất, kết quả trước.
 - Nếu output của sub-agent dài, Main Agent nên tóm tắt nó vào report artifact trước khi tiếp tục.
 

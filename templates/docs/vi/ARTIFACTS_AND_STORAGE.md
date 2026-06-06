@@ -13,6 +13,7 @@
 | Security review | `docs/reports/YYYY-MM-DD-<slug>/security.md` | Threat model findings, OWASP LLM checks, rủi ro chưa xử lý | Bắt buộc cho Full path và bề mặt nhạy cảm. |
 | Performance review | `docs/reports/YYYY-MM-DD-<slug>/performance.md` | Budget, số đo, regression, token/cost checks | Bắt buộc khi có performance budget hoặc sửa hot path. |
 | QA / verification | `docs/reports/YYYY-MM-DD-<slug>/qa.md` | Lệnh test, kiểm tra thủ công, gap còn biết trước | Bắt buộc trước khi claim done ở Standard/Full. |
+| Raw command logs | `docs/reports/YYYY-MM-DD-<slug>/logs/` | Full output từ command build/test/diff/MCP ồn | Không đưa raw log vào chat; trích dẫn path từ bounded report. |
 | Retro / handover | `docs/reports/YYYY-MM-DD-<slug>/retro.md` | Cái gì tốt, cái gì vướng, một cải tiến | Bắt buộc cho Full path; tùy chọn path khác. |
 | Resume packet | `docs/reports/YYYY-MM-DD-<slug>/resume.md` | State để compact/restart session | Tạo hoặc cập nhật trước phase handoff, review lớn, final verification, hoặc khi khôi phục context pressure. |
 | Task tracking trong session | `TaskCreate` / `TaskList` | Checklist thực thi của session hiện tại | Không bền vững; sau restart tạo lại từ `ACTIVE_STATE.md` + artifact đã link. |
@@ -56,6 +57,7 @@ docs/
       security.md
       performance.md
       qa.md
+      logs/
       retro.md
 
   templates/

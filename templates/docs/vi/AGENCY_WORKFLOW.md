@@ -63,6 +63,29 @@ User intent
 
 Self-prompting **không** có nghĩa là mặc định spawn thêm agent. Nó nghĩa là framework quyết định prompt hợp lệ tiếp theo dựa trên loại task, trạng thái path và tiêu chí Done.
 
+### Lightweight Main Agent Protocol
+
+Main Agent là orchestrator giao tiếp với User, không phải executor mặc định. Giữ Main Agent đủ nhẹ để clarify, plan, route, synthesize và nói chuyện với User.
+
+Luồng mặc định:
+
+```text
+User intent
+  → Main Agent clarify và plan
+  → Main Agent delegate việc có biên rõ
+  → sub-agent execute / explore / test / review
+  → sub-agent trả bounded report
+  → Main Agent synthesize, quyết định bước tiếp theo và chịu trách nhiệm claim cuối
+```
+
+Main Agent chỉ trực tiếp làm:
+- giao tiếp với User và quyết định blocking,
+- phân loại task, lập plan và tạo handoff prompt,
+- edit/check nhỏ khi delegate tốn hơn lợi ích,
+- final accountability gate trước khi claim hoàn tất.
+
+Sub-agent nên xử lý broad reading, MCP exploration, noisy command execution, implementation, QA, security, performance review và log analysis khi việc đó bảo vệ context chính.
+
 ### Context Budget Protocol
 
 Main Agent là bộ điều khiển workflow, không phải kho chứa transcript. Trước khi exploration rộng, implementation, QA/review, final verification, hoặc bất kỳ phase handoff nào:

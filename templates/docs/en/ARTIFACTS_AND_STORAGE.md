@@ -13,6 +13,7 @@
 | Security review | `docs/reports/YYYY-MM-DD-<slug>/security.md` | Threat model findings, OWASP LLM checks, unresolved risks | Required for Full path and sensitive surfaces. |
 | Performance review | `docs/reports/YYYY-MM-DD-<slug>/performance.md` | Budget, measurements, regressions, token/cost checks | Required when performance budget exists or hot path changes. |
 | QA / verification | `docs/reports/YYYY-MM-DD-<slug>/qa.md` | Test commands, manual checks, known gaps | Required before claiming done on Standard/Full. |
+| Raw command logs | `docs/reports/YYYY-MM-DD-<slug>/logs/` | Full output from noisy build/test/diff/MCP commands | Keep raw logs out of chat; cite the path from bounded reports. |
 | Retro / handover | `docs/reports/YYYY-MM-DD-<slug>/retro.md` | What went well, pain points, one improvement | Required for Full path; optional otherwise. |
 | Resume packet | `docs/reports/YYYY-MM-DD-<slug>/resume.md` | Compact/session restart state | Create or update before phase handoff, major review, final verification, or context-pressure recovery. |
 | Session task tracking | `TaskCreate` / `TaskList` | Current-session execution checklist | Not durable; recreate from `ACTIVE_STATE.md` + linked artifacts after restart. |
@@ -56,6 +57,7 @@ docs/
       security.md
       performance.md
       qa.md
+      logs/
       retro.md
 
   templates/

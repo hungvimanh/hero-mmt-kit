@@ -63,6 +63,29 @@ User intent
 
 Self-prompting does **not** mean spawning more agents by default. It means the framework decides the next valid prompt from task type, path state, and Done criteria.
 
+### Lightweight Main Agent Protocol
+
+The Main Agent is the user-facing orchestrator, not the default executor. Keep it small enough to clarify, plan, route, synthesize, and talk to the user.
+
+Default flow:
+
+```text
+User intent
+  → Main Agent clarifies and plans
+  → Main Agent delegates bounded work
+  → sub-agents execute / explore / test / review
+  → sub-agents return bounded reports
+  → Main Agent synthesizes, decides next step, and owns final claims
+```
+
+Main Agent does directly only:
+- user communication and blocking decisions,
+- task classification, planning, and handoff prompts,
+- small local edits/checks where delegation costs more than it saves,
+- final accountability gates before completion claims.
+
+Sub-agents should handle broad reading, MCP exploration, noisy command execution, implementation, QA, security, performance review, and log analysis when that protects main-thread context.
+
 ### Context Budget Protocol
 
 The Main Agent is a workflow controller, not a transcript warehouse. Before broad exploration, implementation, QA/review, final verification, or any phase handoff:

@@ -58,7 +58,28 @@ Mặc định Main Agent không được paste các nội dung này vào chat:
 - report artifact,
 - finding ngắn gọn từ sub-agent.
 
-## 5. Trigger checkpoint bắt buộc
+## 5. Protocol output command có biên
+
+Chạy command ồn theo bounded mode:
+
+1. redirect raw output vào log artifact,
+2. chỉ in exit code, pass/fail, count, top error và log path,
+3. chỉ đọc full log khi debug,
+4. delegate log analysis dài cho sub-agent khi việc đó bảo vệ context chính.
+
+Ví dụ command ồn: `git diff`, `npm test`, `dotnet build`, `dotnet test`, MCP exploration, broad search và generated transcript.
+
+Mặc định dùng command summary:
+
+```text
+git diff --stat
+git diff --name-status
+git diff --check
+```
+
+Lưu raw command output dưới `docs/reports/YYYY-MM-DD-<slug>/logs/` khi cần artifact bền vững.
+
+## 6. Trigger checkpoint bắt buộc
 
 Checkpoint trước khi đi qua các ranh giới:
 
@@ -72,7 +93,7 @@ Cũng checkpoint bất cứ khi nào context pressure cao.
 
 Với Standard và Full path, tạo hoặc cập nhật `docs/reports/YYYY-MM-DD-<slug>/resume.md` khi công việc kéo dài hoặc context pressure cao. Với Fast path nhỏ, cập nhật `ACTIVE_STATE.md` là đủ trừ khi context pressure cao.
 
-## 6. Resume packet
+## 7. Resume packet
 
 Resume packet là state ngắn gọn để restart, không phải transcript được copy lại.
 
@@ -133,7 +154,7 @@ Dùng format:
 - Prefer:
 ```
 
-## 7. Prompt compact
+## 8. Prompt compact
 
 Khi tiếp tục trong cùng session, dùng:
 
@@ -141,7 +162,7 @@ Khi tiếp tục trong cùng session, dùng:
 /compact Summarize only durable state for continuing this task. Include: goal, approved decisions, current path/phase, files changed, artifacts, verification evidence, open risks/blockers, next action, and what not to reread. Drop transcripts, full file contents, full diffs, full logs, and conversational detail.
 ```
 
-## 8. Prompt session mới
+## 9. Prompt session mới
 
 Khi session hiện tại quá nặng hoặc gặp API 400, mở session mới với:
 
@@ -160,7 +181,7 @@ Current goal: <next action from resume packet>.
 Start by confirming path, phase, current status, and next action in no more than 5 lines.
 ```
 
-## 9. Giới hạn output sub-agent
+## 10. Giới hạn output sub-agent
 
 Sub-agent có thể đọc rộng, nhưng phải báo cáo hẹp.
 
@@ -181,7 +202,7 @@ Sub-agent không được trả:
 - toàn bộ log,
 - bình luận rộng không liên quan.
 
-## 10. Vệ sinh output tool
+## 11. Vệ sinh output tool
 
 Trước khi chạy tool có thể tạo output lớn:
 
@@ -191,7 +212,7 @@ Trước khi chạy tool có thể tạo output lớn:
 4. ưu tiên summary pass/fail cho test,
 5. ghi evidence dài vào report thay vì chat.
 
-## 11. Khôi phục sau API 400
+## 12. Khôi phục sau API 400
 
 Nếu Claude Code trả lỗi API 400 do context window:
 
