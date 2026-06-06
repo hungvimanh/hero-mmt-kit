@@ -3,6 +3,10 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [0.6.3] - 2026-06-06
+### Changed
+- Updated bilingual sub-agent model routing defaults: medium-hard tasks use `claude-sonnet-4-6`; simple tasks use `claude-haiku-4-5` with medium/high effort guidance.
+
 ## [0.6.2] - 2026-06-06
 ### Added
 - Added bilingual sub-agent model/effort routing in `TEAM_ROSTER.md`, with model IDs centralized for easier future Claude model updates.

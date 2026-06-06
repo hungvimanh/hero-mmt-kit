@@ -22,8 +22,8 @@ Dùng bảng này mỗi khi spawn sub-agent. Giữ model ID tập trung ở đâ
 | Độ khó task | Model | Effort | Dùng khi |
 |---|---|---|---|
 | Khó / Rất khó | Cùng model với Main Agent | medium | Kiến trúc, review sâu, việc mơ hồ, synthesis rủi ro cao |
-| Trung bình-khó | `claude-opus-4-6` | medium | Implementation có biên rõ, review tập trung, investigation vừa phải |
-| Đơn giản | `claude-haiku-4-5-20251001` | low / medium | Tóm tắt nhỏ, check đơn giản, tra cứu doc hẹp |
+| Trung bình-khó | `claude-sonnet-4-6` | medium | Implementation có biên rõ, review tập trung, investigation vừa phải |
+| Đơn giản | `claude-haiku-4-5` | medium / high | Tóm tắt nhỏ, check đơn giản, tra cứu doc hẹp |
 
 Quy tắc:
 - Ưu tiên model nhỏ nhất vẫn đủ an toàn cho task.

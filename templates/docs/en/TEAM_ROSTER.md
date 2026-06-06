@@ -22,8 +22,8 @@ Use this table whenever spawning a sub-agent. Keep model IDs centralized here so
 | Task complexity | Model | Effort | Use when |
 |---|---|---|---|
 | Hard / Very hard | Same model as Main Agent | medium | Architecture, deep review, ambiguous work, high-risk synthesis |
-| Medium-hard | `claude-opus-4-6` | medium | Bounded implementation, focused review, moderate investigation |
-| Simple | `claude-haiku-4-5-20251001` | low / medium | Small summaries, simple checks, narrow doc lookup |
+| Medium-hard | `claude-sonnet-4-6` | medium | Bounded implementation, focused review, moderate investigation |
+| Simple | `claude-haiku-4-5` | medium / high | Small summaries, simple checks, narrow doc lookup |
 
 Rules:
 - Prefer the smallest model that can do the task safely.
