@@ -13,13 +13,15 @@ Role:
 Goal:
 Inputs:
 Required context:
+Model tier:
+Effort:
 Constraints:
 Output format:
 Context budget:
 Done criteria:
 ```
 
-Keep prompts short. Include only the context needed for the assigned scope.
+Keep prompts short. Include only the context needed for the assigned scope. Set `Model tier` and `Effort` from [TEAM_ROSTER.md](./TEAM_ROSTER.md); do not hardcode model IDs in one-off prompts.
 
 Default context budget: minimum words, maximum signal, result first. Do not return full transcripts, full diffs, full logs, or full file contents unless explicitly requested. If evidence is long, summarize it and cite the source path or command.
 

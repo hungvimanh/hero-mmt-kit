@@ -13,13 +13,15 @@ Vai trò:
 Mục tiêu:
 Input:
 Context bắt buộc:
+Model tier:
+Effort:
 Ràng buộc:
 Định dạng đầu ra:
 Context budget:
 Tiêu chí Done:
 ```
 
-Giữ prompt ngắn. Chỉ đưa context cần thiết cho phạm vi được giao.
+Giữ prompt ngắn. Chỉ đưa context cần thiết cho phạm vi được giao. Set `Model tier` và `Effort` theo [TEAM_ROSTER.md](./TEAM_ROSTER.md); không hardcode model ID trong prompt một lần.
 
 Context budget mặc định: ít chữ nhất, nhiều tín hiệu nhất, kết quả trước. Không trả transcript đầy đủ, toàn bộ diff, toàn bộ log, hoặc toàn bộ nội dung file trừ khi được yêu cầu rõ. Nếu bằng chứng dài, hãy tóm tắt và trích dẫn source path hoặc command.
 

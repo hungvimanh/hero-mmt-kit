@@ -3,6 +3,14 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [0.6.2] - 2026-06-06
+### Added
+- Added bilingual sub-agent model/effort routing in `TEAM_ROSTER.md`, with model IDs centralized for easier future Claude model updates.
+- Added `Model tier` and `Effort` fields to bilingual handoff prompt contracts.
+
+### Changed
+- Updated generated `AGENTS.md` and `CLAUDE.md` templates to point to `TEAM_ROSTER.md` for sub-agent model/effort selection instead of hardcoding model IDs.
+
 ## [0.6.1] - 2026-06-06
 ### Changed
 - Added concise response-style guidance to the bilingual communication protocol: minimum words, maximum signal, result first, compact markers, and no filler by default.

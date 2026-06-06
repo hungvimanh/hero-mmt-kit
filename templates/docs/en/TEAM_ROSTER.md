@@ -16,7 +16,21 @@ It rotates lenses based on workflow state:
 
 Roles are lenses first. Spawn a sub-agent only when the path requires review/QA or when delegation genuinely improves focus, speed, or context isolation.
 
-## 2. Path-triggered delegation
+## 2. Sub-agent model and effort routing
+Use this table whenever spawning a sub-agent. Keep model IDs centralized here so future Claude model changes require one doc update.
+
+| Task complexity | Model | Effort | Use when |
+|---|---|---|---|
+| Hard / Very hard | Same model as Main Agent | medium | Architecture, deep review, ambiguous work, high-risk synthesis |
+| Medium-hard | `claude-opus-4-6` | medium | Bounded implementation, focused review, moderate investigation |
+| Simple | `claude-haiku-4-5-20251001` | low / medium | Small summaries, simple checks, narrow doc lookup |
+
+Rules:
+- Prefer the smallest model that can do the task safely.
+- Use the Main Agent model for tasks where losing reasoning quality risks rework.
+- Do not hardcode model IDs in handoff prompts outside this table; cite the tier and effort instead.
+
+## 3. Path-triggered delegation
 Sub-agent delegation reduces main-thread context and enforces specialist review. The path decides; the user does not need to ask for sub-agents.
 
 - **Fast path** → sub-agents optional; main agent may implement directly.
@@ -35,7 +49,7 @@ Sub-agent delegation reduces main-thread context and enforces specialist review.
 - Use the concise response style from [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): minimum words, maximum signal, result first.
 - If a sub-agent output is long, the Main Agent should summarize it into a report artifact before continuing.
 
-## 3. Sub-agent prompt contract
+## 4. Sub-agent prompt contract
 Sub-agents do NOT inherit the Main Agent's conversation, skills, or context. Use [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) for reusable prompt skeletons. Every spawn prompt must still be SELF-CONTAINED and concise:
 1. Role/persona + specific deliverable.
 2. Files/areas to inspect and files to avoid.
@@ -54,11 +68,11 @@ Sub-agents do NOT inherit the Main Agent's conversation, skills, or context. Use
 | **Code Reviewer** (`code-reviewer`) | code-review, simplify | Review diffs: correctness, security, cleanliness |
 | **QA / Security** | security-review, systematic-debugging, verification-before-completion, verify | Break the code, find bugs, ensure execution flow and sensitive surfaces are intact |
 
-## 4. Design direction & profile
+## 5. Design direction & profile
 Design standards, skill routing, and the "pick exactly one direction" rule live in [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md). Lock these per project (in the first PRD/Design Brief):
 - Design profile for {{PROJECT_NAME}}: **`<TBD — system-strict | branded-product | expressive>`**
 - Chosen visual direction: **`<TBD — fill when the first UI feature appears>`**
 
-## 5. Parallelization and worktrees
+## 6. Parallelization and worktrees
 - Only spawn FE & BE in parallel after the API/interface contract is locked.
 - Use `isolation: "worktree"` when multiple agents may edit overlapping files.

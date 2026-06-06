@@ -16,7 +16,21 @@ Main Agent luân phiên lăng kính theo trạng thái workflow:
 
 Role trước hết là lăng kính. Chỉ spawn sub-agent khi path yêu cầu review/QA hoặc khi delegation thật sự cải thiện focus, tốc độ hoặc cô lập context.
 
-## 2. Delegate theo path
+## 2. Routing model và effort cho sub-agent
+Dùng bảng này mỗi khi spawn sub-agent. Giữ model ID tập trung ở đây để khi Claude có model mới chỉ cần cập nhật một doc.
+
+| Độ khó task | Model | Effort | Dùng khi |
+|---|---|---|---|
+| Khó / Rất khó | Cùng model với Main Agent | medium | Kiến trúc, review sâu, việc mơ hồ, synthesis rủi ro cao |
+| Trung bình-khó | `claude-opus-4-6` | medium | Implementation có biên rõ, review tập trung, investigation vừa phải |
+| Đơn giản | `claude-haiku-4-5-20251001` | low / medium | Tóm tắt nhỏ, check đơn giản, tra cứu doc hẹp |
+
+Quy tắc:
+- Ưu tiên model nhỏ nhất vẫn đủ an toàn cho task.
+- Dùng model của Main Agent khi giảm reasoning quality dễ gây rework.
+- Không hardcode model ID trong handoff prompt ngoài bảng này; chỉ cite tier và effort.
+
+## 3. Delegate theo path
 Delegate sub-agent giúp giảm context ở main thread và bảo đảm có review chuyên trách. Path quyết định; User không cần nhắc "dùng sub-agent".
 
 - **Fast path** → sub-agent tùy chọn; main agent có thể tự implement.
@@ -35,7 +49,7 @@ Delegate sub-agent giúp giảm context ở main thread và bảo đảm có rev
 - Dùng concise response style từ [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md): ít chữ nhất, nhiều tín hiệu nhất, kết quả trước.
 - Nếu output của sub-agent dài, Main Agent nên tóm tắt nó vào report artifact trước khi tiếp tục.
 
-## 3. Hợp đồng prompt cho sub-agent
+## 4. Hợp đồng prompt cho sub-agent
 Sub-agent KHÔNG tự kế thừa hội thoại, skill, hay context của Main Agent. Dùng [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) cho các prompt skeleton tái sử dụng. Mọi prompt spawn vẫn phải SELF-CONTAINED và ngắn gọn:
 1. Vai trò/persona + đầu ra cụ thể.
 2. File/khu vực cần xem và file cần tránh.
@@ -54,11 +68,11 @@ Sub-agent KHÔNG tự kế thừa hội thoại, skill, hay context của Main A
 | **Code Reviewer** (`code-reviewer`) | code-review, simplify | Review diff: correctness, security, cleanliness |
 | **QA / Security** | security-review, systematic-debugging, verification-before-completion, verify | Phá code, tìm bug, đảm bảo execution flow và bề mặt nhạy cảm nguyên vẹn |
 
-## 4. Design direction & profile
+## 5. Design direction & profile
 Design standards, skill routing, và quy tắc "chỉ chốt một direction" nằm ở [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md). Chốt các mục này cho từng project (ở PRD/Design Brief đầu tiên):
 - Design profile cho {{PROJECT_NAME}}: **`<TBD — system-strict | branded-product | expressive>`**
 - Visual direction đã chọn: **`<TBD — fill when the first UI feature appears>`**
 
-## 5. Parallelization và worktree
+## 6. Parallelization và worktree
 - Chỉ spawn FE & BE song song sau khi API/interface contract đã chốt.
 - Dùng `isolation: "worktree"` khi nhiều agent có thể sửa file chồng nhau.
