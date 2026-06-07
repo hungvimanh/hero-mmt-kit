@@ -3,6 +3,17 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.0.0] - 2026-06-07
+### Added
+- Added bilingual Phase Handoff Protocol reference docs and wired them into the installed workflow documentation.
+- Added artifact-first phase-boundary guidance for Tiny, Small, Standard, and Full modes, including bounded canonical handoffs, `resume.md` pointers, sanity checks, evidence freshness, and final-claim verification rules.
+- Added a framework-authored `phase-handoff` skill that installs with the bundled process skills and guides fresh sessions or sub-agents through safe handoff/resume behavior.
+- Added test coverage for bilingual protocol wiring, init/install behavior, and the local `phase-handoff` skill package.
+
+### Changed
+- Updated bilingual workflow, context-budget, and handoff templates so Standard/Full work records real phase boundaries without bloating always-loaded instructions.
+- Updated README install-tree and skill attribution wording for the expanded bundled docs and framework-authored skill.
+
 ## [0.6.3] - 2026-06-06
 ### Changed
 - Updated bilingual sub-agent model routing defaults: medium-hard tasks use `claude-sonnet-4-6`; simple tasks use `claude-haiku-4-5` with medium/high effort guidance.

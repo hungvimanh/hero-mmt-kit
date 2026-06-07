@@ -33,10 +33,12 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
     '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
-    'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/templates/PRD_AI_FEATURE.md',
+    'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/PHASE_HANDOFF_PROTOCOL.md',
+    'docs/CONTEXT_BUDGET.md', 'docs/HANDOFF_TEMPLATES.md', 'docs/templates/PRD_AI_FEATURE.md',
     'docs/templates/DESIGN_BRIEF.md',
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
-    '.claude/skills/test-driven-development/SKILL.md', '.claude/skills/requesting-code-review/SKILL.md']) {
+    '.claude/skills/test-driven-development/SKILL.md', '.claude/skills/requesting-code-review/SKILL.md',
+    '.claude/skills/phase-handoff/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
   // vendored skills carry MIT attribution; excluded meta skill is not shipped
@@ -66,6 +68,18 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   const workflow = fs.readFileSync(path.join(dir, 'docs', 'AGENCY_WORKFLOW.md'), 'utf8');
   assert.match(workflow, /Sub-agent delegation is path-triggered/);
   assert.match(workflow, /MUST spawn.*review sub-agent/);
+  assert.match(workflow, /PHASE_HANDOFF_PROTOCOL\.md/);
+  assert.match(workflow, /Tiny[\s\S]*Small[\s\S]*Standard[\s\S]*Full/);
+
+  const contextBudget = fs.readFileSync(path.join(dir, 'docs', 'CONTEXT_BUDGET.md'), 'utf8');
+  for (const expected of ['artifact-first', 'Sanity check', 'Evidence freshness', 'Final claims']) {
+    assert.match(contextBudget, new RegExp(expected), `context budget should contain ${expected}`);
+  }
+
+  const phaseHandoffSkill = fs.readFileSync(path.join(dir, '.claude', 'skills', 'phase-handoff', 'SKILL.md'), 'utf8');
+  assert.match(phaseHandoffSkill, /^name: phase-handoff$/m);
+  assert.match(phaseHandoffSkill, /workflow phase boundaries/);
+
   const roster = fs.readFileSync(path.join(dir, 'docs', 'TEAM_ROSTER.md'), 'utf8');
   assert.match(roster, /Standard path.*MUST spawn a review sub-agent/);
   assert.match(roster, /Brownfield first change/);

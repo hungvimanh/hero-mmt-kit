@@ -42,6 +42,137 @@ Next action:
 Artifact/log paths:
 ```
 
+## 1.1 Phase-boundary artifact templates
+
+Use these operational templates when one workflow phase hands off to the next. Canonical handoff artifacts live under `docs/reports/YYYY-MM-DD-<slug>/handoffs/`. Keep `resume.md` short: it should point to the current phase report, active handoff file, latest gate decision, and next action instead of duplicating the report.
+
+Base handoff artifact:
+
+```text
+# <Phase> handoff
+
+Work item:
+Mode: tiny | small | standard | full
+From phase:
+To phase:
+Status: green | yellow | red
+Approval: draft | approved | auto-approved | blocked
+Approved by:
+Approval evidence:
+Approval note:
+Branch:
+Base commit:
+Working tree state:
+Evidence captured against:
+Last updated:
+
+## Source of truth
+- Latest user instruction:
+- Latest approved handoff/amendment:
+- Referenced artifacts:
+- Evidence paths:
+
+## Read first
+- Files or sections the next agent must read:
+- Commands or logs to trust:
+- Constraints that changed during the phase:
+
+## Do not read
+- Large transcripts, raw logs, or exploratory files that are superseded:
+- Outdated assumptions or discarded options:
+
+## Next action
+- First action for the next phase:
+- Gate or approval needed:
+- Expected output artifact:
+```
+
+### BA / Discovery → Design / Architecture
+
+```text
+Role: Design / Architecture lens.
+Goal: Convert approved discovery into a technical direction without re-litigating scope.
+Inputs: Discovery report, approved PRD/scope, user decisions, known constraints, and open questions.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/discovery.md and docs/reports/YYYY-MM-DD-<slug>/handoffs/01-ba-to-design.md.
+Read first: Approved goals, non-goals, actors, acceptance criteria, constraints, and unresolved decisions.
+Do not read: Raw interview notes or exploratory logs unless cited as source of truth.
+Next action: Produce architecture options, recommended approach, risks, impact-analysis targets, and the approval gate.
+Output: Architecture summary, affected areas, interface contracts, verification strategy, risks, and open decisions.
+```
+
+### Design / Architecture → Code
+
+```text
+Role: Developer implementer.
+Goal: Implement only the approved technical plan task or task slice.
+Inputs: Approved architecture plan, task breakdown, interface contract, target files, tests to run, and constraints.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/architecture.md and docs/reports/YYYY-MM-DD-<slug>/handoffs/02-design-to-code.md.
+Read first: Task boundaries, required impact analysis, data/API contracts, migration notes, and Definition of Done.
+Do not read: Superseded design alternatives or broad repository history unless cited by the plan.
+Next action: Confirm task scope, run required pre-edit analysis, implement the smallest safe slice, and record changed files/tests.
+Output: Status, files changed, tests run, evidence, concerns, and next review target.
+```
+
+### Code → Test
+
+```text
+Role: Test-focused reviewer.
+Goal: Validate the implementation against the approved scope and identify missing automated or manual coverage.
+Inputs: Implementation summary, changed files, approved plan, test commands already run, and known risks.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/implementation.md and docs/reports/YYYY-MM-DD-<slug>/handoffs/03-code-to-test.md.
+Read first: Diff summary, acceptance criteria, edge cases, existing test evidence, and untested areas.
+Do not read: Full diffs or raw logs unless a cited failure needs inspection.
+Next action: Run or recommend targeted tests, map coverage to acceptance criteria, and list gaps.
+Output: Test verdict, commands run, pass/fail evidence, missing coverage, and required fixes.
+```
+
+### Test → Verify / QA
+
+```text
+Role: Verify / QA lens.
+Goal: Challenge the tested change with path-specific DoD, regression, security, and user-outcome checks.
+Inputs: Test report, implementation summary, approved scope, changed files, known risks, and verification instructions.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/test.md and docs/reports/YYYY-MM-DD-<slug>/handoffs/04-test-to-qa.md.
+Read first: Test verdict, failures or skipped tests, manual verification steps, risk list, and DoD checklist.
+Do not read: Passing raw logs unless summarized evidence is disputed.
+Next action: Verify the user-facing outcome or documented artifact, probe risk areas, and decide pass/fix/block.
+Output: QA verdict, checks performed, evidence, suspected risks, required fixes, and handover readiness.
+```
+
+### Verify / QA → Handover
+
+```text
+Role: Handover / Scrum Master lens.
+Goal: Close the work with accurate evidence, residual risk, and next-owner instructions.
+Inputs: QA verdict, verification evidence, changed artifacts, decision log, and unresolved risks.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/qa.md and docs/reports/YYYY-MM-DD-<slug>/handoffs/05-qa-to-handover.md.
+Read first: Final verdict, remaining risks, accepted deviations, commands run, and artifact paths.
+Do not read: Intermediate scratch notes superseded by the final QA report.
+Next action: Prepare final bounded report, update resume.md pointer if needed, and state any follow-up work.
+Output: What changed, evidence, files/artifacts, risks, user-facing result, and next action.
+```
+
+### QA sub-agent prompt
+
+```text
+Role: QA sub-agent.
+Goal: Independently verify the phase output and try to find high-signal failures before handover.
+Inputs: Active handoff file, canonical report paths, changed files, commands to run, and known risks.
+Required context: DEFINITION_OF_DONE.md, AGENCY_WORKFLOW.md QA requirements, and relevant standards documents.
+Constraints: Do not rubber-stamp. Do not broaden scope. Summarize long logs and cite commands/files. If evidence is missing, say so.
+Output format: Status, checks performed, evidence, failures or gaps, risk assessment, and recommendation: PASS, PASS_WITH_CONCERNS, FIX_REQUIRED, or BLOCKED.
+Done criteria: Main Agent can either fix specific issues or hand over with defensible evidence.
+```
+
+### Short next-phase prompt
+
+```text
+Continue from: docs/reports/YYYY-MM-DD-<slug>/handoffs/<phase-to-phase>.md
+Read first: resume.md, the active handoff, and the canonical report paths listed there.
+Do not read: Raw transcripts or superseded scratch files unless the handoff explicitly says to.
+Next action: Complete the first action in the handoff, produce the expected artifact, and return a bounded report.
+```
+
 ## 2. BA Discovery Prompt
 
 ```text

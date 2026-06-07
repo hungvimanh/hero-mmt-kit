@@ -44,10 +44,12 @@ npx hero-vibe-kit init --yes --preset small-team --lang en --skip-integrations
 your-project/
   CLAUDE.md          # hero-vibe-kit managed block (your other content preserved)
   AGENTS.md          # cross-agent entry pointer
-  docs/              # AGENCY_WORKFLOW (SSOT) + ARTIFACTS_AND_STORAGE, DEFINITION_OF_DONE,
+  docs/              # AGENCY_WORKFLOW (SSOT), CONTEXT_BUDGET, PHASE_HANDOFF_PROTOCOL,
+                     # HANDOFF_TEMPLATES, ARTIFACTS_AND_STORAGE, DEFINITION_OF_DONE,
                      # BRANCHING, TEAM_ROSTER, ACTIVE_STATE, COMMUNICATION_PROTOCOL,
                      # INTERACTION_PATTERNS, SECURITY_STANDARDS, PERFORMANCE_STANDARDS,
-                     # templates/PRD_AI_FEATURE; later specs/, plans/, reports/ as needed
+                     # DESIGN_STANDARDS, templates/PRD_AI_FEATURE, templates/DESIGN_BRIEF;
+                     # later specs/, plans/, reports/ as needed
   .claude/
     settings.json    # hooks merged into your existing settings (not clobbered)
     hooks/           # git-guard.cjs, stop-reminder.cjs
@@ -175,4 +177,4 @@ Skill xử lý quy trình lõi được **đóng gói sẵn** (bản copy có ch
 
 ## Giấy phép
 
-MIT (xem [LICENSE](./LICENSE)). Tham chiếu chứ không redistribute `obra/superpowers` và `Leonxlnx/taste-skill` — cài từ nguồn qua `skills` CLI theo license riêng của chúng.
+MIT (xem [LICENSE](./LICENSE)). hero-vibe-kit đóng gói một bản copy có chọn lọc, tinh gọn của core process skills từ [obra/superpowers](https://github.com/obra/superpowers) (MIT) dưới `templates/skills/` — attribution ở `templates/skills/NOTICE`. Design/UI skills từ [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) **không** được redistribute; chúng được cài từ nguồn qua `skills` CLI theo license riêng.

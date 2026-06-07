@@ -6,6 +6,20 @@ Routing and gates live in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md). Role behav
 
 ## 1. Purpose
 
+## 1.1 Artifact-first phase boundaries
+
+The invariant is:
+
+```text
+Phase work → bounded handoff artifact → context reset boundary → next phase reads artifact-first
+```
+
+Writing a handoff file does not reduce context by itself. It helps only when followed by `/compact`, a fresh session, a bounded sub-agent handoff, or a workflow boundary where only the artifact is passed forward.
+
+For Tiny/Small work, avoid report ceremony unless context pressure or evidence needs it. For Standard/Full work, create bounded handoffs at real phase boundaries and keep `resume.md` as a short pointer to the latest canonical handoff.
+
+Full reference: [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md).
+
 The protocol prevents context-window failures by moving durable state out of chat and into artifacts, bounding sub-agent outputs, and forcing checkpoint/compact/session-split decisions at high-risk moments.
 
 It addresses failures such as:
@@ -91,11 +105,11 @@ Checkpoint before moving through these boundaries:
 
 Also checkpoint whenever context pressure is high.
 
-For Standard and Full paths, create or update `docs/reports/YYYY-MM-DD-<slug>/resume.md` when the work is long-running or context pressure is high. For small Fast path work, updating `ACTIVE_STATE.md` is enough unless context pressure is high.
+For Standard and Full paths, update `docs/reports/YYYY-MM-DD-<slug>/resume.md` at every real phase boundary so it points to the latest canonical handoff. For Tiny/Small work, updating `ACTIVE_STATE.md` is enough unless context pressure, evidence needs, or a real handoff requires a report folder.
 
 ## 7. Resume packet
 
-A resume packet is concise restart state, not a copied transcript.
+A resume packet is the fresh-session entry point. It points; it does not duplicate every handoff.
 
 Store it at:
 
@@ -106,53 +120,40 @@ docs/reports/YYYY-MM-DD-<slug>/resume.md
 Use this format:
 
 ```markdown
-# Resume Packet — <work item>
+# Resume Packet — <Work Item>
 
-## Current state
-- Path:
-- Phase:
-- Status:
-- Last completed step:
+## Current pointer
+- Latest canonical handoff:
+- Current mode:
+- Current phase:
+- Next action:
 
-## Goal
-- User-facing goal:
-- Non-goals:
+## State
+- Status: green | yellow | red
+- Branch:
+- Working tree state:
+- Key artifacts:
+- Changed files summary:
 
-## Approved decisions
-- Decision:
-- Reason:
-- Source artifact:
-
-## Files changed
-- `path`: what changed
-
-## Artifacts
-- Spec:
-- Plan:
-- Reports:
-- Active state:
-
-## Verification evidence
-- Command:
+## Verification
+- Last command:
 - Result:
-- Notes:
+- Log path:
+- Evidence freshness:
 
-## Open risks / blockers
-- Risk:
-- Blocker:
-- Needs user decision:
+## Open items
+- Blockers:
+- Risks:
+- User decisions needed:
 
-## Next action
-- Do next:
-- Do not do:
-- Required skill/tool:
-
-## Context hygiene
+## Context rules for next session
+- Read first:
+- Read only if needed:
 - Do not reread:
-- Do read:
 - Do not paste:
-- Prefer:
 ```
+
+If `resume.md` and the latest approved handoff conflict, fix `resume.md` before continuing.
 
 ## 8. Compact prompt
 
@@ -212,7 +213,57 @@ Before running tools that may emit large output:
 4. prefer pass/fail summaries for tests,
 5. write long evidence to reports instead of chat.
 
-## 12. API 400 recovery
+## 12. Sanity check
+
+At the start of Code, Test, QA, or Handover, verify minimally:
+
+```markdown
+## Sanity check
+- Branch: pass | warn | block — note
+- Working tree: pass | warn | block — note
+- Canonical handoff freshness: pass | warn | block — note
+- Required files exist: pass | warn | block — note
+- Changed files summary: pass | warn | block — note
+- Required commands available: pass | warn | block — note
+- Open blockers: pass | warn | block — note
+
+Decision: continue | continue-with-warning | stop
+```
+
+Hard blockers include wrong branch, stale handoff, missing required file, missing approval, evidence claimed as current but older than relevant changes, or unresolved blockers marked complete without evidence.
+
+## 13. Evidence freshness
+
+Evidence is valid only if it was produced after the relevant code/config/artifact change, on the expected branch and working tree, with a referenced log path when output is long.
+
+Before Code → Test, Test → QA, or QA → Handover handoffs, capture or explicitly mark the status of:
+
+- current branch,
+- `git status`,
+- `git diff --name-status`,
+- `git diff --stat`,
+- `git diff --check`,
+- relevant build/test commands,
+- project-required impact/change analysis when code changed.
+
+If a command is not run, record the command, reason, risk, and severity.
+
+## 14. Final claims
+
+Final claims require fresh evidence. Before saying work is complete, the latest QA/Handover artifact or final summary must show:
+
+- `git diff --check` passed, if code changed,
+- build passed, if relevant,
+- relevant tests passed or skipped with reason/risk,
+- QA verdict: `pass`, `yellow`, `fail`, or `blocked`,
+- unresolved risks,
+- project-required change/impact analysis when code changed,
+- final changed files summary,
+- evidence freshness statement.
+
+If evidence is missing, say: `Implemented, but not fully verified because <reason>.`
+
+## 15. API 400 recovery
 
 If Claude Code returns a context-window API 400 error:
 

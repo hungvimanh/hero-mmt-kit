@@ -10,6 +10,7 @@ const VENDORED = [
   'systematic-debugging', 'verification-before-completion', 'requesting-code-review',
   'receiving-code-review', 'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'finishing-a-development-branch', 'using-superpowers',
+  'phase-handoff',
 ];
 
 test('every curated core skill is vendored with a SKILL.md + frontmatter', () => {
@@ -47,4 +48,13 @@ test('vendored set matches the manifest process group', () => {
   assert.strictEqual(proc.bundled, true);
   const names = proc.skills.map((s) => s.name).sort();
   assert.deepStrictEqual(names, [...VENDORED].sort());
+});
+
+test('phase-handoff skill is authored locally and avoids placeholders', () => {
+  const skill = fs.readFileSync(path.join(SKILLS_DIR, 'phase-handoff', 'SKILL.md'), 'utf8');
+  assert.match(skill, /^name: phase-handoff$/m);
+  assert.match(skill, /^description: Use when/m);
+  assert.match(skill, /artifact-first/);
+  assert.match(skill, /Sanity check/);
+  assert.doesNotMatch(skill, /TBD|TODO|implement later|fill in details/i);
 });

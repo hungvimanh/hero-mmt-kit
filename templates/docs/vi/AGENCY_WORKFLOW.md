@@ -98,6 +98,23 @@ Main Agent là bộ điều khiển workflow, không phải kho chứa transcrip
 
 Quy tắc chi tiết, prompt compact, prompt restart session và bước khôi phục API 400 nằm trong [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md).
 
+### Phase Handoff Protocol
+
+Chọn workflow mode nhỏ nhất phù hợp trước khi thêm nghi thức:
+
+| Mode | Dùng khi | Kỳ vọng handoff |
+|---|---|---|
+| Tiny | Sửa typo, đổi text, config rất nhỏ, verify hiển nhiên, dự kiến <= 2 file | Thường không cần |
+| Small | Việc khu trú rủi ro thấp, dự kiến <= 5 file, rollback đơn giản | Chỉ cần một handoff gọn nếu xuất hiện context pressure |
+| Standard | Đổi hành vi hiện có, refactor, cần test/review có ý nghĩa, hoặc project bắt buộc impact analysis | Bắt buộc ở Code → Test và Test → QA khi đó là phase boundary thật |
+| Full | Feature mới, đổi architecture/API/data/security-sensitive, chi phí regression cao | Bắt buộc ở mọi phase boundary thật |
+
+Phase boundary thật xuất hiện khi bước tiếp theo cần vai trò hoặc mindset review khác, cần User approval hoặc QA, công việc chuyển từ implementation sang verification, context pressure tăng, hoặc chuẩn bị qua boundary sub-agent/workflow.
+
+Tại boundary thật, tạo handoff có biên dưới `docs/reports/YYYY-MM-DD-<slug>/handoffs/`, cập nhật `resume.md` chỉ như con trỏ ngắn (không duplicate handoff), rồi bắt đầu phase tiếp theo theo artifact-first. Phase tiếp theo đọc `resume.md` và canonical handoff mới nhất trước, sau đó chạy sanity check có cấu trúc trong [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md).
+
+Template đầy đủ và edge case nằm trong [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md). Không copy toàn bộ protocol đó vào docs luôn được load.
+
 ### Escalation rule (nâng cấp path)
 Một task đang ở **Fast path** mà phát hiện:
 - chạm symbol có nhiều caller / `gitnexus_impact` trả về **MEDIUM trở lên**, HOẶC
@@ -165,7 +182,7 @@ Dùng lăng kính BA và Architect cho các gate; chỉ delegate implementation 
 
 ### Phase 3 — Implementation (lăng kính: Developer)
 1. Cập nhật task `in_progress` (`TaskUpdate`) + ACTIVE_STATE.
-2. **Mặc định main agent tự implement với full project context.** Chỉ delegate cho Dev sub-agent khi thực sự có lợi — ví dụ nhánh song song độc lập, hoặc để cô lập một context lớn. Sub-agent KHÔNG tự kế thừa hội thoại/skill, nên mọi prompt delegate phải self-contained (link PRD/TDD, skill cần invoke, tiêu chí Done, file liên quan). Chi tiết: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
+2. Thực thi implementation theo các task có biên rõ. Main Agent có thể tự làm edit nhỏ/tập trung khi delegate tốn hơn lợi ích; delegate cho Dev sub-agent khi task rộng, độc lập, nặng context, hoặc cần cô lập. Delegate implementation là tùy chọn, nhưng delegate review/QA bắt buộc vẫn theo path. Sub-agent KHÔNG tự kế thừa hội thoại/skill, nên mọi prompt delegate phải self-contained (link PRD/TDD, skill cần invoke, tiêu chí Done, file liên quan). Chi tiết: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
 3. **Parallelize CÓ ĐIỀU KIỆN:** chỉ spawn FE & BE song song **sau khi API contract (Phase 2.5) đã chốt**. Khi nhiều agent sửa file chồng nhau → `isolation: "worktree"`.
 4. Developer áp dụng `test-driven-development`.
 5. Frontend implement dựa trên **design system đã chốt** (tokens/components) từ Phase 2; dùng `image-to-code` khi implement từ các visual reference đã duyệt; tạo media nhúng theo [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md) §6; KHÔNG đưa design direction mới vào giữa chừng khi đang build.
@@ -219,6 +236,7 @@ Sau mỗi bước, chọn prompt/action tiếp theo dựa trên trạng thái wo
 | [TEAM_ROSTER.md](./TEAM_ROSTER.md) | Persona + quy tắc delegate sub-agent + design direction |
 | [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) | Hợp đồng prompt tái sử dụng cho BA, Architect, Implementer, reviewer, brownfield discovery và handover |
 | [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) | Quy tắc context pressure, prompt compact/restart session, format resume packet và khôi phục API 400 |
+| [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md) | Protocol đầy đủ cho phase boundary theo artifact-first, handoff template, sanity check, evidence freshness và quy tắc khôi phục |
 | [ACTIVE_STATE.md](./ACTIVE_STATE.md) | Trạng thái pipeline + resume protocol |
 | [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) | Output artifact, layout docs/specs/plans/reports, quy tắc lưu trữ |
 | [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) | Giao thức giao tiếp Human↔AI (làm rõ yêu cầu) |

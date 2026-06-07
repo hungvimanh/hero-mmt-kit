@@ -42,6 +42,137 @@ Next action:
 Artifact/log paths:
 ```
 
+## 1.1 Template artifact cho phase boundary
+
+Dùng các template vận hành này khi một phase trong workflow bàn giao sang phase kế tiếp. Artifact handoff canonical nằm dưới `docs/reports/YYYY-MM-DD-<slug>/handoffs/`. Giữ `resume.md` thật ngắn: file này chỉ nên trỏ tới report phase hiện tại, file handoff đang active, gate decision mới nhất và next action, thay vì lặp lại toàn bộ report.
+
+Base handoff artifact:
+
+```text
+# <Phase> handoff
+
+Work item:
+Mode: tiny | small | standard | full
+From phase:
+To phase:
+Status: green | yellow | red
+Approval: draft | approved | auto-approved | blocked
+Approved by:
+Approval evidence:
+Approval note:
+Branch:
+Base commit:
+Working tree state:
+Evidence captured against:
+Last updated:
+
+## Source of truth
+- Latest user instruction:
+- Latest approved handoff/amendment:
+- Referenced artifacts:
+- Evidence paths:
+
+## Read first
+- Files or sections the next agent must read:
+- Commands or logs to trust:
+- Constraints that changed during the phase:
+
+## Do not read
+- Large transcripts, raw logs, or exploratory files that are superseded:
+- Outdated assumptions or discarded options:
+
+## Next action
+- First action for the next phase:
+- Gate or approval needed:
+- Expected output artifact:
+```
+
+### BA / Discovery → Design / Architecture
+
+```text
+Vai trò: Lăng kính Design / Architecture.
+Mục tiêu: Chuyển discovery đã duyệt thành hướng kỹ thuật mà không mở lại tranh luận về scope.
+Input: Discovery report, PRD/scope đã duyệt, quyết định của User, ràng buộc đã biết và câu hỏi còn mở.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/discovery.md và docs/reports/YYYY-MM-DD-<slug>/handoffs/01-ba-to-design.md.
+Read first: Goal đã duyệt, non-goal, actor, acceptance criteria, constraint và quyết định chưa chốt.
+Do not read: Raw interview note hoặc exploratory log trừ khi được trích dẫn là source of truth.
+Next action: Tạo các option kiến trúc, approach được khuyến nghị, rủi ro, target impact-analysis và gate phê duyệt.
+Output: Tóm tắt kiến trúc, vùng bị ảnh hưởng, interface contract, strategy verify, rủi ro và quyết định còn mở.
+```
+
+### Design / Architecture → Code
+
+```text
+Vai trò: Developer implementer.
+Mục tiêu: Chỉ implement task hoặc task slice trong technical plan đã duyệt.
+Input: Architecture plan đã duyệt, task breakdown, interface contract, file mục tiêu, test cần chạy và ràng buộc.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/architecture.md và docs/reports/YYYY-MM-DD-<slug>/handoffs/02-design-to-code.md.
+Read first: Biên task, impact analysis bắt buộc, data/API contract, ghi chú migration và Definition of Done.
+Do not read: Design alternative đã bị thay thế hoặc lịch sử repo rộng, trừ khi plan trích dẫn.
+Next action: Xác nhận scope task, chạy pre-edit analysis bắt buộc, implement slice nhỏ an toàn nhất và ghi lại file/test đã đổi.
+Output: Status, files changed, tests run, evidence, concerns và review target tiếp theo.
+```
+
+### Code → Test
+
+```text
+Vai trò: Test-focused reviewer.
+Mục tiêu: Validate implementation theo scope đã duyệt và tìm automated/manual coverage còn thiếu.
+Input: Tóm tắt implementation, file đã đổi, plan đã duyệt, command test đã chạy và rủi ro đã biết.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/implementation.md và docs/reports/YYYY-MM-DD-<slug>/handoffs/03-code-to-test.md.
+Read first: Diff summary, acceptance criteria, edge case, bằng chứng test hiện có và vùng chưa test.
+Do not read: Full diff hoặc raw log trừ khi cần inspect failure đã được trích dẫn.
+Next action: Chạy hoặc đề xuất test có mục tiêu, map coverage với acceptance criteria và liệt kê gap.
+Output: Test verdict, commands run, pass/fail evidence, missing coverage và fix bắt buộc.
+```
+
+### Test → Verify / QA
+
+```text
+Vai trò: Lăng kính Verify / QA.
+Mục tiêu: Thử thách thay đổi đã test bằng DoD theo path, regression, security và check user outcome.
+Input: Test report, tóm tắt implementation, scope đã duyệt, file đã đổi, rủi ro đã biết và hướng dẫn verify.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/test.md và docs/reports/YYYY-MM-DD-<slug>/handoffs/04-test-to-qa.md.
+Read first: Test verdict, failure hoặc skipped test, bước manual verification, risk list và DoD checklist.
+Do not read: Raw log đã pass trừ khi summary evidence bị nghi ngờ.
+Next action: Verify outcome hướng User hoặc artifact đã document, probe vùng rủi ro và quyết định pass/fix/block.
+Output: QA verdict, checks performed, evidence, suspected risks, required fixes và handover readiness.
+```
+
+### Verify / QA → Handover
+
+```text
+Vai trò: Lăng kính Handover / Scrum Master.
+Mục tiêu: Đóng work bằng evidence chính xác, residual risk và hướng dẫn cho owner kế tiếp.
+Input: QA verdict, verification evidence, artifact đã đổi, decision log và rủi ro chưa giải quyết.
+Source of truth: docs/reports/YYYY-MM-DD-<slug>/qa.md và docs/reports/YYYY-MM-DD-<slug>/handoffs/05-qa-to-handover.md.
+Read first: Final verdict, remaining risks, accepted deviation, command đã chạy và artifact path.
+Do not read: Intermediate scratch note đã bị final QA report thay thế.
+Next action: Chuẩn bị final bounded report, cập nhật pointer trong resume.md nếu cần và nêu follow-up work.
+Output: Đã đổi gì, evidence, file/artifact, risk, kết quả user-facing và next action.
+```
+
+### Prompt QA sub-agent
+
+```text
+Vai trò: QA sub-agent.
+Mục tiêu: Verify độc lập output của phase và cố tìm failure tín hiệu cao trước handover.
+Input: File handoff đang active, canonical report path, file đã đổi, command cần chạy và rủi ro đã biết.
+Context bắt buộc: DEFINITION_OF_DONE.md, yêu cầu QA trong AGENCY_WORKFLOW.md và standards document liên quan.
+Ràng buộc: Không rubber-stamp. Không mở rộng scope. Tóm tắt log dài và trích dẫn command/file. Nếu thiếu evidence, nói rõ.
+Định dạng đầu ra: Status, checks performed, evidence, failures or gaps, risk assessment và recommendation: PASS, PASS_WITH_CONCERNS, FIX_REQUIRED hoặc BLOCKED.
+Tiêu chí Done: Main Agent có thể fix issue cụ thể hoặc handover với evidence có thể bảo vệ.
+```
+
+### Prompt ngắn cho phase tiếp theo
+
+```text
+Continue from: docs/reports/YYYY-MM-DD-<slug>/handoffs/<phase-to-phase>.md
+Read first: resume.md, active handoff và canonical report path được liệt kê trong đó.
+Do not read: Raw transcript hoặc scratch file đã bị thay thế trừ khi handoff yêu cầu rõ.
+Next action: Hoàn thành first action trong handoff, tạo expected artifact và trả bounded report.
+```
+
 ## 2. Prompt khám phá BA
 
 ```text

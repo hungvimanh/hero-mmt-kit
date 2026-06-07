@@ -6,6 +6,20 @@ Routing và gate nằm trong [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md). Hành v
 
 ## 1. Mục đích
 
+## 1.1 Artifact-first tại phase boundary
+
+Bất biến là:
+
+```text
+Phase work → bounded handoff artifact → context reset boundary → next phase reads artifact-first
+```
+
+Viết một file handoff không tự giảm context. Nó chỉ có tác dụng khi theo sau bởi `/compact`, session mới, handoff cho sub-agent có biên, hoặc workflow boundary nơi chỉ artifact được chuyển tiếp.
+
+Với việc Tiny/Small, tránh ceremony report trừ khi context pressure hoặc nhu cầu evidence yêu cầu. Với Standard/Full, tạo handoff có biên tại phase boundary thật và giữ `resume.md` như con trỏ ngắn tới canonical handoff mới nhất.
+
+Tham khảo đầy đủ: [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md).
+
 Protocol này giảm lỗi context window bằng cách chuyển state bền vững ra artifact, giới hạn output của sub-agent, và bắt buộc quyết định checkpoint/compact/tách session ở các thời điểm rủi ro cao.
 
 Protocol xử lý các lỗi như:
@@ -91,11 +105,11 @@ Checkpoint trước khi đi qua các ranh giới:
 
 Cũng checkpoint bất cứ khi nào context pressure cao.
 
-Với Standard và Full path, tạo hoặc cập nhật `docs/reports/YYYY-MM-DD-<slug>/resume.md` khi công việc kéo dài hoặc context pressure cao. Với Fast path nhỏ, cập nhật `ACTIVE_STATE.md` là đủ trừ khi context pressure cao.
+Với Standard và Full path, cập nhật `docs/reports/YYYY-MM-DD-<slug>/resume.md` tại mọi phase boundary thật để nó trỏ tới canonical handoff mới nhất. Với Tiny/Small, cập nhật `ACTIVE_STATE.md` là đủ trừ khi context pressure, nhu cầu evidence, hoặc một handoff thật yêu cầu report folder.
 
 ## 7. Resume packet
 
-Resume packet là state ngắn gọn để restart, không phải transcript được copy lại.
+Resume packet là điểm vào cho session mới. Nó chỉ trỏ tới thông tin cần đọc; không duplicate mọi handoff.
 
 Lưu tại:
 
@@ -106,53 +120,40 @@ docs/reports/YYYY-MM-DD-<slug>/resume.md
 Dùng format:
 
 ```markdown
-# Resume Packet — <work item>
+# Resume Packet — <Work Item>
 
-## Current state
-- Path:
-- Phase:
-- Status:
-- Last completed step:
+## Current pointer
+- Latest canonical handoff:
+- Current mode:
+- Current phase:
+- Next action:
 
-## Goal
-- User-facing goal:
-- Non-goals:
+## State
+- Status: green | yellow | red
+- Branch:
+- Working tree state:
+- Key artifacts:
+- Changed files summary:
 
-## Approved decisions
-- Decision:
-- Reason:
-- Source artifact:
-
-## Files changed
-- `path`: what changed
-
-## Artifacts
-- Spec:
-- Plan:
-- Reports:
-- Active state:
-
-## Verification evidence
-- Command:
+## Verification
+- Last command:
 - Result:
-- Notes:
+- Log path:
+- Evidence freshness:
 
-## Open risks / blockers
-- Risk:
-- Blocker:
-- Needs user decision:
+## Open items
+- Blockers:
+- Risks:
+- User decisions needed:
 
-## Next action
-- Do next:
-- Do not do:
-- Required skill/tool:
-
-## Context hygiene
+## Context rules for next session
+- Read first:
+- Read only if needed:
 - Do not reread:
-- Do read:
 - Do not paste:
-- Prefer:
 ```
+
+Nếu `resume.md` và approved handoff mới nhất mâu thuẫn, sửa `resume.md` trước khi tiếp tục.
 
 ## 8. Prompt compact
 
@@ -212,7 +213,57 @@ Trước khi chạy tool có thể tạo output lớn:
 4. ưu tiên summary pass/fail cho test,
 5. ghi evidence dài vào report thay vì chat.
 
-## 12. Khôi phục sau API 400
+## 12. Sanity check
+
+Khi bắt đầu Code, Test, QA hoặc Handover, verify tối thiểu:
+
+```markdown
+## Sanity check
+- Branch: pass | warn | block — note
+- Working tree: pass | warn | block — note
+- Canonical handoff freshness: pass | warn | block — note
+- Required files exist: pass | warn | block — note
+- Changed files summary: pass | warn | block — note
+- Required commands available: pass | warn | block — note
+- Open blockers: pass | warn | block — note
+
+Decision: continue | continue-with-warning | stop
+```
+
+Hard blocker gồm sai branch, handoff stale, thiếu file bắt buộc, thiếu approval, evidence được claim là hiện tại nhưng cũ hơn thay đổi liên quan, hoặc blocker chưa giải quyết bị đánh dấu complete mà thiếu evidence.
+
+## 13. Evidence freshness
+
+Evidence chỉ hợp lệ khi được tạo sau thay đổi code/config/artifact liên quan, trên branch và working tree mong đợi, có log path được tham chiếu khi output dài.
+
+Trước các handoff Code → Test, Test → QA, hoặc QA → Handover, capture hoặc ghi rõ trạng thái của:
+
+- branch hiện tại,
+- `git status`,
+- `git diff --name-status`,
+- `git diff --stat`,
+- `git diff --check`,
+- command build/test liên quan,
+- impact/change analysis mà project yêu cầu khi code đổi.
+
+Nếu không chạy command, ghi command, lý do, rủi ro và severity.
+
+## 14. Claim cuối
+
+Claim cuối cần evidence mới; mọi claim cuối phải dựa trên evidence mới. Trước khi nói work đã hoàn tất, artifact QA/Handover mới nhất hoặc summary cuối phải thể hiện:
+
+- `git diff --check` pass, nếu code đổi,
+- build pass, nếu liên quan,
+- test liên quan pass hoặc được skip kèm lý do/rủi ro,
+- QA verdict: `pass`, `yellow`, `fail`, hoặc `blocked`,
+- rủi ro chưa giải quyết,
+- change/impact analysis mà project yêu cầu khi code đổi,
+- summary file đã đổi cuối cùng,
+- statement về evidence freshness.
+
+Nếu thiếu evidence, nói: `Implemented, but not fully verified because <reason>.`
+
+## 15. Khôi phục sau API 400
 
 Nếu Claude Code trả lỗi API 400 do context window:
 

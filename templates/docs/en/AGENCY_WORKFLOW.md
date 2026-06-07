@@ -98,6 +98,23 @@ The Main Agent is a workflow controller, not a transcript warehouse. Before broa
 
 Detailed rules, compact prompts, session-restart prompts, and API 400 recovery steps live in [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md).
 
+### Phase Handoff Protocol
+
+Use the smallest workflow mode that fits the work before adding ceremony:
+
+| Mode | Use when | Handoff expectation |
+|---|---|---|
+| Tiny | Typo, text tweak, trivial config, obvious verification, <= 2 likely files | Usually none |
+| Small | Localized low-risk work, <= 5 likely files, simple rollback | One compact handoff only if context pressure appears |
+| Standard | Existing behavior change, refactor, meaningful tests/review, project-required impact analysis | Required at Code → Test and Test → QA when the phase boundary is real |
+| Full | New feature, architecture/API/data/security-sensitive work, high regression cost | Required at every real phase boundary |
+
+A real phase boundary occurs when the next step needs a different role or review mindset, user approval or QA is expected, work moves from implementation to verification, context pressure rises, or a sub-agent/workflow boundary is crossed.
+
+At a real boundary, create a bounded handoff under `docs/reports/YYYY-MM-DD-<slug>/handoffs/`, update `resume.md` as a short pointer only (do not duplicate the handoff), then start the next phase artifact-first. The next phase reads `resume.md` and the latest canonical handoff first, then runs the structured sanity check in [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md).
+
+Full templates and edge cases live in [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md). Do not copy that full protocol into always-loaded docs.
+
 ### Escalation rule
 A task on the **Fast path** that turns out to:
 - touch a symbol with many callers / `gitnexus_impact` returns **MEDIUM or higher**, OR
@@ -165,7 +182,7 @@ Use BA and Architect lenses for the gates; delegate implementation only for inde
 
 ### Phase 3 — Implementation (lens: Developer)
 1. Mark tasks `in_progress` (`TaskUpdate`) + update ACTIVE_STATE.
-2. **Implement directly with full project context by default.** Delegate to Dev sub-agent(s) only when it genuinely helps — e.g. independent parallel tracks, or to isolate a large context. Sub-agents do NOT inherit the conversation/skills, so any delegated prompt must be self-contained (PRD/TDD links, skills to invoke, Done criteria, relevant files). Details: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
+2. Execute implementation as bounded tasks. The Main Agent may handle small/focused edits when delegation costs more than it saves; delegate to Dev sub-agent(s) when the task is broad, independent, context-heavy, or needs isolation. Implementation delegation is optional, but required review/QA delegation remains path-triggered. Sub-agents do NOT inherit the conversation/skills, so any delegated prompt must be self-contained (PRD/TDD links, skills to invoke, Done criteria, relevant files). Details: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
 3. **Conditional parallelization:** only spawn FE & BE in parallel **after the API contract (Phase 2.5) is locked**. When multiple agents edit overlapping files → `isolation: "worktree"`.
 4. Developers apply `test-driven-development`.
 5. Frontend implements against the **locked design system** (tokens/components) from Phase 2; use `image-to-code` when implementing from approved visual references; produce embedded media per [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md) §6; do NOT introduce a new design direction mid-build.
@@ -219,6 +236,7 @@ After each step, choose the next prompt/action from workflow state:
 | [TEAM_ROSTER.md](./TEAM_ROSTER.md) | Personas + sub-agent delegation rules + design direction |
 | [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) | Reusable prompt contracts for BA, Architect, Implementer, reviewers, brownfield discovery, and handover |
 | [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) | Context pressure rules, compact/session restart prompts, resume packet format, and API 400 recovery |
+| [PHASE_HANDOFF_PROTOCOL.md](./PHASE_HANDOFF_PROTOCOL.md) | Full artifact-first phase-boundary protocol, handoff templates, sanity checks, evidence freshness, and recovery rules |
 | [ACTIVE_STATE.md](./ACTIVE_STATE.md) | Pipeline state + resume protocol |
 | [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) | Output artifacts, docs/specs/plans/reports layout, storage rules |
 | [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) | Human↔AI communication protocol (requirements clarification) |

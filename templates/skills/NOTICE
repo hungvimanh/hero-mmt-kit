@@ -1,24 +1,27 @@
 Vendored skills — attribution
 ==============================
 
-The core process skills under this directory are vendored (a curated, lightly
+Most core process skills under this directory are vendored (a curated, lightly
 trimmed copy) from:
 
   superpowers — https://github.com/obra/superpowers
   Copyright (c) obra (Jesse Vincent) and contributors
   License: MIT
 
-These skills are redistributed under the terms of the MIT License. The MIT
-permission notice is reproduced below. Only operational content was kept;
-authoring/meta/test files and non–Claude-Code tool references were removed.
-Skill methodology is unchanged.
+The obra/superpowers skills are redistributed under the terms of the MIT
+License. The MIT permission notice is reproduced below. Only operational content
+was kept; authoring/meta/test files and non–Claude-Code tool references were
+removed. Skill methodology is unchanged.
 
-Vendored skills:
+Vendored skills from obra/superpowers:
   brainstorming, writing-plans, executing-plans, test-driven-development,
   systematic-debugging, verification-before-completion, requesting-code-review,
   receiving-code-review, dispatching-parallel-agents,
   subagent-driven-development, using-git-worktrees,
   finishing-a-development-branch, using-superpowers
+
+Framework-authored skills shipped by hero-vibe-kit:
+  phase-handoff
 
 Design / visual-direction skills are NOT vendored — they are referenced in
 skills.manifest.json and installed from their original sources on demand.
