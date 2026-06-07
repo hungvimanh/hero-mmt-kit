@@ -86,6 +86,7 @@ test('installSkills copies only selected skill directories plus NOTICE', () => {
   assert.ok(fs.existsSync(path.join(dir, '.claude', 'skills', 'NOTICE')), 'NOTICE should be installed');
   assert.ok(hasSkill(dir, 'using-superpowers'));
   assert.ok(hasSkill(dir, 'brainstorming'));
+  assert.ok(fs.existsSync(path.join(dir, '.claude', 'skills', 'brainstorming', 'scripts', 'server.cjs')), 'nested skill scripts should be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'test-driven-development')));
 });
 

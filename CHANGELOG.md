@@ -3,6 +3,10 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.1] - 2026-06-07
+### Fixed
+- Fixed selected skill installation on Windows by creating each destination directory before recursively copying nested skill files such as `brainstorming/scripts/server.cjs`.
+
 ## [1.1.0] - 2026-06-07
 ### Breaking
 - Removed Vietnamese framework template support. Framework templates and installed docs are now English-only; agents still respond in the user's chat language unless asked otherwise. `--lang` is deprecated/ignored with a warning.

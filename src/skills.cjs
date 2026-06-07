@@ -71,12 +71,13 @@ function selectProcessSkills(cfg) {
 
 // Recursively copy a directory tree, returning the number of files written.
 function copyTree(srcDir, dstDir) {
+  ensureDir(dstDir);
   let files = 0;
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const s = path.join(srcDir, entry.name);
     const d = path.join(dstDir, entry.name);
     if (entry.isDirectory()) files += copyTree(s, d);
-    else { ensureDir(path.dirname(d)); fs.copyFileSync(s, d); files++; }
+    else { fs.copyFileSync(s, d); files++; }
   }
   return files;
 }
