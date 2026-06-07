@@ -3,7 +3,7 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
-## [1.0.0] - 2026-06-07
+## [1.1.0] - 2026-06-07
 ### Breaking
 - Removed Vietnamese framework template support. Framework templates and installed docs are now English-only; agents still respond in the user's chat language unless asked otherwise. `--lang` is deprecated/ignored with a warning.
 - Reframed sub-agent/review policy from mandatory review loops to adaptive, risk-based review budgets. Normal Coding Assistant work now defaults to direct implementation, targeted verification, and explicit developer-review handoff instead of automatic multi-review swarms.
@@ -20,7 +20,7 @@ All notable changes to hero-vibe-kit are documented here. Format based on
 - Updated `AGENCY_WORKFLOW.md`, `TEAM_ROSTER.md`, `DEFINITION_OF_DONE.md`, and process skills so sub-agents are escalation tools, not default ceremony. Review budgets now range from no delegated review, to one combined review, to targeted specialist review, to full multi-stage review only when risk justifies it.
 - Updated Coding Assistant defaults to `fullstack` + `pragmatic` verification for `--yes`, with a leaner workflow and explicit verified/unverified final reports.
 - Updated `update` to refresh selected framework-managed skills while preserving existing unselected or user-added skill directories.
-- Updated README and installed docs to describe the 1.0.0 profile-driven workflow, selected skills, adaptive review policy, and English-only template policy.
+- Updated README and installed docs to describe the 1.1.0 profile-driven workflow, selected skills, adaptive review policy, and English-only template policy.
 
 ## [0.6.3] - 2026-06-06
 ### Changed
