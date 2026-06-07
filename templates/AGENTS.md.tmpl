@@ -2,6 +2,12 @@
 
 > Canonical development process: **[docs/AGENCY_WORKFLOW.md](docs/AGENCY_WORKFLOW.md)** (single source of truth). Applies to any AI agent working in this repo.
 
+Active operating profile:
+- Active assistance profile: {{ASSISTANCE_PROFILE_LABEL}} (`{{ASSISTANCE_PROFILE}}`)
+- Project surface: {{PROJECT_SURFACE_LABEL}} (`{{PROJECT_SURFACE}}`)
+- Verification level: {{VERIFICATION_LEVEL}}
+- Profile rules: [docs/ASSISTANCE_PROFILES.md](docs/ASSISTANCE_PROFILES.md)
+
 Minimum non-negotiables:
 1. Classify the request via the router before acting; don't run heavy workflow for small tasks.
 2. Use Plan Mode for paths with Gates before editing.
@@ -9,6 +15,6 @@ Minimum non-negotiables:
 4. Framework instructions, skills, rules, and templates are English-only; respond to the user in the same language they use in chat unless they request another language.
 5. Do not bypass hooks, checks, or verification.
 6. Use GitNexus for Standard/Full impact/context analysis when available.
-7. **Sub-agent delegation is path-triggered, not user-prompt-triggered** for required review/QA (Standard/Full + broad brownfield) — don't wait to be asked. Delegating implementation is optional; sub-agents shine at research and review, and not every task needs one. See [TEAM_ROSTER](docs/TEAM_ROSTER.md).
+7. **Sub-agent delegation follows the active profile** in [ASSISTANCE_PROFILES](docs/ASSISTANCE_PROFILES.md): Standard/Full review is path-triggered for Vibecode, while Coding Assistant keeps developer review central and applies its recommended/required review rules. Delegating implementation is optional; sub-agents shine at research and review, and not every task needs one. See [TEAM_ROSTER](docs/TEAM_ROSTER.md).
 8. Sub-agent model/effort selection follows [TEAM_ROSTER](docs/TEAM_ROSTER.md); do not hardcode model IDs elsewhere.
 9. Keep outputs concise: findings, decisions, risks, next steps.

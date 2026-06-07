@@ -2,6 +2,12 @@
 
 > **READ BEFORE DOING ANYTHING:** [`docs/AGENCY_WORKFLOW.md`](docs/AGENCY_WORKFLOW.md) is the **single source of truth** for the {{PROJECT_NAME}} development process. Classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). Don't run the heavy process for small tasks.
 
+> **Active operating profile:**
+> - Active assistance profile: {{ASSISTANCE_PROFILE_LABEL}} (`{{ASSISTANCE_PROFILE}}`)
+> - Project surface: {{PROJECT_SURFACE_LABEL}} (`{{PROJECT_SURFACE}}`)
+> - Verification level: {{VERIFICATION_LEVEL}}
+> See [ASSISTANCE_PROFILES](docs/ASSISTANCE_PROFILES.md) before changing gate, delegation, or verification strictness.
+
 ### Context loading
 - **Always start with:** [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md) for routing, gates, sub-agents, and path-specific requirements.
 - **Resume / durable state:** read [ACTIVE_STATE](docs/ACTIVE_STATE.md) when resuming work or changing durable task state.
@@ -15,4 +21,4 @@
 - **GitNexus (if installed):** skip on empty repos; use impact/context analysis for Standard/Full code changes and stale-index checks per [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md).
 - **Skills (if installed):** invoke relevant process skills via the `Skill` tool; do not load unrelated skill/docs context.
 - **Language:** framework instructions, skills, rules, and templates are English-only. Respond to the user in the same language they use in chat unless they request another language.
-- **Sub-agent delegation is path-triggered, not user-prompt-triggered** for the review/QA a path requires (Standard/Full + broad brownfield) — don't wait to be asked. Sub-agents are best for research and review; **delegating implementation is optional** — use when it helps, and not every task needs one. Sub-agent model/effort selection follows [TEAM_ROSTER](docs/TEAM_ROSTER.md); do not hardcode model IDs elsewhere.
+- **Sub-agent delegation follows the active profile.** Resolve [ASSISTANCE_PROFILES](docs/ASSISTANCE_PROFILES.md) before changing review/QA strictness: Standard/Full review is path-triggered for Vibecode, while Coding Assistant keeps developer review central and applies its recommended/required review rules. Sub-agents are best for research and review; **delegating implementation is optional** — use when it helps, and not every task needs one. Sub-agent model/effort selection follows [TEAM_ROSTER](docs/TEAM_ROSTER.md); do not hardcode model IDs elsewhere.

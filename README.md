@@ -1,23 +1,22 @@
 # hero-vibe-kit
 
-> An opinionated, AI-assisted software-development workflow for **Claude Code** — a task-type router, real gates, enforcement hooks, a human↔AI communication protocol, and security/performance standards. Works for **new** and **existing (brownfield)** projects.
-
-*(English below · [Tiếng Việt ở dưới](#tiếng-việt))*
-
----
+> An adaptive, AI-assisted software-development workflow for **Claude Code** — profile-aware routing, real approval gates, pragmatic verification, enforcement hooks, selected process skills, and security/performance standards for new and brownfield projects.
 
 ## What it is
 
-`hero-vibe-kit` drops a complete, lightweight development process into your repo so any AI agent (Claude Code first) works the way a disciplined team would:
+`hero-vibe-kit` installs a lightweight but disciplined development process into your repository so Claude Code and compatible agents can work like a pragmatic software team:
 
-- **Task-type router** — every request is classified (Q&A · chore · bugfix · hotfix · change · refactor · feature · spike) and routed to the right *path* (Read-only / Fast / Standard / Full). No heavy ceremony for small tasks.
-- **Real gates** — "wait for approval" is enforced via Claude Code **Plan Mode**, not prose.
-- **Enforcement hooks** — `git-guard` blocks force-push, `--no-verify`, `reset --hard`, and direct pushes to `main`; `stop-reminder` nudges you to keep state updated.
-- **Human↔AI communication protocol** — no silent assumptions, blocking vs non-blocking questions, decision/assumption logs — tuned for building AI products.
-- **Standards** — a measurable Definition of Done, branching model, and **Security** (incl. OWASP LLM Top 10) + **Performance** (incl. prompt caching) baselines.
-- **AI-feature PRD template** + **interaction patterns** for how your product talks to its end-users.
+- **Profile-aware workflow** — choose `vibecode` for high-agency AI execution or `coding-assistant` for developer-led collaboration.
+- **Project surfaces** — tune the workflow for `fullstack`, `backend`, or `frontend` projects.
+- **Verification levels** — choose `strict`, `pragmatic`, or `minimal` evidence requirements without changing the project structure.
+- **Task router** — classify each request (Q&A, chore, bugfix, hotfix, change, refactor, feature, spike, UI/UX) and use the smallest path that fits.
+- **Real gates** — approval gates use Claude Code Plan Mode, not prose promises.
+- **Adaptive sub-agents** — sub-agents and reviews are escalation tools. Normal Coding Assistant work stays lean; high-risk, broad, or sensitive work gets targeted review.
+- **Enforcement hooks** — `git-guard` blocks unsafe git operations; `stop-reminder` nudges state updates when work changes.
+- **Selected bundled skills** — `init` installs only the vendored process skills needed for the active profile/surface/verification.
+- **Standards** — Definition of Done, branching model, communication protocol, artifact storage, security, performance, and AI-feature templates.
 
-It is **documentation + hooks + a CLI** — it does not bundle third-party tools; it integrates with them and degrades gracefully when they're absent.
+It is **documentation + hooks + a zero-dependency CLI**. Optional third-party tools are referenced or installed from their original sources; they are not redistributed.
 
 ## Quick start
 
@@ -25,156 +24,178 @@ It is **documentation + hooks + a CLI** — it does not bundle third-party tools
 # In your project root (new or existing):
 npx hero-vibe-kit init
 
-# For old codebases, create the first AI discovery map:
+# For existing codebases, create the first AI discovery map:
 npx hero-vibe-kit discover
 
-# Then restart Claude Code (or run /hooks) to activate the hooks, and:
+# Then restart Claude Code (or run /hooks) to activate hooks, and:
 npx hero-vibe-kit doctor
 ```
 
-Non-interactive / CI:
+Non-interactive / CI example:
 
 ```bash
-npx hero-vibe-kit init --yes --preset small-team --lang en --skip-integrations
+npx hero-vibe-kit init --yes --preset small-team --profile coding-assistant --surface fullstack --verify pragmatic --skip-integrations
 ```
 
 ## What `init` installs
 
-```
+```text
 your-project/
-  CLAUDE.md          # hero-vibe-kit managed block (your other content preserved)
+  CLAUDE.md          # hero-vibe-kit managed block; your other content is preserved
   AGENTS.md          # cross-agent entry pointer
-  docs/              # AGENCY_WORKFLOW (SSOT), CONTEXT_BUDGET, PHASE_HANDOFF_PROTOCOL,
-                     # HANDOFF_TEMPLATES, ARTIFACTS_AND_STORAGE, DEFINITION_OF_DONE,
-                     # BRANCHING, TEAM_ROSTER, ACTIVE_STATE, COMMUNICATION_PROTOCOL,
-                     # INTERACTION_PATTERNS, SECURITY_STANDARDS, PERFORMANCE_STANDARDS,
-                     # DESIGN_STANDARDS, templates/PRD_AI_FEATURE, templates/DESIGN_BRIEF;
+  docs/              # English-only workflow docs: AGENCY_WORKFLOW, ASSISTANCE_PROFILES,
+                     # CONTEXT_BUDGET, PHASE_HANDOFF_PROTOCOL, HANDOFF_TEMPLATES,
+                     # ARTIFACTS_AND_STORAGE, DEFINITION_OF_DONE, BRANCHING,
+                     # TEAM_ROSTER, ACTIVE_STATE, COMMUNICATION_PROTOCOL,
+                     # INTERACTION_PATTERNS, SECURITY_STANDARDS,
+                     # PERFORMANCE_STANDARDS, DESIGN_STANDARDS,
+                     # templates/PRD_AI_FEATURE, templates/DESIGN_BRIEF;
                      # later specs/, plans/, reports/ as needed
   .claude/
-    settings.json    # hooks merged into your existing settings (not clobbered)
+    settings.json    # hooks merged into existing settings, not clobbered
     hooks/           # git-guard.cjs, stop-reminder.cjs
+    skills/          # selected bundled process skills for the active profile/surface
   .hero-vibe-kit/
-    config.json      # your choices (team size, branching, integrations)
+    config.json      # preset, branching, profile, surface, verification, integrations
 ```
 
-- **New project**: scaffolds everything.
-- **English-only framework docs**: `init` renders one active docs set into `docs/`. Agents still reply in the user's chat language unless asked otherwise.
-- **Brownfield**: never overwrites your `CLAUDE.md`/`AGENTS.md`/`settings.json` — it inserts a marked managed block and deep-merges hooks. Your `docs/ACTIVE_STATE.md` is never overwritten. Re-running is idempotent; touched files are backed up to `*.bak`.
+- **New project:** scaffolds the workflow from scratch.
+- **Brownfield project:** preserves existing `CLAUDE.md`, `AGENTS.md`, and `.claude/settings.json`; inserts managed blocks and deep-merges hooks. `docs/ACTIVE_STATE.md` is never overwritten.
+- **English-only framework docs:** installed docs and templates are English-only for consistency and token efficiency. Agents still respond in the user's chat language unless asked otherwise.
+- **Idempotent updates:** re-running `init`/`update` refreshes framework-managed regions and backs up touched files to `*.bak` when needed.
 
-## The task router (heart of it)
+## Operating profiles
 
-| Task | Path | Gate | Branch |
-|------|------|------|--------|
-| Q&A / explain / find code | Read-only | — | — |
-| chore / docs / config | Fast | — | `chore/` `docs/` |
-| small bugfix | Fast | — (repro test) | `fix/` |
-| hotfix | Fast | — | `hotfix/` |
-| change existing logic | Standard | ✅ | `change/` |
-| refactor | Standard | ✅ | `refactor/` |
-| new feature | Full (5-phase) | ✅✅ | `feat/` |
-| spike / research | Timeboxed | — | `spike/` |
+`init` records the active operating profile in `.hero-vibe-kit/config.json` and renders it into the installed docs.
 
-Full details in `docs/AGENCY_WORKFLOW.md` (the single source of truth).
+| Setting | Values | Purpose |
+|---|---|---|
+| Assistance profile | `vibecode`, `coding-assistant` | Chooses high-agency AI execution vs developer-led collaboration. |
+| Project surface | `fullstack`, `backend`, `frontend` | Tunes routing, checks, and selected skills to the project shape. |
+| Verification level | `strict`, `pragmatic`, `minimal` | Controls evidence requirements without encouraging false completion claims. |
 
-## Integrations (optional — reference & auto-install)
+Defaults for `--yes` are:
 
-Core process skills are **bundled** (a curated MIT-licensed copy of `obra/superpowers`, attribution in `templates/skills/NOTICE`). Other third-party tools are **not redistributed**: `init` offers to set them up from their original sources and degrades gracefully if they're missing.
+```text
+profile: coding-assistant
+surface: fullstack
+verify : pragmatic
+```
+
+### Vibecode
+
+Use when the user wants the AI to own technical execution end-to-end. Vibecode installs the full bundled process suite and uses sub-agents/review when risk, scope, or parallel work justifies them.
+
+### Coding Assistant
+
+Use when the user is a developer who wants Claude to code and verify pragmatically while the developer remains the final review gate. Normal tasks should stay lean:
+
+1. understand the request,
+2. make a short plan only when useful,
+3. implement directly when the scope is clear,
+4. run targeted checks,
+5. report what was verified, what was not verified, and what needs developer review.
+
+## Adaptive review and sub-agent policy
+
+Sub-agents are no longer default ceremony. The workflow uses the smallest review budget that supports the completion claim:
+
+| Review budget | Use when |
+|---|---|
+| None | Low-risk, localized work with credible targeted checks. |
+| Single combined review | Medium-risk changes where one reviewer can catch requirement, correctness, test, docs, or overengineering issues. |
+| Targeted specialist review | Security, performance, API/data, UI/accessibility, migration, or other specific risk. |
+| Full multi-stage review | HIGH/CRITICAL, broad multi-area work, or explicit user request for full process. |
+
+Do not run spec review, quality review, and final review over the same scope unless each pass has a distinct purpose. Final integration review is for multiple independent task streams, high-risk/core changes, or narrow prior reviews.
+
+## Selected bundled process skills
+
+Core process skills are bundled under `templates/skills/` as a curated MIT-licensed copy of `obra/superpowers` with attribution in `templates/skills/NOTICE`.
+
+`init` selects bundled skills from the active config:
+
+| Active config | Installed skills |
+|---|---|
+| All profiles | Baseline process skills: superpowers, brainstorming, planning, executing plans, debugging, verification, phase handoff. |
+| `verify: strict` | Adds TDD and code-review helper skills. |
+| `surface: fullstack` | Adds delegation helpers for cross-layer coordination. |
+| `profile: vibecode` | Installs the full bundled process suite. |
+
+`update` refreshes selected framework-managed skills and preserves existing unselected or user-added skill directories. To shrink an older project initialized before selective installation, manually delete unwanted skill directories after review.
+
+## Task router
+
+| Task | Path | Gate | Typical branch |
+|---|---|---|---|
+| Q&A / explain / find code | Read-only | No | — |
+| chore / docs / config | Fast | No | `chore/`, `docs/` |
+| small localized bugfix | Fast | No, but repro test expected | `fix/` |
+| hotfix | Fast expedited | No | `hotfix/` |
+| change existing logic | Standard | Yes | `change/` |
+| refactor | Standard | Yes | `refactor/` |
+| new feature | Full | Yes, usually two gates | `feat/` |
+| spike / research | Timeboxed | No | `spike/` |
+| UI/UX design or redesign | Standard | Yes | `design/` |
+
+Full details live in `docs/AGENCY_WORKFLOW.md`, the single source of truth for routing, gates, phase handoff, and review budgets.
+
+## Optional integrations
 
 | Tool | What it is | What init does | Tier |
-|------|-----------|----------------|------|
-| **core skills** | process skills (brainstorming, TDD, debugging…) vendored from `obra/superpowers` (MIT) | bundled — installs into `.claude/skills/` (no CLI needed) | recommended |
-| **taste-skill** | UI/design skills from `Leonxlnx/taste-skill` | offers to install; pick ONE direction | optional |
-| **GitNexus** | code-intelligence CLI/MCP | offers `npx gitnexus analyze` | optional |
-| **Serena** | semantic code-intelligence MCP | detects existing `.serena/` setup and can seed lightweight pointer notes | optional |
+|---|---|---|---|
+| Core process skills | Bundled process skills from `obra/superpowers` (MIT) | Installs selected skills into `.claude/skills/` | Recommended |
+| taste-skill | UI/design skills from `Leonxlnx/taste-skill` | Offers external install; pick one visual direction | Optional |
+| GitNexus | Code-intelligence CLI/MCP | Offers `npx gitnexus analyze` | Optional |
+| Serena | Semantic code-intelligence MCP | Detects existing `.serena/` and can seed pointer notes | Optional |
 
-**Required:** Node ≥ 18 and Claude Code. Everything else is optional.
+Required: Node.js 18+ and Claude Code. Everything else is optional.
 
 ## Commands
 
 | Command | Purpose |
-|---------|---------|
-| `init` | Install into the current project |
-| `update` | Re-render managed regions, preserving your edits & working files |
-| `discover` | Scan a brownfield codebase and create `docs/BROWNFIELD_DISCOVERY.md` |
-| `brownfield` | Alias for `discover` |
-| `doctor` | Validate hooks, settings.json, doc links, tool presence |
-| `version` | Print version |
+|---|---|
+| `init` | Install the workflow into the current project. |
+| `update` | Re-render managed regions while preserving user edits and working files. |
+| `discover` | Scan a brownfield codebase and create `docs/BROWNFIELD_DISCOVERY.md`. |
+| `brownfield` | Alias for `discover`. |
+| `doctor` | Validate hooks, settings, doc links, and tool presence. |
+| `version` | Print the package version. |
 
-Flags: `--dir <path>` · `--preset solo|small-team|enterprise` · `--name <name>` · `--yes` · `--skip-integrations`.
+Flags:
 
-## Update & customize
+```text
+--dir <path>
+--preset solo|small-team|enterprise
+--profile vibecode|coding-assistant
+--surface fullstack|backend|frontend
+--verify strict|pragmatic|minimal
+--name <name>
+--yes
+--skip-integrations
+```
 
-- Edit anything **outside** the `<!-- hero-vibe-kit:start/end -->` markers freely — `update` won't touch it.
-- Fill the `<TBD>` placeholders in DEFINITION_OF_DONE / SECURITY / PERFORMANCE once you pick a stack.
-- `npx hero-vibe-kit update` refreshes the managed docs/hooks to the latest version, backing up changes.
+## Update and customize
+
+- Edit anything outside `<!-- hero-vibe-kit:start/end -->` markers freely; `update` will not touch it.
+- Fill `<TBD>` placeholders in Definition of Done, Security, Performance, and design docs once the stack is known.
+- Run `npx hero-vibe-kit update` to refresh framework-managed docs/hooks to the latest version.
+- Never hand-edit inside managed regions; change the source template or use `update`.
 
 ## Uninstall
 
-Remove `docs/` framework files, the `.claude/hooks/*` + the hooks block in `settings.json`, the
-`<!-- hero-vibe-kit:* -->` block in `CLAUDE.md`/`AGENTS.md`, and `.hero-vibe-kit/`.
+Remove:
 
-## License & attribution
+- framework docs under `docs/`,
+- `.claude/hooks/*` and the hook block in `.claude/settings.json`,
+- the managed blocks in `CLAUDE.md` and `AGENTS.md`,
+- `.hero-vibe-kit/`,
+- bundled skills under `.claude/skills/` that you no longer want.
 
-MIT (see [LICENSE](./LICENSE)). hero-vibe-kit vendors a curated, lightly trimmed copy
-of the core process skills from [obra/superpowers](https://github.com/obra/superpowers)
-(MIT) under `templates/skills/` — attribution in `templates/skills/NOTICE`. Design/UI
-skills from [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) are **not**
-redistributed; they are installed from source via the `skills` CLI under their own license.
+Review before deleting skill directories because some may be user-added or intentionally retained.
 
----
+## License and attribution
 
-# Tiếng Việt
+MIT (see `LICENSE`). hero-vibe-kit vendors a curated, lightly trimmed copy of the core process skills from [`obra/superpowers`](https://github.com/obra/superpowers) under `templates/skills/` with attribution in `templates/skills/NOTICE`.
 
-> Một quy trình phát triển phần mềm có AI hỗ trợ, dùng cho **Claude Code** — bảng phân loại task, gate thật, hook cưỡng chế, giao thức giao tiếp Human↔AI, và chuẩn bảo mật/hiệu năng. Chạy tốt cho **project mới** lẫn **code cũ (brownfield)**.
-
-## Là gì
-
-`hero-vibe-kit` cài một quy trình phát triển hoàn chỉnh, tinh gọn vào repo của bạn để mọi AI agent (Claude Code trước) làm việc kỷ luật như một team thực thụ:
-
-- **Bảng phân loại task** → chọn đúng *path* (Read-only / Fast / Standard / Full). Việc nhỏ không phải chạy quy trình nặng.
-- **Gate thật** qua **Plan Mode** của Claude Code, không phải lời hứa văn xuôi.
-- **Hook cưỡng chế** — `git-guard` chặn force-push, `--no-verify`, `reset --hard`, push thẳng `main`; `stop-reminder` nhắc cập nhật trạng thái.
-- **Giao thức giao tiếp Human↔AI** — no silent assumptions, câu hỏi blocking/non-blocking, decision/assumption log — thiết kế cho việc xây sản phẩm AI.
-- **Chuẩn** — Definition of Done đo được, branching model, và baseline **Security** (gồm OWASP LLM Top 10) + **Performance** (gồm prompt caching).
-- **Template PRD cho feature AI** + **interaction patterns** cho cách sản phẩm giao tiếp với end-user.
-
-Đây là **tài liệu + hook + CLI** — không đóng gói tool bên thứ ba; chỉ tích hợp và degrade mượt khi thiếu.
-
-## Bắt đầu nhanh
-
-```bash
-# Ở thư mục gốc project (mới hoặc đã có code):
-npx hero-vibe-kit init
-
-# Với codebase cũ, tạo bản đồ khám phá ban đầu cho AI:
-npx hero-vibe-kit discover
-
-# Khởi động lại Claude Code (hoặc /hooks) để bật hook, rồi:
-npx hero-vibe-kit doctor
-```
-
-Không tương tác / CI:
-
-```bash
-npx hero-vibe-kit init --yes --preset small-team --skip-integrations
-```
-
-## init cài gì
-
-Như sơ đồ ở phần English: `docs/` (AGENCY_WORKFLOW là single source of truth, ARTIFACTS_AND_STORAGE quy định output/storage + các chuẩn), `CLAUDE.md`/`AGENTS.md` (chèn **block có marker**, giữ nguyên nội dung của bạn), `.claude/` (hook + settings deep-merge), `.hero-vibe-kit/config.json`.
-
-- **Project mới**: scaffold đầy đủ.
-- **Framework docs English-only**: `init` render một bộ docs active vào `docs/`; agent vẫn trả lời theo ngôn ngữ chat của user trừ khi user yêu cầu khác.
-- **Brownfield**: KHÔNG đè `CLAUDE.md`/`AGENTS.md`/`settings.json` — chỉ chèn block + merge hook. `docs/ACTIVE_STATE.md` không bị ghi đè. Chạy lại idempotent; file bị đụng được sao lưu `*.bak`.
-
-## Tích hợp (tùy chọn — reference & auto-install)
-
-Skill xử lý quy trình lõi được **đóng gói sẵn** (bản copy có chọn lọc, giấy phép MIT từ `obra/superpowers`; attribution ở `templates/skills/NOTICE`) và init cài thẳng vào `.claude/skills/` (không cần `skills` CLI). Các tool bên thứ ba khác **không redistribute** — `init` mời cài từ nguồn gốc và degrade nếu thiếu: **taste-skill** (UI/design, tùy chọn, chọn 1 hướng), **GitNexus** (`npx gitnexus analyze`, tùy chọn), **Serena** (semantic code-intelligence MCP; pointer notes chỉ là phụ, tùy chọn). **Bắt buộc:** Node ≥ 18 + Claude Code.
-
-## Lệnh & cập nhật
-
-`init` · `update` (giữ chỉnh sửa ngoài marker + file làm việc) · `discover` / `brownfield` (quét codebase cũ và tạo `docs/BROWNFIELD_DISCOVERY.md`) · `doctor` · `version`. Sửa thoải mái phần **ngoài** marker `<!-- hero-vibe-kit:start/end -->`. Điền `<TBD>` khi chốt tech stack.
-
-## Giấy phép
-
-MIT (xem [LICENSE](./LICENSE)). hero-vibe-kit đóng gói một bản copy có chọn lọc, tinh gọn của core process skills từ [obra/superpowers](https://github.com/obra/superpowers) (MIT) dưới `templates/skills/` — attribution ở `templates/skills/NOTICE`. Design/UI skills từ [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) **không** được redistribute; chúng được cài từ nguồn qua `skills` CLI theo license riêng.
+Design/UI skills from [`Leonxlnx/taste-skill`](https://github.com/Leonxlnx/taste-skill) are **not** redistributed; they are installed from source via the `skills` CLI under their own license when the user opts in.

@@ -37,8 +37,13 @@ Flags:
   --dir <path>          Target project dir (default: current dir)
   --preset <name>       solo | small-team | enterprise
   --name <name>         Project name (default: dir name)
+  --profile <name>      Assistance profile: vibecode | coding-assistant
+  --surface <name>      Project surface: fullstack | backend | frontend
+  --verify <level>      Verification level: strict | pragmatic | minimal
   --yes                 Non-interactive; accept defaults
-  --skip-integrations   Skip skills / gitnexus / serena prompts`);
+  --skip-integrations   Skip skills / gitnexus / serena prompts
+
+Assistance profile, project surface, and verification level tune the installed workflow guidance.`);
 }
 
 async function main() {

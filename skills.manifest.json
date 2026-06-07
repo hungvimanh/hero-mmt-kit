@@ -9,6 +9,38 @@
       "source": "mixed",
       "license": "MIT for obra/superpowers skills; hero-vibe-kit authored for phase-handoff",
       "description": "Core process skills the workflow invokes by name. Bundled under templates/skills/ and installed into .claude/skills/ by init/update; most are a curated, lightly trimmed copy of obra/superpowers, and phase-handoff is authored by hero-vibe-kit (attribution in templates/skills/NOTICE). The workflow still runs without them (gates/hooks/router intact) but loses skill-guided depth.",
+      "selection": {
+        "mode": "derived",
+        "deriveFrom": ["assistanceProfile", "projectSurface", "verificationLevel"],
+        "baseline": [
+          "using-superpowers",
+          "brainstorming",
+          "writing-plans",
+          "executing-plans",
+          "systematic-debugging",
+          "verification-before-completion",
+          "phase-handoff"
+        ],
+        "strictVerificationAdds": [
+          "test-driven-development",
+          "requesting-code-review",
+          "receiving-code-review"
+        ],
+        "fullstackSurfaceAdds": [
+          "dispatching-parallel-agents",
+          "subagent-driven-development"
+        ],
+        "vibecodeProfileAdds": [
+          "test-driven-development",
+          "requesting-code-review",
+          "receiving-code-review",
+          "dispatching-parallel-agents",
+          "subagent-driven-development",
+          "using-git-worktrees",
+          "finishing-a-development-branch"
+        ],
+        "updatePolicy": "refresh selected skills only; preserve existing unselected and user-added skill directories"
+      },
       "skills": [
         { "name": "using-superpowers", "source": "obra/superpowers" },
         { "name": "brainstorming", "source": "obra/superpowers" },

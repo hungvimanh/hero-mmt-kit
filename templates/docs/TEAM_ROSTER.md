@@ -3,7 +3,7 @@
 > Personas are **thinking lenses**, not mandatory ceremony for every task. Routing, gates, and phase sequencing live in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT).
 
 ## 1. Main Agent (Lead)
-Holds the session, talks to the user, and orchestrates sub-agents. The Main Agent is the planner/router/synthesizer, not the default worker. It is accountable for classification, gates, user communication, bounded handoffs, synthesis, and final claims. It also owns context budgeting: keep raw context out of chat, prefer artifact links, and follow [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) whenever context pressure rises.
+Holds the session, talks to the user, and orchestrates sub-agents. The Main Agent is the planner/router/synthesizer and may be the direct worker for clear bounded tasks. It is accountable for classification, gates, user communication, bounded handoffs, synthesis, and final claims. It also owns context budgeting: keep raw context out of chat, prefer artifact links, and follow [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md) whenever context pressure rises.
 
 It rotates lenses based on workflow state:
 - **BA** — activates during discovery, PRD, assumptions, and acceptance criteria work.
@@ -14,7 +14,7 @@ It rotates lenses based on workflow state:
 - **Scrum Master** — manages [ACTIVE_STATE.md](./ACTIVE_STATE.md), artifact links, handoff, and retro.
 - **Design/UX** — activates for UI flows, wireframes, and locked visual direction; see [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md).
 
-Roles are lenses first. Spawn a sub-agent only when the path requires review/QA or when delegation genuinely improves focus, speed, or context isolation.
+Roles are lenses first. Spawn a sub-agent only when risk, scope, or context cost justifies it. Do not spawn one simply because a role exists.
 
 ## 2. Sub-agent model and effort routing
 Use this table whenever spawning a sub-agent. Keep model IDs centralized here so future Claude model changes require one doc update.
@@ -30,13 +30,15 @@ Rules:
 - Use the Main Agent model for tasks where losing reasoning quality risks rework.
 - Do not hardcode model IDs in handoff prompts outside this table; cite the tier and effort instead.
 
-## 3. Path-triggered delegation
-Sub-agent delegation reduces main-thread context and enforces specialist review. The path decides; the user does not need to ask for sub-agents.
+## 3. Adaptive delegation and review budget
+Sub-agent delegation reduces main-thread context and adds specialist judgment. Use the smallest budget that fits the risk; the user does not need to ask for required risk review.
 
-- **Fast path** → sub-agents optional; main agent may implement directly.
-- **Standard path** → MUST spawn a review sub-agent (QA/code-review) before completion.
-- **Full path** → MUST spawn a QA/review sub-agent before completion; **delegating Dev implementation is OPTIONAL** — use it only when it genuinely helps (independent parallel tracks or to isolate context).
-- **Brownfield first change** → if `docs/BROWNFIELD_DISCOVERY.md` exists and the request touches > 2 files or **Needs confirmation** areas, treat as Standard (gate + review sub-agent).
+- **Fast path** → sub-agents usually unnecessary; main agent implements directly and runs targeted checks.
+- **Standard path + Coding Assistant** → default to direct implementation + targeted verification; use one combined reviewer for broad, risky, or ambiguous work; escalate before editing HIGH/CRITICAL risk changes.
+- **Standard path + Vibecode** → use a reviewer when risk/scope warrants it; do not duplicate review passes over the same scope.
+- **Full path** → delegate implementation only for independent tracks or context isolation; use targeted specialist review for high-risk seams and final integration review only when multiple streams need integration checking.
+- **Security-sensitive work** → requires security review when the selected path touches a sensitive surface. Exception: after scope review, the selected path explicitly does not touch a sensitive surface.
+- **Brownfield first change** → follow the active profile; if `docs/BROWNFIELD_DISCOVERY.md` exists and the request touches > 2 files or **Needs confirmation** areas, treat as Standard and choose a review budget from actual risk.
 
 ### When NOT to use a sub-agent
 - Small/localized tasks where spinning one up costs more than it saves.

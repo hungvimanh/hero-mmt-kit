@@ -7,19 +7,24 @@ description: Use when completing tasks, implementing major features, or before m
 
 Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
 
-**Core principle:** Review early, review often.
+**Core principle:** Review when it changes the risk picture. Review is evidence, not ceremony.
 
 ## When to Request Review
 
 **Mandatory:**
-- After each task in subagent-driven development
-- After completing major feature
-- Before merge to main
+- HIGH/CRITICAL risk changes before completion
+- Security-sensitive work when the touched surface can affect auth, data exposure, secrets, deployment, or AI safety
+- Before merge to main when project policy requires it
 
 **Optional but valuable:**
+- Medium-risk behavior changes where one combined review can catch requirement or quality gaps
 - When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+- Before risky refactoring (baseline check)
+- After fixing a complex bug
+
+**Usually skip:**
+- Low-risk docs/config/localized changes with credible targeted checks
+- A final review over the same scope already covered by a reviewer
 
 ## How to Request
 
@@ -75,22 +80,22 @@ You: [Fix progress indicators]
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- Use the review budget selected by the workflow
+- Prefer one combined or targeted reviewer unless risk justifies multi-stage review
+- Re-review only fixes/findings unless scope expanded
 
 **Executing Plans:**
-- Review after each task or at natural checkpoints
+- Review at natural checkpoints when risk or uncertainty warrants it
 - Get feedback, apply, continue
 
 **Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
+- Review when risk, uncertainty, or merge policy warrants it
+- Skip duplicate review for low-risk work already verified
 
 ## Red Flags
 
 **Never:**
-- Skip review because "it's simple"
+- Skip review for HIGH/CRITICAL or sensitive work because it is inconvenient
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback

@@ -2,6 +2,16 @@
 
 > **Measurable** completion criteria. A change is "done" only when it meets the DoD for its path. The path is decided by [AGENCY_WORKFLOW.md §1](./AGENCY_WORKFLOW.md#1-task-classification--workflow-router).
 
+## Verification level overlay
+
+Active verification level: **{{VERIFICATION_LEVEL}}**. Full definitions live in [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md).
+
+| Level | Completion evidence |
+|---|---|
+| `strict` | Relevant tests, lint/typecheck/build where configured, and required review/QA; explain any not-run command. |
+| `pragmatic` | Targeted checks for the changed surface, broader checks when risk or behavior change warrants it; state skipped checks. |
+| `minimal` | Smallest credible check for low-risk work; if no command applies, state manual rationale and unverified areas. |
+
 ## ⚙️ Placeholders to fill when the tech stack is chosen
 Stack not decided yet — fill these in the first PRD/TDD, then update this file:
 
@@ -38,7 +48,8 @@ Includes all of Fast path, plus:
 - [ ] `<TYPECHECK_CMD>` green (if applicable).
 - [ ] **Refactor:** the same test suite passes before & after (behavior unchanged); renames use `gitnexus_rename`, not manual find-replace.
 - [ ] **Change logic:** old regression tests still green + new tests for new behavior.
-- [ ] QA sub-agent reviewed (`code-review`); `security-review` if touching a sensitive surface.
+- [ ] Review/QA evidence follows the active profile's adaptive review budget: low-risk work may use self-review + targeted verification; medium-risk work may use one combined reviewer; sensitive/high-impact work requires targeted specialist review. Coding Assistant normal work includes verified/unverified scope plus explicit developer review handoff.
+- [ ] `security-review` if touching a sensitive surface.
 - [ ] Standard security/performance checks pass: input validation for touched boundaries, authz checks if touched, hot-path before/after bench, AI prompt caching preserved when relevant ([SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md), [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md)).
 - [ ] **If the change includes UI:** meets the "Design / UI work" checklist below.
 
@@ -48,6 +59,7 @@ Includes all of Standard path, plus:
 - [ ] **TDD** approved (Gate 2): includes a light threat model + API/interface contract.
 - [ ] Coverage ≥ `<COVERAGE_MIN>` for new code.
 - [ ] Meets all acceptance criteria in the PRD.
+- [ ] Full review/QA evidence follows the active profile's adaptive review budget; final integration review is required only when multiple independent streams, high-risk/core changes, or narrow prior reviews leave integration seams unchecked.
 - [ ] `security-review` ran, no unresolved new findings.
 - [ ] Full security standards pass; AI features include OWASP LLM Top 10 abuse cases ([SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md)).
 - [ ] Full performance standards pass; AI features meet token/latency ceilings and main-flow measurements exist ([PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md)).

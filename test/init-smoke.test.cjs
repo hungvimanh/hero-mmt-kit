@@ -7,8 +7,10 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const BIN = path.join(__dirname, '..', 'bin', 'hero-vibe-kit.js');
+const PROCESS_SKILLS = require(path.join(__dirname, '..', 'skills.manifest.json')).groups.process.skills.map((s) => s.name);
 function cli(args, opts) { return spawnSync('node', [BIN, ...args], Object.assign({ encoding: 'utf8' }, opts)); }
 function mkdir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-')); }
+function hasSkill(dir, name) { return fs.existsSync(path.join(dir, '.claude', 'skills', name, 'SKILL.md')); }
 function allFiles(dir) {
   const out = [];
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -37,13 +39,17 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     'docs/CONTEXT_BUDGET.md', 'docs/HANDOFF_TEMPLATES.md', 'docs/templates/PRD_AI_FEATURE.md',
     'docs/templates/DESIGN_BRIEF.md',
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
-    '.claude/skills/test-driven-development/SKILL.md', '.claude/skills/requesting-code-review/SKILL.md',
+    '.claude/skills/dispatching-parallel-agents/SKILL.md', '.claude/skills/subagent-driven-development/SKILL.md',
     '.claude/skills/phase-handoff/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
-  // vendored skills carry MIT attribution; excluded meta skill is not shipped
+  // vendored skills carry MIT attribution; default Coding Assistant installs a selected subset
   assert.match(fs.readFileSync(path.join(dir, '.claude/skills/NOTICE'), 'utf8'), /obra\/superpowers/);
   assert.ok(!fs.existsSync(path.join(dir, '.claude/skills/writing-skills')), 'writing-skills excluded from vendored set');
+  assert.ok(!hasSkill(dir, 'test-driven-development'), 'default pragmatic Coding Assistant should not install TDD skill');
+  assert.ok(!hasSkill(dir, 'requesting-code-review'), 'default pragmatic Coding Assistant should not install review skill');
+  assert.ok(!hasSkill(dir, 'using-git-worktrees'), 'default pragmatic Coding Assistant should not install worktree skill');
+  assert.ok(!hasSkill(dir, 'finishing-a-development-branch'), 'default pragmatic Coding Assistant should not install branch finishing skill');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'en')), 'consumer docs should not include duplicate en tree');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'vi')), 'consumer docs should not include duplicate vi tree');
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
@@ -52,7 +58,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(claude, /docs\/AGENCY_WORKFLOW\.md/);
   assert.match(claude, /single source of truth/i);
   assert.match(claude, /Context loading/);
-  assert.match(claude, /Sub-agent delegation is path-triggered/);
+  assert.match(claude, /Sub-agent delegation follows the active profile/);
   assert.doesNotMatch(claude, /## 1\. Task classification → workflow \(ROUTER\)/);
   assert.doesNotMatch(claude, /\| # \| Task type \| Trigger \/ example \| Path \| Gate \|/);
   assert.doesNotMatch(claude, /### Phase 1 — Discovery & Scoping/);
@@ -66,8 +72,9 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   }
 
   const workflow = fs.readFileSync(path.join(dir, 'docs', 'AGENCY_WORKFLOW.md'), 'utf8');
-  assert.match(workflow, /Sub-agent delegation is path-triggered/);
-  assert.match(workflow, /MUST spawn.*review sub-agent/);
+  assert.match(workflow, /Sub-agents are escalation tools, not default ceremony/);
+  assert.match(workflow, /adaptive review budget/i);
+  assert.match(workflow, /Coding Assistant pragmatic work may finish with targeted verification plus explicit developer review handoff/);
   assert.match(workflow, /PHASE_HANDOFF_PROTOCOL\.md/);
   assert.match(workflow, /Tiny[\s\S]*Small[\s\S]*Standard[\s\S]*Full/);
 
@@ -81,11 +88,12 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(phaseHandoffSkill, /workflow phase boundaries/);
 
   const roster = fs.readFileSync(path.join(dir, 'docs', 'TEAM_ROSTER.md'), 'utf8');
-  assert.match(roster, /Standard path.*MUST spawn a review sub-agent/);
+  assert.match(roster, /Adaptive delegation and review budget/);
+  assert.match(roster, /Security-sensitive work.*requires security review/);
+  assert.doesNotMatch(roster, /Security-sensitive work.*not-run note/i);
   assert.match(roster, /Brownfield first change/);
-  // subagent policy recalibrated: review/QA required, implementation delegation optional
   assert.match(roster, /When NOT to use a sub-agent/i);
-  assert.match(roster, /OPTIONAL/);
+  assert.doesNotMatch(roster, /MUST spawn a review sub-agent/i);
   assert.doesNotMatch(roster, /MUST delegate.*implementation/i);
   assert.doesNotMatch(workflow, /MUST delegate.*implementation/i);
 
@@ -132,13 +140,18 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
     replaceManagedBlock(fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8') + '\nUSER AGENTS FOOTER\n', 'STALE AGENTS MANAGED GUIDANCE')
   );
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE AFTER INIT\n');
-  // corrupt a framework-managed vendored skill; update must refresh it
+  // corrupt a selected framework-managed vendored skill; update must refresh it
   const skillFile = path.join(dir, '.claude', 'skills', 'brainstorming', 'SKILL.md');
   fs.writeFileSync(skillFile, 'CORRUPTED\n');
+  // Existing unselected skill dirs are preserved, not pruned or refreshed.
+  const unselectedSkill = path.join(dir, '.claude', 'skills', 'using-git-worktrees', 'SKILL.md');
+  fs.mkdirSync(path.dirname(unselectedSkill), { recursive: true });
+  fs.writeFileSync(unselectedSkill, 'CUSTOM UNSELECTED SKILL\n');
 
   const upd = cli(['update', '--dir', dir]);
   assert.strictEqual(upd.status, 0, upd.stderr);
-  assert.doesNotMatch(fs.readFileSync(skillFile, 'utf8'), /^CORRUPTED/, 'update should refresh vendored skill');
+  assert.doesNotMatch(fs.readFileSync(skillFile, 'utf8'), /^CORRUPTED/, 'update should refresh selected vendored skill');
+  assert.strictEqual(fs.readFileSync(unselectedSkill, 'utf8'), 'CUSTOM UNSELECTED SKILL\n', 'update should preserve unselected skills');
 
   claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
@@ -152,9 +165,99 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   const agents = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
   assert.match(agents, /USER AGENTS FOOTER/);
   assert.match(agents, /docs\/AGENCY_WORKFLOW\.md/);
-  assert.match(agents, /Sub-agent delegation is path-triggered/);
+  assert.match(agents, /Sub-agent delegation follows the active profile/);
   assert.doesNotMatch(agents, /STALE AGENTS MANAGED GUIDANCE/);
   assert.strictEqual((agents.match(/hero-vibe-kit:start/g) || []).length, 1);
 
   assert.strictEqual(fs.readFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'utf8'), 'CUSTOM STATE AFTER INIT\n');
+});
+
+test('init --yes writes default assistance profile config and docs', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'ProfileDefault']);
+  assert.strictEqual(r.status, 0, r.stderr);
+
+  const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
+  assert.strictEqual(config.assistanceProfile, 'coding-assistant');
+  assert.strictEqual(config.projectSurface, 'fullstack');
+  assert.strictEqual(config.verificationLevel, 'pragmatic');
+
+  const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
+  assert.match(claude, /Active assistance profile: Coding Assistant/);
+  assert.match(claude, /Project surface: Fullstack/);
+  assert.match(claude, /Verification level: pragmatic/);
+
+  const workflow = fs.readFileSync(path.join(dir, 'docs', 'AGENCY_WORKFLOW.md'), 'utf8');
+  assert.match(workflow, /Resolve the active assistance profile/);
+  assert.match(workflow, /ASSISTANCE_PROFILES\.md/);
+
+  assert.ok(fs.existsSync(path.join(dir, 'docs', 'ASSISTANCE_PROFILES.md')), 'missing profile reference doc');
+});
+
+test('init accepts vibecode backend flags and derives strict verification', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'VibeBackend', '--profile', 'vibecode', '--surface', 'backend']);
+  assert.strictEqual(r.status, 0, r.stderr);
+
+  const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
+  assert.strictEqual(config.assistanceProfile, 'vibecode');
+  assert.strictEqual(config.projectSurface, 'backend');
+  assert.strictEqual(config.verificationLevel, 'strict');
+
+  for (const name of PROCESS_SKILLS) assert.ok(hasSkill(dir, name), `vibecode should install ${name}`);
+
+  const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
+  assert.match(claude, /Active assistance profile: Vibecode/);
+  assert.match(claude, /Project surface: Backend/);
+});
+
+test('init accepts coding assistant frontend minimal verification flags', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'FrontAssist', '--profile', 'coding-assistant', '--surface', 'frontend', '--verify', 'minimal']);
+  assert.strictEqual(r.status, 0, r.stderr);
+
+  const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
+  assert.strictEqual(config.assistanceProfile, 'coding-assistant');
+  assert.strictEqual(config.projectSurface, 'frontend');
+  assert.strictEqual(config.verificationLevel, 'minimal');
+
+  for (const name of ['using-superpowers', 'brainstorming', 'writing-plans', 'executing-plans', 'systematic-debugging', 'verification-before-completion', 'phase-handoff']) {
+    assert.ok(hasSkill(dir, name), `frontend minimal should install ${name}`);
+  }
+  for (const name of ['test-driven-development', 'requesting-code-review', 'dispatching-parallel-agents', 'subagent-driven-development', 'using-git-worktrees', 'finishing-a-development-branch']) {
+    assert.ok(!hasSkill(dir, name), `frontend minimal should not install ${name}`);
+  }
+});
+
+test('init rejects invalid profile flags before writing config', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'autopilot']);
+  assert.notStrictEqual(r.status, 0);
+  assert.match(r.stderr + r.stdout, /Invalid --profile: autopilot/);
+  assert.ok(!fs.existsSync(path.join(dir, '.hero-vibe-kit', 'config.json')), 'config should not be written after invalid flags');
+});
+
+test('update backfills profile fields and accepts overrides', () => {
+  const dir = mkdir();
+  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Migrated']);
+  assert.strictEqual(init.status, 0, init.stderr);
+
+  const configPath = path.join(dir, '.hero-vibe-kit', 'config.json');
+  const oldConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  delete oldConfig.assistanceProfile;
+  delete oldConfig.projectSurface;
+  delete oldConfig.verificationLevel;
+  fs.writeFileSync(configPath, JSON.stringify(oldConfig, null, 2) + '\n');
+
+  const upd = cli(['update', '--dir', dir, '--profile', 'vibecode', '--surface', 'backend', '--verify', 'minimal']);
+  assert.strictEqual(upd.status, 0, upd.stderr);
+
+  const migrated = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  assert.strictEqual(migrated.assistanceProfile, 'vibecode');
+  assert.strictEqual(migrated.projectSurface, 'backend');
+  assert.strictEqual(migrated.verificationLevel, 'minimal');
+
+  const agents = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
+  assert.match(agents, /Active assistance profile: Vibecode/);
+  assert.match(agents, /Project surface: Backend/);
 });

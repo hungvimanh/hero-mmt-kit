@@ -14,7 +14,7 @@ test('template doc links resolve', () => {
 
 test('phase handoff protocol is wired into workflow docs', () => {
   const docsRoot = path.join(__dirname, '..', 'templates', 'docs');
-  const requiredDocs = ['PHASE_HANDOFF_PROTOCOL.md', 'AGENCY_WORKFLOW.md', 'CONTEXT_BUDGET.md', 'HANDOFF_TEMPLATES.md'];
+  const requiredDocs = ['PHASE_HANDOFF_PROTOCOL.md', 'AGENCY_WORKFLOW.md', 'CONTEXT_BUDGET.md', 'HANDOFF_TEMPLATES.md', 'ASSISTANCE_PROFILES.md'];
   const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const assertContains = (text, expected, message) => {
     assert.match(text, new RegExp(escapeRegExp(expected)), message || `missing: ${expected}`);
@@ -26,6 +26,7 @@ test('phase handoff protocol is wired into workflow docs', () => {
 
   const workflow = fs.readFileSync(path.join(docsRoot, 'AGENCY_WORKFLOW.md'), 'utf8');
   assertContains(workflow, 'PHASE_HANDOFF_PROTOCOL.md', 'workflow should reference phase handoff protocol');
+  assertContains(workflow, 'ASSISTANCE_PROFILES.md', 'workflow should reference assistance profiles');
   assert.match(workflow, /Tiny[\s\S]*Small[\s\S]*Standard[\s\S]*Full/, 'workflow should list context tiers');
 
   const contextBudget = fs.readFileSync(path.join(docsRoot, 'CONTEXT_BUDGET.md'), 'utf8');

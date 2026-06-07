@@ -5,6 +5,7 @@ const { log, ensureDir, exists, backup, writeJSON, makeAsker } = require('./util
 const { detect } = require('./detect.cjs');
 const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
+const { collectProfileConfig, buildProfileVars } = require('./profile-config.cjs');
 
 const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
 const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
@@ -31,17 +32,24 @@ async function init(opts) {
   cfg.projectName = flags.name || cfg.projectName || (auto ? path.basename(target) : await ask.text('Project name', path.basename(target)));
   if (!cfg.teamSize) cfg.teamSize = auto ? 'small-team' : await ask.choice('Team size:', ['solo', 'small-team', 'enterprise'], 1);
   if (!cfg.branchingModel) cfg.branchingModel = auto ? 'github-flow' : await ask.choice('Branching model:', ['github-flow', 'gitlab-flow', 'trunk'], 0);
+  try {
+    cfg = await collectProfileConfig(cfg, flags, ask, auto);
+  } catch (e) {
+    log.err(e.message);
+    ask.close();
+    process.exit(1);
+  }
   if (!cfg.enforceLevel) cfg.enforceLevel = 'mixed';
   delete cfg.lang;
   cfg.version = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8')).version;
   cfg.brownfield = d.brownfield;
 
-  const vars = {
+  const vars = Object.assign({
     PROJECT_NAME: cfg.projectName,
     DATE: new Date().toISOString().slice(0, 10),
     TEAM_SIZE: TEAM_LABELS[cfg.teamSize] || cfg.teamSize,
     BRANCHING_MODEL: BRANCH_LABELS[cfg.branchingModel] || cfg.branchingModel,
-  };
+  }, buildProfileVars(cfg));
 
   // ---- 1. docs ----
   const srcDocs = path.join(templates, 'docs');
@@ -71,9 +79,11 @@ async function init(opts) {
   mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
   log.ok('Hooks   : git-guard + stop-reminder installed; settings.json merged');
 
-  // ---- 3b. vendored core skills (native .claude/skills, no `skills` CLI needed) ----
-  const sk = require('./skills.cjs').installSkills(pkgRoot, target);
-  log.ok(`Skills  : ${sk.skills} core skill(s) → .claude/skills/ (bundled)`);
+  // ---- 3b. selected vendored core skills (native .claude/skills, no `skills` CLI needed) ----
+  const skills = require('./skills.cjs');
+  const selectedSkills = skills.selectProcessSkills(cfg);
+  const sk = skills.installSkills(pkgRoot, target, { selectedSkills });
+  log.ok(`Skills  : ${sk.skills} selected core skill(s) → .claude/skills/ (bundled)`);
 
   // ---- 4. config ----
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);

@@ -6,19 +6,22 @@ The AI acts as a lean software agency. Operating scale: **{{TEAM_SIZE}} + AI**, 
 
 > **Language policy:** this workflow and all framework templates are English-only for token efficiency and consistency. Use the user's chat language for responses unless they ask otherwise.
 
+> **Active operating profile:** {{ASSISTANCE_PROFILE_LABEL}} (`{{ASSISTANCE_PROFILE}}`) · surface: {{PROJECT_SURFACE_LABEL}} (`{{PROJECT_SURFACE}}`) · verification: {{VERIFICATION_LEVEL}}. Resolve details in [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md) before changing gate, delegation, or verification strictness.
+
 The personas (BA / Architect / Developer / QA / Scrum Master) are **thinking lenses**, not mandatory ceremony for every task — details in [TEAM_ROSTER.md](./TEAM_ROSTER.md).
 
 ---
 
 ## 0. Golden rules
 
-1. **Start every request by CLASSIFYING the task** (table §1) → pick the right *path*. Don't default to the full 5-phase process for everything.
-2. **Don't jump into code while the request is unclear.** For Standard/Full paths, clarify scope first.
-3. **A gate is real Plan Mode, not a promise.** When a path requires a "Gate", use `EnterPlanMode` → present the plan → `ExitPlanMode` for the user to approve. This is a harness-enforced block, replacing the prose "wait for sign-off".
-4. **Update [ACTIVE_STATE.md](./ACTIVE_STATE.md)** when starting / finishing a unit of work. It is the durable cross-session backlog (TaskCreate only lives within the current session).
-5. **Follow [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) in every interaction** — especially when clarifying requirements: no silent assumptions, layered certainty, blocking/non-blocking question classification, close the loop on misunderstandings.
-6. **For old codebases, run brownfield discovery first** after install: `hero-vibe-kit init` → `hero-vibe-kit discover` → `hero-vibe-kit doctor`. Read [BROWNFIELD_DISCOVERY.md](./BROWNFIELD_DISCOVERY.md) before changing code.
-7. **Sub-agent delegation is path-triggered, not user-prompt-triggered** for the *review/QA* a path requires — do it even if the user didn't ask. Sub-agents are best for research/exploration and review; **delegating implementation is optional** — use it only when it genuinely helps (independent parallel tracks, or to isolate context). Not every task needs a sub-agent.
+1. **Resolve the active assistance profile before routing.** Use [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md) to apply the active profile, surface, verification level, and any per-task override.
+2. **Start every request by CLASSIFYING the task** (table §1) → pick the right *path*. Don't default to the full 5-phase process for everything.
+3. **Don't jump into code while the request is unclear.** For Standard/Full paths, clarify scope first.
+4. **A gate is real Plan Mode, not a promise.** When a path requires a "Gate", use `EnterPlanMode` → present the plan → `ExitPlanMode` for the user to approve. This is a harness-enforced block, replacing the prose "wait for sign-off".
+5. **Update [ACTIVE_STATE.md](./ACTIVE_STATE.md)** when starting / finishing a unit of work. It is the durable cross-session backlog (TaskCreate only lives within the current session).
+6. **Follow [COMMUNICATION_PROTOCOL.md](./COMMUNICATION_PROTOCOL.md) in every interaction** — especially when clarifying requirements: no silent assumptions, layered certainty, blocking/non-blocking question classification, close the loop on misunderstandings.
+7. **For old codebases, run brownfield discovery first** after install: `hero-vibe-kit init` → `hero-vibe-kit discover` → `hero-vibe-kit doctor`. Read [BROWNFIELD_DISCOVERY.md](./BROWNFIELD_DISCOVERY.md) before changing code.
+8. **Sub-agents are escalation tools, not default ceremony.** Use them when they reduce context load, add specialist judgment, isolate parallel work, or satisfy a real risk requirement. Do not run duplicate review passes over the same scope; review is evidence, not ritual.
 
 ---
 
@@ -32,7 +35,7 @@ When a request arrives, consult this table first to pick path, branch, required 
 | 2 | **Chore / Docs / Config** | edit README, change config, bump version, format | Fast | No | `chore/` `docs/` | edit → MR | — | build/lint green; no runtime behavior change |
 | 3 | **Small bugfix (localized)** | clear root cause, ≤ ~2 files, not a shared symbol | Fast | No (but **repro test required**) | `fix/` | `systematic-debugging` → write a RED test reproducing the bug → fix → GREEN → MR | systematic-debugging, test-driven-development, verification-before-completion | bug repro test (red→green); regression green; root cause noted in MR |
 | 4 | **Hotfix (urgent prod)** | production incident needs an urgent patch | Fast (expedited) | No | `hotfix/` (off `main`) | minimal fix + test → fast MR → backport to the development branch | systematic-debugging, verify | incident patched + test; backported; logged for post-mortem |
-| 5 | **Change logic of an existing feature** | "change how X is computed", "add a condition to Y", "change behavior Z" | Standard | **YES** | `change/` | **impact analysis REQUIRED** → ensure/add regression tests → implement → QA review | `gitnexus_impact` (upstream), test-driven-development, code-review | impact reported; regression + new tests green; `detect_changes` scope correct |
+| 5 | **Change logic of an existing feature** | "change how X is computed", "add a condition to Y", "change behavior Z" | Standard | **YES** | `change/` | **impact analysis REQUIRED** → ensure/add regression tests → implement → adaptive review/QA if risk warrants | `gitnexus_impact` (upstream), test-driven-development, code-review | impact reported; regression + new tests green; `detect_changes` scope correct |
 | 6 | **Refactor (NO behavior change)** | "split this module", "rename", "clean up" | Standard | **YES** | `refactor/` | tests GREEN before → impact analysis → change (use `gitnexus_rename`) → tests GREEN after (unchanged) | gitnexus_rename, gitnexus_impact, simplify | same test suite passes before & after; NO manual find-replace |
 | 7 | **New feature** | "build feature Z" | Full (5-phase) | **YES (2 gates: PRD + TDD)** | `feat/` | full §3 — if the feature has UI, follow the design track ([DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md)) | brainstorming, writing-plans, test-driven-development, design system, code-review, security-review | full [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) |
 | 8 | **Spike / Research / POC** | "feasibility study", "try an approach" | Timeboxed | No (timebox instead of gate) | `spike/` (throwaway) | clear timebox → output a **recommendation doc**; **do NOT merge POC code** into main | deep-research, gitnexus_exploring | conclusion + recommendation doc; POC code stays out of main |
@@ -45,7 +48,7 @@ Treat the router as the controller for the next prompt, not just as reference ma
 1. classify the task using the table above,
 2. select the workflow path,
 3. identify required gates, verification steps, and Done criteria,
-4. identify which lenses or sub-agents are required by the path,
+4. identify which lenses or sub-agents, if any, are justified by risk, scope, and context cost,
 5. generate the next internal prompt or handoff prompt from [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) when a handoff is needed,
 6. continue only when the current gate or Done criteria allow the workflow to advance.
 
@@ -65,28 +68,41 @@ User intent
 
 Self-prompting does **not** mean spawning more agents by default. It means the framework decides the next valid prompt from task type, path state, and Done criteria.
 
+### Assistance profile overlay
+
+Apply the active profile from [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md) after selecting the path:
+
+| Area | Vibecode | Coding Assistant |
+|---|---|---|
+| Default posture | Agent owns routing, gates, implementation, and evidence unless blocked. | Human-led; agent assists, proposes, and keeps developer review central. |
+| New features | Full path by default, with PRD and TDD gates. | Full path for broad features; bounded enhancements may stay Standard with user agreement. |
+| Plan Mode gates | Treat required gates as strict blockers. | Treat required gates as blockers; keep plans concise for developer approval. |
+| Verification | Run the active verification level and report evidence before claims. | Run the active verification level; prefer targeted checks plus developer-readable evidence. |
+| Review/QA sub-agent | Required for HIGH/CRITICAL, security-sensitive, or broad multi-area work; otherwise choose the smallest review budget that proves the claim. | Required for HIGH/CRITICAL or sensitive work; optional for normal tasks, with targeted verification and explicit developer handoff. |
+| Phase handoff | Use artifact-first handoffs at real phase boundaries. | Use handoffs when context, role, or review boundaries make them useful. |
+
 ### Lightweight Main Agent Protocol
 
-The Main Agent is the user-facing orchestrator, not the default executor. Keep it small enough to clarify, plan, route, synthesize, and talk to the user.
+The Main Agent is the user-facing lead. For normal Coding Assistant work it may implement directly; for broad, noisy, parallel, or risky work it orchestrates sub-agents. Keep it small enough to clarify, plan, route, synthesize, and talk to the user.
 
 Default flow:
 
 ```text
 User intent
   → Main Agent clarifies and plans
-  → Main Agent delegates bounded work
-  → sub-agents execute / explore / test / review
-  → sub-agents return bounded reports
+  → Main Agent acts directly when the work is clear and bounded
+  → Main Agent delegates only when delegation adds value
+  → sub-agents return bounded reports when used
   → Main Agent synthesizes, decides next step, and owns final claims
 ```
 
-Main Agent does directly only:
+Main Agent does directly:
 - user communication and blocking decisions,
 - task classification, planning, and handoff prompts,
-- small local edits/checks where delegation costs more than it saves,
-- final accountability gates before completion claims.
+- small and medium local edits/checks where delegation costs more than it saves,
+- pragmatic verification and final accountability before completion claims.
 
-Sub-agents should handle broad reading, MCP exploration, noisy command execution, implementation, QA, security, performance review, and log analysis when that protects main-thread context.
+Sub-agents should handle broad reading, MCP exploration, noisy command execution, independent implementation tracks, QA, security, performance review, and log analysis when that protects main-thread context or adds specialist value.
 
 ### Context Budget Protocol
 
@@ -148,14 +164,14 @@ For changing existing feature logic & refactors.
 1. **Gate**: `EnterPlanMode` → investigate + run `gitnexus_impact` (upstream) → present a plan stating **blast radius + risk level** → `ExitPlanMode` and wait for approval.
 2. Warn the user if risk is **HIGH/CRITICAL** before continuing.
 3. Implement with TDD; for refactors keep tests unchanged.
-4. QA: **MUST spawn** a review sub-agent (`code-review` + `security-review` if touching a sensitive surface) + `gitnexus_detect_changes`.
+4. QA: run `gitnexus_detect_changes`; apply the active profile's review/QA rule from [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md).
 5. MR against the "Standard" DoD.
 
-Implementation delegation is optional, but the review sub-agent is mandatory before completion. Use [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) for reviewer prompts.
+Implementation delegation is optional. For review/QA, choose an adaptive review budget: none for low-risk work with credible targeted verification, one combined reviewer for medium-risk uncertainty, targeted specialist review for security/performance/API/data/UI risk, and full multi-stage review only for high-risk or broad multi-area work. Security-sensitive work requires security review when the selected path touches a sensitive surface. Use [HANDOFF_TEMPLATES.md](./HANDOFF_TEMPLATES.md) for reviewer prompts.
 
 ### Full path (5-phase) — new features only
 See §3.
-Use BA and Architect lenses for the gates; delegate implementation only for independent tracks or context isolation; QA/review remains mandatory.
+Use BA and Architect lenses for the gates; delegate implementation only for independent tracks or context isolation. For QA/review, apply the active profile and adaptive review budget: review high-risk seams, avoid duplicate review over already-covered scope, and reserve final integration review for multi-area work.
 
 ---
 
@@ -184,14 +200,14 @@ Use BA and Architect lenses for the gates; delegate implementation only for inde
 
 ### Phase 3 — Implementation (lens: Developer)
 1. Mark tasks `in_progress` (`TaskUpdate`) + update ACTIVE_STATE.
-2. Execute implementation as bounded tasks. The Main Agent may handle small/focused edits when delegation costs more than it saves; delegate to Dev sub-agent(s) when the task is broad, independent, context-heavy, or needs isolation. Implementation delegation is optional, but required review/QA delegation remains path-triggered. Sub-agents do NOT inherit the conversation/skills, so any delegated prompt must be self-contained (PRD/TDD links, skills to invoke, Done criteria, relevant files). Details: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
+2. Execute implementation as bounded tasks. The Main Agent may handle focused edits when delegation costs more than it saves; delegate to Dev sub-agent(s) when the task is broad, independent, context-heavy, or needs isolation. Review/QA delegation follows the adaptive review budget, not a fixed loop. Sub-agents do NOT inherit the conversation/skills, so any delegated prompt must be self-contained (PRD/TDD links, skills to invoke, Done criteria, relevant files). Details: [TEAM_ROSTER.md](./TEAM_ROSTER.md).
 3. **Conditional parallelization:** only spawn FE & BE in parallel **after the API contract (Phase 2.5) is locked**. When multiple agents edit overlapping files → `isolation: "worktree"`.
 4. Developers apply `test-driven-development`.
 5. Frontend implements against the **locked design system** (tokens/components) from Phase 2; use `image-to-code` when implementing from approved visual references; produce embedded media per [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md) §6; do NOT introduce a new design direction mid-build.
 
-### Phase 4 — Quality Assurance (lens: QA, sub-agent)
-1. Spawn a Code Reviewer / QA sub-agent (self-contained prompt).
-2. QA runs `verification-before-completion`, `security-review`, `systematic-debugging` as needed. Check against [SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md) + [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) (incl. OWASP LLM Top 10 for AI features, and performance budgets).
+### Phase 4 — Quality Assurance (lens: QA)
+1. Apply the active profile's adaptive review budget from [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md): run no delegated review for low-risk work with credible targeted evidence, one combined review for medium-risk uncertainty, targeted specialist review for sensitive surfaces, and full multi-stage review only for high-risk or broad multi-area work. Coding Assistant pragmatic work may finish with targeted verification plus explicit developer review handoff.
+2. QA runs `verification-before-completion` and the checks required by [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md). For Full path, `security-review` is required; use `systematic-debugging` when failures or unexpected behavior appear. Check against [SECURITY_STANDARDS.md](./SECURITY_STANDARDS.md) + [PERFORMANCE_STANDARDS.md](./PERFORMANCE_STANDARDS.md) (incl. OWASP LLM Top 10 for AI features, and performance budgets).
 3. `gitnexus_detect_changes` to confirm no unexpected execution flows broke.
 4. Must meet [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) (Full level) before merging.
 5. **Visual QA (UI features):** run the [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md) §7 checklist (incl. media weight) and verify the in-product help entry exists & is accurate (§8 sync rule); record in `reports/.../design-qa.md`.
@@ -220,9 +236,9 @@ After each step, choose the next prompt/action from workflow state:
 | New feature idea | Generate the BA Discovery Prompt and produce the PRD/scope artifact. |
 | PRD approved | Generate the Architect Planning Prompt and produce the technical plan. |
 | Plan approved | Generate a bounded implementer prompt or act directly when delegation is not useful. |
-| Implementation done | Generate spec compliance and code quality review prompts. |
-| Sensitive surface touched | Generate the QA / Security Reviewer Prompt. |
-| Review failed | Generate a focused fix prompt using reviewer findings. |
+| Implementation done | Select the smallest review budget that fits risk; often targeted verification is enough. |
+| Sensitive surface touched | Generate a targeted Security Reviewer Prompt for the touched sensitive surface. |
+| Review failed | Generate a focused fix prompt using reviewer findings; re-review only the fix or disputed finding unless scope expanded. |
 | Verification passed | Generate the Handover / Retro Prompt and update state/artifacts. |
 | Context pressure high | Write/update the resume packet, run `/compact` if staying in-session, or start a fresh session from artifact links. |
 | Unexpected risk discovered | Stop, report the risk, and request the required gate or user decision. |

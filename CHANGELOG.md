@@ -5,17 +5,22 @@ All notable changes to hero-vibe-kit are documented here. Format based on
 
 ## [1.0.0] - 2026-06-07
 ### Breaking
-- Removed Vietnamese framework template support. `templates/docs` is now English-only, `--lang` is deprecated/ignored with a warning, and agents are instructed to respond in the user's chat language.
+- Removed Vietnamese framework template support. Framework templates and installed docs are now English-only; agents still respond in the user's chat language unless asked otherwise. `--lang` is deprecated/ignored with a warning.
+- Reframed sub-agent/review policy from mandatory review loops to adaptive, risk-based review budgets. Normal Coding Assistant work now defaults to direct implementation, targeted verification, and explicit developer-review handoff instead of automatic multi-review swarms.
 
 ### Added
-- Added bilingual Phase Handoff Protocol reference docs and wired them into the installed workflow documentation.
-- Added artifact-first phase-boundary guidance for Tiny, Small, Standard, and Full modes, including bounded canonical handoffs, `resume.md` pointers, sanity checks, evidence freshness, and final-claim verification rules.
-- Added a framework-authored `phase-handoff` skill that installs with the bundled process skills and guides fresh sessions or sub-agents through safe handoff/resume behavior.
-- Added test coverage for bilingual protocol wiring, init/install behavior, and the local `phase-handoff` skill package.
+- Added assistance profiles for consumer projects: `vibecode` for high-agency AI execution and `coding-assistant` for developer-led collaboration.
+- Added project surfaces (`fullstack`, `backend`, `frontend`) and verification levels (`strict`, `pragmatic`, `minimal`) to `init`, `update`, rendered docs, and `.hero-vibe-kit/config.json`.
+- Added `ASSISTANCE_PROFILES.md` as the canonical installed reference for active profile, surface, verification, per-task overrides, adaptive review budgets, and selected process skills.
+- Added selective bundled process skill installation so `init` installs only the core skills needed for the active profile/surface/verification instead of always installing the full vendored suite.
+- Added artifact-first Phase Handoff Protocol guidance for real phase boundaries, including bounded canonical handoffs, `resume.md` pointers, sanity checks, evidence freshness, and final-claim verification rules.
+- Added a framework-authored `phase-handoff` skill for safe handoff/resume behavior across fresh sessions and sub-agents.
 
 ### Changed
-- Updated bilingual workflow, context-budget, and handoff templates so Standard/Full work records real phase boundaries without bloating always-loaded instructions.
-- Updated README install-tree and skill attribution wording for the expanded bundled docs and framework-authored skill.
+- Updated `AGENCY_WORKFLOW.md`, `TEAM_ROSTER.md`, `DEFINITION_OF_DONE.md`, and process skills so sub-agents are escalation tools, not default ceremony. Review budgets now range from no delegated review, to one combined review, to targeted specialist review, to full multi-stage review only when risk justifies it.
+- Updated Coding Assistant defaults to `fullstack` + `pragmatic` verification for `--yes`, with a leaner workflow and explicit verified/unverified final reports.
+- Updated `update` to refresh selected framework-managed skills while preserving existing unselected or user-added skill directories.
+- Updated README and installed docs to describe the 1.0.0 profile-driven workflow, selected skills, adaptive review policy, and English-only template policy.
 
 ## [0.6.3] - 2026-06-06
 ### Changed

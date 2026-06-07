@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 /*
- * PreToolUse hook (matcher: Bash) — enforcement "hỗn hợp".
- * CHẶN (exit 2, stderr -> Claude) các lệnh git nguy hiểm.
- * NHẮC (exit 0, stderr -> user) khi commit.
- * Đọc JSON từ stdin theo schema hook của Claude Code: { tool_name, tool_input:{command} }.
- * Tham chiếu quy trình: docs/AGENCY_WORKFLOW.md, docs/BRANCHING.md, docs/DEFINITION_OF_DONE.md
+ * PreToolUse hook (matcher: Bash) — mixed enforcement.
+ * BLOCKS dangerous git commands (exit 2, stderr -> Claude).
+ * REMINDS on commits without blocking (exit 0, stderr -> user).
+ * Reads JSON from stdin using the Claude Code hook schema: { tool_name, tool_input:{command} }.
+ * Process references: docs/AGENCY_WORKFLOW.md, docs/BRANCHING.md, docs/DEFINITION_OF_DONE.md
  */
 let raw = '';
 process.stdin.on('data', (d) => { raw += d; });
@@ -22,33 +22,33 @@ process.stdin.on('end', () => {
   const isPush = /\bpush\b/.test(cmd);
   const isCommit = /\bcommit\b/.test(cmd);
 
-  // 1) Force push (cho phép --force-with-lease)
+  // 1) Force push (allow --force-with-lease)
   if (isPush && /(--force(?!-with-lease)|(^|\s)-f(\s|$))/.test(cmd)) {
-    block('Chặn force-push (--force/-f). Nếu thực sự cần, dùng --force-with-lease và xác nhận thủ công. ' +
-          '`main` được bảo vệ — đẩy thay đổi qua Merge Request (docs/BRANCHING.md).');
+    block('Blocked force-push (--force/-f). If truly needed, use --force-with-lease and confirm manually. ' +
+          '`main` is protected — send changes through a Merge Request (docs/BRANCHING.md).');
   }
 
-  // 2) commit --no-verify / -n  (bỏ qua hook/CI)
+  // 2) commit --no-verify / -n (bypasses hooks/CI)
   if (isCommit && /(--no-verify|(^|\s)-n(\s|$))/.test(cmd)) {
-    block('Chặn `git commit --no-verify`: không bỏ qua hook/kiểm tra trừ khi User yêu cầu rõ ràng.');
+    block('Blocked `git commit --no-verify`: do not bypass hooks/checks unless the User explicitly requests it.');
   }
 
-  // 3) reset --hard (mất thay đổi)
+  // 3) reset --hard (can discard changes)
   if (/\breset\b[\s\S]*--hard/.test(cmd)) {
-    block('Chặn `git reset --hard` (có thể mất thay đổi). Cân nhắc `git stash`, hoặc chạy thủ công nếu thực sự muốn.');
+    block('Blocked `git reset --hard` (it can discard changes). Consider `git stash`, or run it manually if you truly intend it.');
   }
 
-  // 4) push thẳng lên main (token "main" độc lập hoặc refspec :main)
+  // 4) direct push to main (standalone "main" token or :main refspec)
   if (isPush && /(^|\s|:)main(\s|$)/.test(cmd) && !/--dry-run/.test(cmd)) {
-    block('Chặn push thẳng lên `main` (được bảo vệ). Tạo nhánh + Merge Request (docs/BRANCHING.md).');
+    block('Blocked direct push to protected `main`. Create a branch + Merge Request (docs/BRANCHING.md).');
   }
 
-  // NHẮC (không chặn) khi commit
+  // REMIND (non-blocking) on commit
   if (isCommit) {
-    console.error('🔔 [git-guard] Trước khi commit, kiểm tra: ' +
-      '(1) docs/ACTIVE_STATE.md đã cập nhật? ' +
-      '(2) đã chạy gitnexus_detect_changes (khi đã có code)? ' +
-      '(3) message theo Conventional Commits? — xem docs/DEFINITION_OF_DONE.md');
+    console.error('🔔 [git-guard] Before committing, check: ' +
+      '(1) docs/ACTIVE_STATE.md updated? ' +
+      '(2) gitnexus_detect_changes run when code changed? ' +
+      '(3) Conventional Commits message? — see docs/DEFINITION_OF_DONE.md');
   }
 
   process.exit(0);

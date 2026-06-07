@@ -23,7 +23,7 @@ npx hero-vibe-kit doctor
    - **Found** — directly observed in files.
    - **Likely** — inferred from names/structure, not yet proven.
    - **Needs confirmation** — requires the human or missing business context.
-5. For the first code changes after discovery, classify the request with the router in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md). If it touches > 2 files or any **Needs confirmation** area, treat it as Standard path: Plan Mode + impact analysis + review sub-agent, even when the user did not ask for sub-agents.
+5. For the first code changes after discovery, classify the request with the router in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md). If it touches > 2 files or any **Needs confirmation** area, treat it as Standard path: Plan Mode + impact analysis, then choose the active profile's review budget from actual risk and uncertainty.
 
 ## Context discipline
 

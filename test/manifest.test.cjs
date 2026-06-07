@@ -33,3 +33,25 @@ test('design-direction contains the taste skills and brand is separate', () => {
   assert.ok(!dir.includes('brandkit'), 'brandkit lives in the brand group');
   assert.deepStrictEqual(manifest.groups.brand.skills.map((s) => s.name), ['brandkit']);
 });
+
+test('process skill selection metadata references only vendored process skills', () => {
+  const proc = manifest.groups.process;
+  const selection = proc.selection;
+  assert.ok(selection, 'process selection metadata present');
+  assert.strictEqual(selection.mode, 'derived');
+  assert.deepStrictEqual(selection.deriveFrom, ['assistanceProfile', 'projectSurface', 'verificationLevel']);
+  assert.match(selection.updatePolicy, /preserve existing unselected/);
+
+  const valid = new Set(proc.skills.map((s) => s.name));
+  for (const key of ['baseline', 'strictVerificationAdds', 'fullstackSurfaceAdds', 'vibecodeProfileAdds']) {
+    assert.ok(Array.isArray(selection[key]), `${key} should be an array`);
+    for (const name of selection[key]) assert.ok(valid.has(name), `${key} references unknown process skill: ${name}`);
+  }
+});
+
+test('optional design groups remain external and unbundled', () => {
+  for (const name of ['brand', 'design-direction', 'design-tools']) {
+    assert.strictEqual(manifest.groups[name].tier, 'optional', `${name} should remain optional`);
+    assert.notStrictEqual(manifest.groups[name].bundled, true, `${name} should not be bundled`);
+  }
+});
