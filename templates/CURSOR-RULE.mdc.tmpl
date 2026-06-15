@@ -1,0 +1,29 @@
+---
+description: hero-vibe-kit workflow — task router, gates, verification, and enforcement
+alwaysApply: true
+---
+
+## hero-vibe-kit workflow
+
+> **READ BEFORE DOING ANYTHING:** [`docs/AGENCY_WORKFLOW.md`](docs/AGENCY_WORKFLOW.md) is the **single source of truth** for the {{PROJECT_NAME}} development process. Classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). Don't run the heavy process for small tasks.
+
+> **Active operating profile:**
+> - Active assistance profile: {{ASSISTANCE_PROFILE_LABEL}} (`{{ASSISTANCE_PROFILE}}`)
+> - Project surface: {{PROJECT_SURFACE_LABEL}} (`{{PROJECT_SURFACE}}`)
+> - Verification level: {{VERIFICATION_LEVEL}}
+> See [ASSISTANCE_PROFILES](docs/ASSISTANCE_PROFILES.md) before changing gate, delegation, or verification strictness.
+
+### Context loading
+- **Always start with:** [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md) for routing, gates, sub-agents, and path-specific requirements.
+- **Resume / durable state:** read [ACTIVE_STATE](docs/ACTIVE_STATE.md) when resuming work or changing durable task state.
+- **Artifacts:** read [ARTIFACTS_AND_STORAGE](docs/ARTIFACTS_AND_STORAGE.md) only when creating/linking PRDs, plans, reports, design assets, or help content.
+- **Completion:** read [DEFINITION_OF_DONE](docs/DEFINITION_OF_DONE.md) before claiming done.
+- **Read on demand:** [BRANCHING](docs/BRANCHING.md), [TEAM_ROSTER](docs/TEAM_ROSTER.md), [COMMUNICATION_PROTOCOL](docs/COMMUNICATION_PROTOCOL.md), [SECURITY_STANDARDS](docs/SECURITY_STANDARDS.md), [PERFORMANCE_STANDARDS](docs/PERFORMANCE_STANDARDS.md), [DESIGN_STANDARDS](docs/DESIGN_STANDARDS.md), [BROWNFIELD_DISCOVERY](docs/BROWNFIELD_DISCOVERY.md), and templates under `docs/templates/` only when the selected path requires them.
+
+### Non-negotiables
+- **Gates:** when a path requires a Gate, switch to Plan mode for real sign-off — not a prose promise.
+- **Enforcement:** `git-guard` (`beforeShellExecution`) + `stop-reminder` (`stop`) hooks are installed under `.cursor/hooks/`. Don't bypass them.
+- **GitNexus (if installed):** skip on empty repos; use impact/context analysis for Standard/Full code changes and stale-index checks per [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md).
+- **Skills (if installed):** read relevant process skills from `.cursor/skills/` when the task matches; do not load unrelated skill context.
+- **Language:** framework instructions, skills, rules, and templates are English-only. Respond to the user in the same language they use in chat unless they request another language.
+- **Sub-agent delegation follows the active profile.** Resolve [ASSISTANCE_PROFILES](docs/ASSISTANCE_PROFILES.md) before changing review/QA strictness: Standard/Full review is path-triggered for Vibecode, while Coding Assistant keeps developer review central and applies its recommended/required review rules. Sub-agents are best for research and review; **delegating implementation is optional** — use when it helps, and not every task needs one. Sub-agent model/effort selection follows [TEAM_ROSTER](docs/TEAM_ROSTER.md); do not hardcode model IDs elsewhere.

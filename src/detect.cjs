@@ -4,7 +4,7 @@ const path = require('path');
 const { exists } = require('./util.cjs');
 
 const CODE_EXT = new Set(['.js', '.mjs', '.cjs', '.ts', '.jsx', '.tsx', '.py', '.go', '.rs', '.java', '.rb', '.php', '.cs', '.cpp', '.c', '.h', '.vue', '.svelte', '.kt', '.swift', '.scala', '.dart']);
-const SKIP = new Set(['.git', 'node_modules', '.gitnexus', '.agents', '.hero-vibe-kit', 'templates', 'dist', 'build', '.next', 'out', 'vendor', '__pycache__', '.serena', '.claude', 'coverage']);
+const SKIP = new Set(['.git', 'node_modules', '.gitnexus', '.agents', '.hero-vibe-kit', 'templates', 'dist', 'build', '.next', 'out', 'vendor', '__pycache__', '.serena', '.claude', '.cursor', 'coverage']);
 
 function findCode(dir, depth) {
   if (depth > 3) return false;
@@ -28,10 +28,13 @@ function detect(target) {
     existingClaudeMd: exists(path.join(target, 'CLAUDE.md')),
     existingAgentsMd: exists(path.join(target, 'AGENTS.md')),
     existingSettings: exists(path.join(target, '.claude', 'settings.json')),
+    existingCursorHooks: exists(path.join(target, '.cursor', 'hooks.json')),
+    existingCursorRule: exists(path.join(target, '.cursor', 'rules', 'hero-vibe-kit.mdc')),
     existingActiveState: exists(path.join(target, 'docs', 'ACTIVE_STATE.md')),
     existingConfig: exists(path.join(target, '.hero-vibe-kit', 'config.json')),
     hasSkillsLock: exists(path.join(target, 'skills-lock.json')),
     hasVendoredSkills: exists(path.join(target, '.claude', 'skills')),
+    hasCursorSkills: exists(path.join(target, '.cursor', 'skills')),
     hasSerena: exists(path.join(target, '.serena')),
     hasGitnexus: exists(path.join(target, '.gitnexus')),
     hasCode: findCode(target, 0),

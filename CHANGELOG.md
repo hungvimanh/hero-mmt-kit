@@ -3,6 +3,17 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+## [1.2.0] - 2026-06-15
+### Added
+- Added first-class **Cursor** support alongside Claude Code: `init`/`update` now install `.cursor/rules/hero-vibe-kit.mdc`, `.cursor/hooks.json`, shared enforcement hooks, and selected process skills under `.cursor/skills/`.
+- Added `--ide claude-code|cursor|both` flag and `ideTargets` in `.hero-vibe-kit/config.json`. Interactive `init` prompts for IDE target; `--yes` requires `--ide`.
+
+### Changed
+- Updated `git-guard` and `stop-reminder` hooks to accept both Claude Code and Cursor hook payloads.
+- Updated `doctor` to validate Claude Code and/or Cursor installs based on `ideTargets`.
+
 ## [1.1.1] - 2026-06-07
 ### Fixed
 - Fixed selected skill installation on Windows by creating each destination directory before recursively copying nested skill files such as `brainstorming/scripts/server.cjs`.

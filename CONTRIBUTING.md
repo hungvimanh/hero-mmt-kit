@@ -8,7 +8,9 @@ bin/        CLI entry (hero-vibe-kit.js)
 src/        CLI logic (detect, config, render, merge, init, update, doctor, integrations, links)
 templates/  what gets installed into a consumer project
   docs/      English-only framework docs (including ARTIFACTS_AND_STORAGE)
-  common/.claude/ hooks + settings.json
+  common/.claude/ hooks + settings.json (Claude Code)
+  common/.cursor/ hooks.json (Cursor)
+  CURSOR-RULE.mdc.tmpl  always-on Cursor project rule
   skills/         VENDORED core process skills (MIT, from obra/superpowers) + NOTICE
   CLAUDE.md.tmpl AGENTS.md.tmpl
 presets/    solo | small-team | enterprise
@@ -27,7 +29,7 @@ skills.manifest.json  vendored core (process) + referenced design/taste skills
 ## Before opening a PR
 ```bash
 npm test          # hooks self-tests + link integrity + init/brownfield smoke
-node bin/hero-vibe-kit.js init --dir /tmp/x --yes && node bin/hero-vibe-kit.js doctor --dir /tmp/x
+node bin/hero-vibe-kit.js init --dir /tmp/x --yes --ide claude-code && node bin/hero-vibe-kit.js doctor --dir /tmp/x
 ```
 - Add a `CHANGELOG.md` entry under *Unreleased*.
 - Keep PRs scoped (see the task router); use Conventional Commits.

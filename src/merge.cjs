@@ -58,4 +58,28 @@ function mergeSettings(file, templateFile) {
   fs.writeFileSync(file, JSON.stringify(cur, null, 2) + '\n');
 }
 
-module.exports = { mergeManagedBlock, mergeSettings, START, END };
+// Merge hero-vibe-kit hooks into an existing Cursor hooks.json without clobbering user hooks.
+function mergeCursorHooks(file, templateFile) {
+  const tpl = JSON.parse(fs.readFileSync(templateFile, 'utf8'));
+  let cur = { version: 1, hooks: {} };
+  if (exists(file)) { cur = JSON.parse(fs.readFileSync(file, 'utf8')); backup(file); }
+  else ensureDir(path.dirname(file));
+
+  cur.version = cur.version || tpl.version || 1;
+  cur.hooks = cur.hooks || {};
+
+  for (const ev of Object.keys(tpl.hooks || {})) {
+    cur.hooks[ev] = cur.hooks[ev] || [];
+    const existingCmds = new Set(cur.hooks[ev].map((h) => h.command));
+    for (const hook of tpl.hooks[ev]) {
+      if (!existingCmds.has(hook.command)) {
+        cur.hooks[ev].push(hook);
+        existingCmds.add(hook.command);
+      }
+    }
+  }
+
+  fs.writeFileSync(file, JSON.stringify(cur, null, 2) + '\n');
+}
+
+module.exports = { mergeManagedBlock, mergeSettings, mergeCursorHooks, START, END };

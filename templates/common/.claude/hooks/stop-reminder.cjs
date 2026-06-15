@@ -2,6 +2,8 @@
 'use strict';
 /*
  * Stop hook — soft reminder (non-blocking, exit 0).
+ * Claude Code: Stop — { hook_event_name, stop_hook_active, cwd }
+ * Cursor: stop — { cwd, workspace_roots, loop_count, ... }
  * If there are uncommitted changes and docs/ACTIVE_STATE.md was not touched,
  * print a reminder for the user. Do NOT block stopping (no exit 2 -> avoid loops).
  */
@@ -12,9 +14,12 @@ process.stdin.on('data', (d) => { raw += d; });
 process.stdin.on('end', () => {
   let payload = {};
   try { payload = JSON.parse(raw || '{}'); } catch (_) { /* ignore */ }
-  if (payload.stop_hook_active) process.exit(0); // avoid recursive activation
+  if (payload.stop_hook_active) process.exit(0); // Claude Code loop guard
+  if (Number(payload.loop_count) > 0) process.exit(0); // Cursor loop guard
 
-  const cwd = payload.cwd || process.cwd();
+  const cwd = payload.cwd
+    || (Array.isArray(payload.workspace_roots) && payload.workspace_roots[0])
+    || process.cwd();
   let status = '';
   try {
     status = execSync('git status --porcelain', { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });

@@ -1,10 +1,10 @@
 # hero-vibe-kit
 
-> An adaptive, AI-assisted software-development workflow for **Claude Code** — profile-aware routing, real approval gates, pragmatic verification, enforcement hooks, selected process skills, and security/performance standards for new and brownfield projects.
+> An adaptive, AI-assisted software-development workflow for **Claude Code** and **Cursor** — profile-aware routing, real approval gates, pragmatic verification, enforcement hooks, selected process skills, and security/performance standards for new and brownfield projects.
 
 ## What it is
 
-`hero-vibe-kit` installs a lightweight but disciplined development process into your repository so Claude Code and compatible agents can work like a pragmatic software team:
+`hero-vibe-kit` installs a lightweight but disciplined development process into your repository so Claude Code, Cursor, and compatible agents can work like a pragmatic software team:
 
 - **Profile-aware workflow** — choose `vibecode` for high-agency AI execution or `coding-assistant` for developer-led collaboration.
 - **Project surfaces** — tune the workflow for `fullstack`, `backend`, or `frontend` projects.
@@ -34,7 +34,7 @@ npx hero-vibe-kit doctor
 Non-interactive / CI example:
 
 ```bash
-npx hero-vibe-kit init --yes --preset small-team --profile coding-assistant --surface fullstack --verify pragmatic --skip-integrations
+npx hero-vibe-kit init --yes --preset small-team --profile coding-assistant --surface fullstack --verify pragmatic --ide cursor --skip-integrations
 ```
 
 ## What `init` installs
@@ -55,6 +55,11 @@ your-project/
     settings.json    # hooks merged into existing settings, not clobbered
     hooks/           # git-guard.cjs, stop-reminder.cjs
     skills/          # selected bundled process skills for the active profile/surface
+  .cursor/
+    hooks.json       # beforeShellExecution + stop hooks for Cursor
+    hooks/           # git-guard.cjs, stop-reminder.cjs (shared logic)
+    rules/           # hero-vibe-kit.mdc always-on workflow rule
+    skills/          # same selected bundled process skills as .claude/skills/
   .hero-vibe-kit/
     config.json      # preset, branching, profile, surface, verification, integrations
 ```
@@ -73,13 +78,15 @@ your-project/
 | Assistance profile | `vibecode`, `coding-assistant` | Chooses high-agency AI execution vs developer-led collaboration. |
 | Project surface | `fullstack`, `backend`, `frontend` | Tunes routing, checks, and selected skills to the project shape. |
 | Verification level | `strict`, `pragmatic`, `minimal` | Controls evidence requirements without encouraging false completion claims. |
+| IDE target | `claude-code`, `cursor`, `both` | Chooses which assistant surfaces to install (interactive prompt if omitted). |
 
-Defaults for `--yes` are:
+Defaults for `--yes` (with required `--ide`):
 
 ```text
 profile: coding-assistant
 surface: fullstack
 verify : pragmatic
+ide    : (required — pass --ide claude-code | cursor | both)
 ```
 
 ### Vibecode
@@ -149,7 +156,7 @@ Full details live in `docs/AGENCY_WORKFLOW.md`, the single source of truth for r
 | GitNexus | Code-intelligence CLI/MCP | Offers `npx gitnexus analyze` | Optional |
 | Serena | Semantic code-intelligence MCP | Detects existing `.serena/` and can seed pointer notes | Optional |
 
-Required: Node.js 18+ and Claude Code. Everything else is optional.
+Required: Node.js 18+ and Claude Code **or** Cursor. Everything else is optional.
 
 ## Commands
 
@@ -170,6 +177,7 @@ Flags:
 --profile vibecode|coding-assistant
 --surface fullstack|backend|frontend
 --verify strict|pragmatic|minimal
+--ide claude-code|cursor|both
 --name <name>
 --yes
 --skip-integrations
@@ -187,10 +195,11 @@ Flags:
 Remove:
 
 - framework docs under `docs/`,
-- `.claude/hooks/*` and the hook block in `.claude/settings.json`,
+- `.claude/hooks/*` and the hook block in `.claude/settings.json` (if used),
+- `.cursor/hooks/*`, `.cursor/hooks.json`, and `.cursor/rules/hero-vibe-kit.mdc` (if used),
 - the managed blocks in `CLAUDE.md` and `AGENTS.md`,
 - `.hero-vibe-kit/`,
-- bundled skills under `.claude/skills/` that you no longer want.
+- bundled skills under `.claude/skills/` and `.cursor/skills/` that you no longer want.
 
 Review before deleting skill directories because some may be user-added or intentionally retained.
 

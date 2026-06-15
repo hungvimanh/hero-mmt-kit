@@ -10,7 +10,7 @@ const BIN = path.join(__dirname, '..', 'bin', 'hero-vibe-kit.js');
 const PROCESS_SKILLS = require(path.join(__dirname, '..', 'skills.manifest.json')).groups.process.skills.map((s) => s.name);
 function cli(args, opts) { return spawnSync('node', [BIN, ...args], Object.assign({ encoding: 'utf8' }, opts)); }
 function mkdir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-')); }
-function hasSkill(dir, name) { return fs.existsSync(path.join(dir, '.claude', 'skills', name, 'SKILL.md')); }
+function hasSkill(dir, name, rel = '.claude/skills') { return fs.existsSync(path.join(dir, rel, name, 'SKILL.md')); }
 function allFiles(dir) {
   const out = [];
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -29,10 +29,12 @@ function replaceManagedBlock(text, replacement) {
 
 test('init new project: files + no leftover placeholders + doctor passes', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'SmokeApp']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'SmokeApp', '--ide', 'both']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
+    '.cursor/hooks.json', '.cursor/hooks/git-guard.cjs', '.cursor/hooks/stop-reminder.cjs',
+    '.cursor/rules/hero-vibe-kit.mdc',
     '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
     'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/PHASE_HANDOFF_PROTOCOL.md',
@@ -40,7 +42,10 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     'docs/templates/DESIGN_BRIEF.md',
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
     '.claude/skills/dispatching-parallel-agents/SKILL.md', '.claude/skills/subagent-driven-development/SKILL.md',
-    '.claude/skills/phase-handoff/SKILL.md']) {
+    '.claude/skills/phase-handoff/SKILL.md',
+    '.cursor/skills/NOTICE', '.cursor/skills/brainstorming/SKILL.md',
+    '.cursor/skills/dispatching-parallel-agents/SKILL.md', '.cursor/skills/subagent-driven-development/SKILL.md',
+    '.cursor/skills/phase-handoff/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
   // vendored skills carry MIT attribution; default Coding Assistant installs a selected subset
@@ -50,6 +55,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.ok(!hasSkill(dir, 'requesting-code-review'), 'default pragmatic Coding Assistant should not install review skill');
   assert.ok(!hasSkill(dir, 'using-git-worktrees'), 'default pragmatic Coding Assistant should not install worktree skill');
   assert.ok(!hasSkill(dir, 'finishing-a-development-branch'), 'default pragmatic Coding Assistant should not install branch finishing skill');
+  assert.ok(hasSkill(dir, 'brainstorming', '.cursor/skills'), 'cursor skills should mirror claude selection');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'en')), 'consumer docs should not include duplicate en tree');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'vi')), 'consumer docs should not include duplicate vi tree');
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
@@ -99,8 +105,15 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
 
   const settings = JSON.parse(fs.readFileSync(path.join(dir, '.claude', 'settings.json'), 'utf8'));
   assert.ok(JSON.stringify(settings.hooks).includes('git-guard.cjs'));
+  const cursorHooks = JSON.parse(fs.readFileSync(path.join(dir, '.cursor', 'hooks.json'), 'utf8'));
+  assert.ok(JSON.stringify(cursorHooks.hooks).includes('git-guard.cjs'));
+  const cursorRule = fs.readFileSync(path.join(dir, '.cursor', 'rules', 'hero-vibe-kit.mdc'), 'utf8');
+  assert.match(cursorRule, /alwaysApply: true/);
+  assert.match(cursorRule, /SmokeApp/);
+  assert.match(cursorRule, /Plan mode/);
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
   assert.strictEqual(config.projectName, 'SmokeApp');
+  assert.deepStrictEqual(config.ideTargets, ['claude-code', 'cursor']);
   assert.ok(!Object.prototype.hasOwnProperty.call(config, 'lang'), 'new config should not include lang');
 
   const doc = cli(['doctor', '--dir', dir]);
@@ -116,7 +129,7 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE\n');
   fs.writeFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'CUSTOM DISCOVERY\n');
 
-  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy']).status, 0);
+  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy', '--ide', 'both']).status, 0);
   let claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
   assert.strictEqual((claude.match(/hero-vibe-kit:start/g) || []).length, 1);
@@ -124,12 +137,15 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   assert.match(fs.readFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'utf8'), /CUSTOM DISCOVERY/);
 
   // idempotent second run
-  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy']).status, 0);
+  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy', '--ide', 'both']).status, 0);
   claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.strictEqual((claude.match(/hero-vibe-kit:start/g) || []).length, 1, 'block not duplicated');
   const settings = JSON.parse(fs.readFileSync(path.join(dir, '.claude', 'settings.json'), 'utf8'));
   const ggCount = (JSON.stringify(settings.hooks).match(/git-guard\.cjs/g) || []).length;
   assert.strictEqual(ggCount, 1, 'hook not duplicated');
+  const cursorHooks = JSON.parse(fs.readFileSync(path.join(dir, '.cursor', 'hooks.json'), 'utf8'));
+  const cursorGgCount = (JSON.stringify(cursorHooks.hooks).match(/git-guard\.cjs/g) || []).length;
+  assert.strictEqual(cursorGgCount, 1, 'cursor hook not duplicated');
 
   fs.writeFileSync(
     path.join(dir, 'CLAUDE.md'),
@@ -174,13 +190,14 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
 
 test('init --yes writes default assistance profile config and docs', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'ProfileDefault']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'ProfileDefault', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
   assert.strictEqual(config.assistanceProfile, 'coding-assistant');
   assert.strictEqual(config.projectSurface, 'fullstack');
   assert.strictEqual(config.verificationLevel, 'pragmatic');
+  assert.deepStrictEqual(config.ideTargets, ['claude-code']);
 
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /Active assistance profile: Coding Assistant/);
@@ -196,7 +213,7 @@ test('init --yes writes default assistance profile config and docs', () => {
 
 test('init accepts vibecode backend flags and derives strict verification', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'VibeBackend', '--profile', 'vibecode', '--surface', 'backend']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'VibeBackend', '--profile', 'vibecode', '--surface', 'backend', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
@@ -213,7 +230,7 @@ test('init accepts vibecode backend flags and derives strict verification', () =
 
 test('init accepts coding assistant frontend minimal verification flags', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'FrontAssist', '--profile', 'coding-assistant', '--surface', 'frontend', '--verify', 'minimal']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'FrontAssist', '--profile', 'coding-assistant', '--surface', 'frontend', '--verify', 'minimal', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
@@ -229,9 +246,34 @@ test('init accepts coding assistant frontend minimal verification flags', () => 
   }
 });
 
+test('init --yes without --ide fails before writing config', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'NoIde']);
+  assert.notStrictEqual(r.status, 0);
+  assert.match(r.stderr + r.stdout, /requires --ide/i);
+  assert.ok(!fs.existsSync(path.join(dir, '.hero-vibe-kit', 'config.json')));
+});
+
+test('init --ide cursor installs cursor surfaces only', () => {
+  const dir = mkdir();
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'CursorOnly', '--ide', 'cursor']);
+  assert.strictEqual(r.status, 0, r.stderr);
+
+  assert.ok(fs.existsSync(path.join(dir, '.cursor', 'rules', 'hero-vibe-kit.mdc')));
+  assert.ok(fs.existsSync(path.join(dir, '.cursor', 'skills', 'brainstorming', 'SKILL.md')));
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'settings.json')));
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'brainstorming', 'SKILL.md')));
+
+  const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
+  assert.deepStrictEqual(config.ideTargets, ['cursor']);
+
+  const doc = cli(['doctor', '--dir', dir]);
+  assert.strictEqual(doc.status, 0, 'doctor should pass for cursor-only: ' + doc.stdout + doc.stderr);
+});
+
 test('init rejects invalid profile flags before writing config', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'autopilot']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'autopilot', '--ide', 'claude-code']);
   assert.notStrictEqual(r.status, 0);
   assert.match(r.stderr + r.stdout, /Invalid --profile: autopilot/);
   assert.ok(!fs.existsSync(path.join(dir, '.hero-vibe-kit', 'config.json')), 'config should not be written after invalid flags');
@@ -239,7 +281,7 @@ test('init rejects invalid profile flags before writing config', () => {
 
 test('update backfills profile fields and accepts overrides', () => {
   const dir = mkdir();
-  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Migrated']);
+  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Migrated', '--ide', 'claude-code']);
   assert.strictEqual(init.status, 0, init.stderr);
 
   const configPath = path.join(dir, '.hero-vibe-kit', 'config.json');

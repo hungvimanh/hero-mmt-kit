@@ -5,7 +5,8 @@ const { log, ensureDir, exists, backup, writeJSON, makeAsker } = require('./util
 const { detect } = require('./detect.cjs');
 const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
-const { collectProfileConfig, buildProfileVars } = require('./profile-config.cjs');
+const { collectProfileConfig, buildProfileVars, skillDestinations } = require('./profile-config.cjs');
+const { installCursor } = require('./cursor.cjs');
 
 const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
 const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
@@ -51,6 +52,9 @@ async function init(opts) {
     BRANCHING_MODEL: BRANCH_LABELS[cfg.branchingModel] || cfg.branchingModel,
   }, buildProfileVars(cfg));
 
+  const ideTargets = cfg.ideTargets || [];
+  const skillDirs = skillDestinations(ideTargets);
+
   // ---- 1. docs ----
   const srcDocs = path.join(templates, 'docs');
   let docCount = 0, keptActiveState = false;
@@ -71,19 +75,27 @@ async function init(opts) {
   log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, cfg.projectName)}`);
   log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
-  // ---- 3. hooks + settings ----
-  ensureDir(path.join(target, '.claude', 'hooks'));
-  for (const h of ['git-guard.cjs', 'stop-reminder.cjs']) {
-    fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
+  // ---- 3. Claude Code hooks + settings ----
+  if (ideTargets.includes('claude-code')) {
+    ensureDir(path.join(target, '.claude', 'hooks'));
+    for (const h of ['git-guard.cjs', 'stop-reminder.cjs']) {
+      fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
+    }
+    mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
+    log.ok('Claude  : git-guard + stop-reminder → .claude/hooks; settings.json merged');
   }
-  mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
-  log.ok('Hooks   : git-guard + stop-reminder installed; settings.json merged');
 
-  // ---- 3b. selected vendored core skills (native .claude/skills, no `skills` CLI needed) ----
+  // ---- 3a. Cursor rules + hooks ----
+  if (ideTargets.includes('cursor')) {
+    installCursor(pkgRoot, target, vars);
+    log.ok('Cursor  : rule + git-guard + stop-reminder → .cursor/');
+  }
+
+  // ---- 3b. selected vendored core skills ----
   const skills = require('./skills.cjs');
   const selectedSkills = skills.selectProcessSkills(cfg);
-  const sk = skills.installSkills(pkgRoot, target, { selectedSkills });
-  log.ok(`Skills  : ${sk.skills} selected core skill(s) → .claude/skills/ (bundled)`);
+  const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
+  log.ok(`Skills  : ${sk.skills} selected core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
 
   // ---- 4. config ----
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
@@ -100,7 +112,12 @@ async function init(opts) {
 
   log.title('Next steps');
   console.log('  1. Review docs/AGENCY_WORKFLOW.md (single source of truth).');
-  console.log('  2. Restart Claude Code (or run /hooks) to activate the git-guard + stop-reminder hooks.');
+  if (ideTargets.includes('claude-code')) {
+    console.log('  2. Restart Claude Code (or run /hooks) to activate .claude hooks.');
+  }
+  if (ideTargets.includes('cursor')) {
+    console.log('  2. Restart Cursor (or reload hooks) to activate .cursor/hooks.json.');
+  }
   console.log('  3. Fill <TBD> in DEFINITION_OF_DONE / SECURITY_STANDARDS / PERFORMANCE_STANDARDS when you pick a stack.');
   console.log('  4. Run: npx hero-vibe-kit doctor');
 }

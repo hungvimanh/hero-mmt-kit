@@ -20,7 +20,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`hero-vibe-kit — AI-assisted development workflow for Claude Code
+  console.log(`hero-vibe-kit — AI-assisted development workflow for Claude Code and Cursor
 
 Usage: npx hero-vibe-kit <command> [flags]
 
@@ -40,10 +40,11 @@ Flags:
   --profile <name>      Assistance profile: vibecode | coding-assistant
   --surface <name>      Project surface: fullstack | backend | frontend
   --verify <level>      Verification level: strict | pragmatic | minimal
+  --ide <target>        IDE target: claude-code | cursor | both (required with --yes)
   --yes                 Non-interactive; accept defaults
   --skip-integrations   Skip skills / gitnexus / serena prompts
 
-Assistance profile, project surface, and verification level tune the installed workflow guidance.`);
+Assistance profile, project surface, verification level, and IDE target tune the installed workflow guidance.`);
 }
 
 async function main() {

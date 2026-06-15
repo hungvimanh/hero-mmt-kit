@@ -3,6 +3,8 @@
 const PROFILES = ['vibecode', 'coding-assistant'];
 const SURFACES = ['fullstack', 'backend', 'frontend'];
 const VERIFY_LEVELS = ['strict', 'pragmatic', 'minimal'];
+const IDE_TARGETS = ['claude-code', 'cursor'];
+const IDE_CHOICES = ['claude-code', 'cursor', 'both'];
 
 const DEFAULTS = {
   assistanceProfile: 'coding-assistant',
@@ -28,14 +30,49 @@ function invalidFlag(name, value, expected) {
   throw new Error(`Invalid --${name}: ${value}. Expected one of: ${expected.join(', ')}.`);
 }
 
+function invalidIdeTargets(value) {
+  throw new Error(`Invalid --ide: ${value}. Expected one of: claude-code, cursor, both.`);
+}
+
+function normalizeIdeTargets(value) {
+  if (value === 'both') return IDE_TARGETS.slice();
+  if (IDE_TARGETS.includes(value)) return [value];
+  invalidIdeTargets(value);
+}
+
+function resolveIdeTargets(input, flags, opts) {
+  input = input || {};
+  flags = flags || {};
+  opts = opts || {};
+  if (Object.prototype.hasOwnProperty.call(flags, 'ide')) return normalizeIdeTargets(flags.ide);
+  if (Array.isArray(input.ideTargets) && input.ideTargets.length) {
+    const out = [];
+    for (const item of input.ideTargets) {
+      if (!IDE_TARGETS.includes(item)) invalidIdeTargets(item);
+      if (!out.includes(item)) out.push(item);
+    }
+    if (out.length) return out;
+  }
+  if (opts.requireExplicit) return null;
+  return ['claude-code'];
+}
+
+function skillDestinations(ideTargets) {
+  const dests = [];
+  if (ideTargets.includes('claude-code')) dests.push('.claude/skills');
+  if (ideTargets.includes('cursor')) dests.push('.cursor/skills');
+  return dests;
+}
+
 function validate(name, value, expected) {
   if (!expected.includes(value)) invalidFlag(name, value, expected);
   return value;
 }
 
-function normalizeProfileConfig(input, flags) {
+function normalizeProfileConfig(input, flags, opts) {
   input = input || {};
   flags = flags || {};
+  opts = opts || {};
 
   const hasProfileFlag = Object.prototype.hasOwnProperty.call(flags, 'profile');
   const hasSurfaceFlag = Object.prototype.hasOwnProperty.call(flags, 'surface');
@@ -62,10 +99,16 @@ function normalizeProfileConfig(input, flags) {
   }
   verificationLevel = validate('verify', verificationLevel, VERIFY_LEVELS);
 
+  const ideTargets = resolveIdeTargets(input, flags, { requireExplicit: opts.requireExplicitIde });
+  if (!ideTargets) {
+    throw new Error('IDE target is required. Use --ide claude-code | cursor | both, or run init interactively.');
+  }
+
   return Object.assign({}, input, {
     assistanceProfile,
     projectSurface,
     verificationLevel,
+    ideTargets,
   });
 }
 
@@ -86,8 +129,15 @@ async function collectProfileConfig(input, flags, ask, auto) {
       ? DEFAULTS.projectSurface
       : await ask.choice('Project surface:', SURFACES, SURFACES.indexOf(DEFAULTS.projectSurface));
   }
+  if (!Object.prototype.hasOwnProperty.call(promptFlags, 'ide') && !collected.ideTargets) {
+    if (auto) {
+      throw new Error('Non-interactive init requires --ide (claude-code | cursor | both).');
+    }
+    const idx = await ask.choice('IDE target:', IDE_CHOICES, 0);
+    promptFlags.ide = IDE_CHOICES[idx];
+  }
 
-  return normalizeProfileConfig(collected, promptFlags);
+  return normalizeProfileConfig(collected, promptFlags, { requireExplicitIde: false });
 }
 
 function buildProfileVars(cfg) {
@@ -104,6 +154,8 @@ module.exports = {
   PROFILES,
   SURFACES,
   VERIFY_LEVELS,
+  IDE_TARGETS,
+  IDE_CHOICES,
   DEFAULTS,
   PROFILE_LABELS,
   SURFACE_LABELS,
@@ -111,4 +163,6 @@ module.exports = {
   normalizeProfileConfig,
   collectProfileConfig,
   buildProfileVars,
+  resolveIdeTargets,
+  skillDestinations,
 };

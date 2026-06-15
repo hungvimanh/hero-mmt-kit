@@ -90,7 +90,7 @@ function sourceEntries(src, selectedSkills) {
 }
 
 // Install vendored core skills (templates/skills/<name>/) into the consumer's
-// native Claude Code skills dir (.claude/skills/<name>/). Framework-managed:
+// native skills dirs (.claude/skills/ and/or .cursor/skills/). Framework-managed:
 // overwrites selected framework skill dirs and the NOTICE file, but never deletes
 // skill dirs the user added or skills not selected for the active profile.
 function installSkills(pkgRoot, target, opts) {
@@ -98,7 +98,7 @@ function installSkills(pkgRoot, target, opts) {
   const src = path.join(pkgRoot, 'templates', 'skills');
   if (!exists(src)) return { skills: 0, files: 0, selectedSkills: [] };
   const selectedSkills = opts.selectedSkills ? uniqueCoreSkills(opts.selectedSkills) : null;
-  const dstRoot = path.join(target, '.claude', 'skills');
+  const destinations = opts.destinations || ['.claude/skills'];
   let skills = 0, files = 0;
   const installed = [];
 
@@ -109,17 +109,20 @@ function installSkills(pkgRoot, target, opts) {
     }
   }
 
-  for (const entry of sourceEntries(src, selectedSkills)) {
-    if (entry.isDirectory()) {
-      const dstDir = path.join(dstRoot, entry.name);
-      if (selectedSkills && exists(dstDir)) fs.rmSync(dstDir, { recursive: true, force: true });
-      files += copyTree(path.join(src, entry.name), dstDir);
-      installed.push(entry.name);
-      skills++;
-    } else {
-      ensureDir(dstRoot);
-      fs.copyFileSync(path.join(src, entry.name), path.join(dstRoot, entry.name));
-      files++;
+  for (const rel of destinations) {
+    const dstRoot = path.join(target, rel);
+    for (const entry of sourceEntries(src, selectedSkills)) {
+      if (entry.isDirectory()) {
+        const dstDir = path.join(dstRoot, entry.name);
+        if (selectedSkills && exists(dstDir)) fs.rmSync(dstDir, { recursive: true, force: true });
+        files += copyTree(path.join(src, entry.name), dstDir);
+        if (!installed.includes(entry.name)) installed.push(entry.name);
+        skills = Math.max(skills, installed.length);
+      } else {
+        ensureDir(dstRoot);
+        fs.copyFileSync(path.join(src, entry.name), path.join(dstRoot, entry.name));
+        files++;
+      }
     }
   }
   return { skills, files, selectedSkills: selectedSkills || installed };

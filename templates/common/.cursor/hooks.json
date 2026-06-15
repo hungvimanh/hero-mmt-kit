@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/git-guard.cjs",
+        "matcher": "\\bgit\\b"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/stop-reminder.cjs"
+      }
+    ]
+  }
+}

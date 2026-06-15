@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 /*
- * PreToolUse hook (matcher: Bash) — mixed enforcement.
- * BLOCKS dangerous git commands (exit 2, stderr -> Claude).
+ * Shell git guard — mixed enforcement for Claude Code and Cursor.
+ * Claude Code: PreToolUse (matcher: Bash) — { tool_name, tool_input:{command} }
+ * Cursor: beforeShellExecution — { command, ... }
+ * BLOCKS dangerous git commands (exit 2; Cursor also emits permission: deny JSON).
  * REMINDS on commits without blocking (exit 0, stderr -> user).
- * Reads JSON from stdin using the Claude Code hook schema: { tool_name, tool_input:{command} }.
  * Process references: docs/AGENCY_WORKFLOW.md, docs/BRANCHING.md, docs/DEFINITION_OF_DONE.md
  */
 let raw = '';
@@ -13,11 +14,20 @@ process.stdin.on('end', () => {
   let payload = {};
   try { payload = JSON.parse(raw || '{}'); } catch (_) { process.exit(0); }
 
-  if (payload.tool_name !== 'Bash') process.exit(0);
-  const cmd = String((payload.tool_input && payload.tool_input.command) || '');
+  const cmd = extractCommand(payload);
+  if (!cmd) process.exit(0);
+  if (payload.tool_name && payload.tool_name !== 'Bash') process.exit(0);
   if (!/\bgit\b/.test(cmd)) process.exit(0);
 
-  const block = (msg) => { console.error('⛔ [git-guard] ' + msg); process.exit(2); };
+  const cursor = isCursorPayload(payload);
+  const block = (msg) => {
+    console.error('⛔ [git-guard] ' + msg);
+    if (cursor) {
+      const body = JSON.stringify({ permission: 'deny', user_message: msg, agent_message: msg });
+      process.stdout.write(body);
+    }
+    process.exit(2);
+  };
 
   const isPush = /\bpush\b/.test(cmd);
   const isCommit = /\bcommit\b/.test(cmd);
@@ -51,5 +61,18 @@ process.stdin.on('end', () => {
       '(3) Conventional Commits message? — see docs/DEFINITION_OF_DONE.md');
   }
 
+  if (cursor) process.stdout.write(JSON.stringify({ permission: 'allow' }));
   process.exit(0);
 });
+
+function extractCommand(payload) {
+  if (payload.tool_input && payload.tool_input.command) return String(payload.tool_input.command);
+  if (payload.command) return String(payload.command);
+  return '';
+}
+
+function isCursorPayload(payload) {
+  if (payload.command) return true;
+  if (payload.hook_event_name === 'beforeShellExecution') return true;
+  return false;
+}

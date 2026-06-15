@@ -12,6 +12,7 @@ test('profile config defaults to coding assistant fullstack pragmatic', () => {
   assert.strictEqual(cfg.assistanceProfile, 'coding-assistant');
   assert.strictEqual(cfg.projectSurface, 'fullstack');
   assert.strictEqual(cfg.verificationLevel, 'pragmatic');
+  assert.deepStrictEqual(cfg.ideTargets, ['claude-code']);
 });
 
 test('vibecode defaults verification to strict', () => {
@@ -88,5 +89,22 @@ test('invalid verification values fail clearly', () => {
   assert.throws(
     () => normalizeProfileConfig({}, { verify: 'exhaustive' }),
     /Invalid --verify: exhaustive\. Expected one of: strict, pragmatic, minimal\./
+  );
+});
+
+test('ide flag selects a single target', () => {
+  const cfg = normalizeProfileConfig({}, { ide: 'cursor' });
+  assert.deepStrictEqual(cfg.ideTargets, ['cursor']);
+});
+
+test('ide both expands to claude-code and cursor', () => {
+  const cfg = normalizeProfileConfig({}, { ide: 'both' });
+  assert.deepStrictEqual(cfg.ideTargets, ['claude-code', 'cursor']);
+});
+
+test('invalid ide values fail clearly', () => {
+  assert.throws(
+    () => normalizeProfileConfig({}, { ide: 'vscode' }),
+    /Invalid --ide: vscode\. Expected one of: claude-code, cursor, both\./
   );
 });
