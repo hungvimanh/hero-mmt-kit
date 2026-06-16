@@ -57,7 +57,7 @@ async function update(opts) {
 
   if (ideTargets.includes('claude-code')) {
     ensureDir(path.join(target, '.claude', 'hooks'));
-    for (const h of ['git-guard.cjs', 'stop-reminder.cjs']) {
+    for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'workflow-check.cjs']) {
       fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
     }
     mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));

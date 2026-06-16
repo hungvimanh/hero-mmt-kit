@@ -5,7 +5,7 @@ const { ensureDir, exists, backup } = require('./util.cjs');
 const { renderString } = require('./render.cjs');
 const { mergeCursorHooks } = require('./merge.cjs');
 
-const HOOK_FILES = ['git-guard.cjs', 'stop-reminder.cjs'];
+const HOOK_FILES = ['git-guard.cjs', 'stop-reminder.cjs', 'workflow-check.cjs'];
 const RULE_FILE = 'hero-vibe-kit.mdc';
 
 function hookSourceDir(pkgRoot) {

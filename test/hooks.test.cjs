@@ -2,10 +2,13 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 const GUARD = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'git-guard.cjs');
 const STOP = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'stop-reminder.cjs');
+const WC = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'workflow-check.cjs');
 
 function run(script, payload) {
   const r = spawnSync('node', [script], { input: JSON.stringify(payload), encoding: 'utf8' });
@@ -30,3 +33,56 @@ test('safe on invalid json', () => { const r = spawnSync('node', [GUARD], { inpu
 test('cursor payload allows git status', () => { const r = run(GUARD, shell('git status')); assert.strictEqual(r.code, 0); });
 test('stop-reminder claude loop guard exits 0', () => { assert.strictEqual(run(STOP, { hook_event_name: 'Stop', stop_hook_active: true, cwd: process.cwd() }).code, 0); });
 test('stop-reminder cursor loop guard exits 0', () => { assert.strictEqual(run(STOP, { hook_event_name: 'stop', loop_count: 1, cwd: process.cwd() }).code, 0); });
+
+// workflow-check tests
+function tmpWithSession(session) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-wc-'));
+  fs.mkdirSync(path.join(dir, '.hero-vibe-kit'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), JSON.stringify(session));
+  return dir;
+}
+const wcBash = (command, cwd) => ({ tool_name: 'Bash', tool_input: { command }, cwd });
+const wcCursor = (command, cwd) => ({ command, cwd });
+
+test('workflow-check: non-commit command exits 0', () => {
+  assert.strictEqual(run(WC, wcBash('git status', process.cwd())).code, 0);
+});
+test('workflow-check: missing session exits 0 (fail-safe)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-wc-'));
+  assert.strictEqual(run(WC, wcBash('git commit -m test', dir)).code, 0);
+});
+test('workflow-check: malformed json exits 0 (fail-safe)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-wc-'));
+  fs.mkdirSync(path.join(dir, '.hero-vibe-kit'));
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), 'not json');
+  assert.strictEqual(run(WC, wcBash('git commit -m test', dir)).code, 0);
+});
+test('workflow-check: fast path exits 0', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'fast', mode: null });
+  assert.strictEqual(run(WC, wcBash('git commit -m test', dir)).code, 0);
+});
+test('workflow-check: tiny mode exits 0', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: null, mode: 'tiny' });
+  assert.strictEqual(run(WC, wcBash('git commit -m test', dir)).code, 0);
+});
+test('workflow-check: standard path without checkpoint exits 2', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'standard', mode: 'standard', reportSlug: null });
+  // Need a real git repo so git status --porcelain succeeds
+  spawnSync('git', ['init'], { cwd: dir, encoding: 'utf8' });
+  spawnSync('git', ['commit', '--allow-empty', '-m', 'init'], { cwd: dir, encoding: 'utf8' });
+  const r = run(WC, wcBash('git commit -m test', dir));
+  assert.strictEqual(r.code, 2);
+  assert.match(r.err, /⛔/);
+});
+test('workflow-check: HVK_SKIP_STATE_GATE=1 override exits 0', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'standard', mode: 'standard' });
+  const r = spawnSync('node', [WC], {
+    input: JSON.stringify(wcBash('git commit -m test', dir)),
+    encoding: 'utf8',
+    env: Object.assign({}, process.env, { HVK_SKIP_STATE_GATE: '1' }),
+  });
+  assert.strictEqual(r.status, 0);
+});
+test('workflow-check: cursor non-commit exits 0', () => {
+  assert.strictEqual(run(WC, wcCursor('git status', process.cwd())).code, 0);
+});

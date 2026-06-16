@@ -5,6 +5,10 @@
       {
         "command": "node .cursor/hooks/git-guard.cjs",
         "matcher": "\\bgit\\b"
+      },
+      {
+        "command": "node .cursor/hooks/workflow-check.cjs",
+        "matcher": "\\bgit\\b.*\\bcommit\\b"
       }
     ],
     "stop": [
