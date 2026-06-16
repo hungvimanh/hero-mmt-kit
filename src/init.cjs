@@ -7,6 +7,7 @@ const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
 const { collectProfileConfig, buildProfileVars, skillDestinations } = require('./profile-config.cjs');
 const { installCursor } = require('./cursor.cjs');
+const { defaultSession } = require('./workflow-state.cjs');
 
 const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
 const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
@@ -97,9 +98,23 @@ async function init(opts) {
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
   log.ok(`Skills  : ${sk.skills} selected core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
 
-  // ---- 4. config ----
+  // ---- 4. config + session state ----
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
   log.ok('Config  : .hero-vibe-kit/config.json');
+
+  const sessionPath = path.join(target, '.hero-vibe-kit', 'session.json');
+  if (!exists(sessionPath)) {
+    writeJSON(sessionPath, defaultSession());
+    log.ok('Session : .hero-vibe-kit/session.json (seeded)');
+  } else {
+    log.ok('Session : .hero-vibe-kit/session.json (preserved)');
+  }
+
+  const schemaSrc = path.join(pkgRoot, 'templates', '.hero-vibe-kit', 'session.schema.json');
+  if (exists(schemaSrc)) {
+    const schemaDest = path.join(target, '.hero-vibe-kit', 'session.schema.json');
+    if (!exists(schemaDest)) fs.copyFileSync(schemaSrc, schemaDest);
+  }
 
   // ---- 5. optional integrations ----
   if (!flags['skip-integrations']) {

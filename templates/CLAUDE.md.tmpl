@@ -10,7 +10,7 @@
 
 ### Context loading
 - **Always start with:** [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md) for routing, gates, sub-agents, and path-specific requirements.
-- **Resume / durable state:** read [ACTIVE_STATE](docs/ACTIVE_STATE.md) when resuming work or changing durable task state.
+- **Resume (fast path):** read `.hero-vibe-kit/session.json` first → then the `resumePath` it names → then the latest handoff only if needed. Read [ACTIVE_STATE](docs/ACTIVE_STATE.md) only to switch work items or when session is blank/stale.
 - **Artifacts:** read [ARTIFACTS_AND_STORAGE](docs/ARTIFACTS_AND_STORAGE.md) only when creating/linking PRDs, plans, reports, design assets, or help content.
 - **Completion:** read [DEFINITION_OF_DONE](docs/DEFINITION_OF_DONE.md) before claiming done.
 - **Read on demand:** [BRANCHING](docs/BRANCHING.md), [TEAM_ROSTER](docs/TEAM_ROSTER.md), [COMMUNICATION_PROTOCOL](docs/COMMUNICATION_PROTOCOL.md), [SECURITY_STANDARDS](docs/SECURITY_STANDARDS.md), [PERFORMANCE_STANDARDS](docs/PERFORMANCE_STANDARDS.md), [DESIGN_STANDARDS](docs/DESIGN_STANDARDS.md), [BROWNFIELD_DISCOVERY](docs/BROWNFIELD_DISCOVERY.md), and templates under `docs/templates/` only when the selected path requires them.

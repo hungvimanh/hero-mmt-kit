@@ -6,7 +6,8 @@
 
 | Information | Primary storage | Purpose | Notes |
 |---|---|---|---|
-| Durable workflow state | `docs/ACTIVE_STATE.md` | Cross-session backlog and resume state | Update when a feature starts, changes phase/status, blocks, or finishes. |
+| Durable workflow state | `docs/ACTIVE_STATE.md` | Cross-session backlog and resume state (index of active items; completed work archived to reports). | Update when a feature starts, changes phase/status, blocks, or finishes. |
+| Session pointer (hot path) | `.hero-vibe-kit/session.json` | Current path/phase/gate/resumePath/nextAction — written by `phase-handoff` at real boundaries. Read first on resume (~200 tokens); then `resumePath`; then latest handoff. **Derived from artifacts — not authoritative.** | Do not hand-edit. `doctor` validates and reports drift vs handoffs. |
 | PRD / scope | `docs/specs/YYYY-MM-DD-<slug>.md` | Requirements, acceptance criteria, decision log, assumptions | Required for Full path; optional for Standard when scope is complex. |
 | Technical plan / TDD | `docs/plans/YYYY-MM-DD-<slug>.md` | Architecture, API/interface contract, task breakdown, risk plan | Required for Standard/Full gated work. |
 | Impact analysis | `docs/reports/YYYY-MM-DD-<slug>/impact.md` | Blast radius, affected flows, risk level | Required for Standard changes to existing code and refactors. |

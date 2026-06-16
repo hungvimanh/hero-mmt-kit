@@ -29,12 +29,15 @@ Keep here:
 Do not paste long investigation notes, transcripts, screenshots, logs, PRDs, or completed reports here. Summarize in 1–2 lines and link the source. When work is no longer active, archive durable details under `docs/reports/` (or the canonical artifact path) and replace the table entry with a short link if future agents may need it.
 
 ## Session Resume Protocol
-*An AI starting or resuming tracked work READS this section:*
-1. Read [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) for the router & paths.
-2. Read [ARTIFACTS_AND_STORAGE.md](./ARTIFACTS_AND_STORAGE.md) only if you need artifact locations for PRDs, TDDs, reports, design assets, or help content.
-3. Look at the "Active Features" table above + any **open MRs** (`git branch`, MR list) — do NOT rely on the previous session's TaskList (it's gone).
-4. By each feature's path & phase:
-   - **Read-only/Fast**: continue/finish then open the MR.
-   - **Standard/Full at Phase 1–2**: continue brainstorming/planning with the user (via the Plan Mode gate).
-   - **Standard/Full at Phase 3–4**: open only the linked PRD/TDD/reports needed for the current step, check code & branch status, recreate tasks with `TaskCreate`, ask the user before resuming code/test.
-5. Update this table when durable work state changes.
+
+`session.json` vs `ACTIVE_STATE.md`:
+- `.hero-vibe-kit/session.json` — a small derived pointer (path, phase, resumePath, nextAction). Read it first on resume; it is the fast path.
+- `ACTIVE_STATE.md` — the durable backlog index. Read it when switching work items or when session.json is absent/stale.
+
+*An AI starting or resuming tracked work READS in this order:*
+1. **Read `.hero-vibe-kit/session.json`** (~200 tokens) → get `workItem`, `phase`, `resumePath`, `nextAction`. If populated and not stale, go directly to step 2a.
+2a. **Read the `resumePath`** it names (one `resume.md`) → concrete next action + read-first list.
+2b. **Read the latest handoff** under `docs/reports/<reportSlug>/handoffs/` only if `resume.md` is insufficient.
+3. **Only if you need to switch work or session.json is blank/stale:** read the "Active Features" table above + any **open MRs** (`git branch`, MR list).
+4. Read [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md) (SSOT) for the router & paths when selecting a new path.
+5. Update this table when durable work state changes. When a work item completes, replace the row with a one-line link to `docs/reports/<slug>/resume.md`.

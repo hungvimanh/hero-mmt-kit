@@ -10,8 +10,9 @@ Active operating profile:
 
 Minimum non-negotiables:
 1. Classify the request via the router before acting; don't run heavy workflow for small tasks.
-2. Use Plan Mode for paths with Gates before editing.
-3. Read only the docs needed for the selected path; avoid loading unrelated context.
+2. **Resume (fast path):** read `.hero-vibe-kit/session.json` first → then the `resumePath` it names → then the latest handoff. Read [ACTIVE_STATE](docs/ACTIVE_STATE.md) only to switch work items or when session is blank/stale.
+3. Use Plan Mode for paths with Gates before editing.
+4. Read only the docs needed for the selected path; avoid loading unrelated context.
 4. Framework instructions, skills, rules, and templates are English-only; respond to the user in the same language they use in chat unless they request another language.
 5. Do not bypass hooks, checks, or verification.
 6. Use GitNexus for Standard/Full impact/context analysis when available.

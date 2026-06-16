@@ -13,6 +13,8 @@ node_modules/
 
 # hero-vibe-kit per-project runtime config (created by `init` in a consumer repo)
 .hero-vibe-kit/
+# but track the schema template that ships in the package
+!templates/.hero-vibe-kit/
 
 # OS / editor
 .DS_Store

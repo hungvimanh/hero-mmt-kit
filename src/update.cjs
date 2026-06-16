@@ -6,6 +6,7 @@ const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
 const { normalizeProfileConfig, buildProfileVars, skillDestinations } = require('./profile-config.cjs');
 const { refreshCursor } = require('./cursor.cjs');
+const { defaultSession } = require('./workflow-state.cjs');
 
 const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
 const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
@@ -73,6 +74,13 @@ async function update(opts) {
   const selectedSkills = skills.selectProcessSkills(cfg);
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
   log.ok(`Skills refreshed: ${sk.skills} selected core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
+
+  const sessionPath = path.join(target, '.hero-vibe-kit', 'session.json');
+  if (!exists(sessionPath)) {
+    ensureDir(path.dirname(sessionPath));
+    writeJSON(sessionPath, defaultSession());
+    log.ok('Session : .hero-vibe-kit/session.json (seeded — was missing)');
+  }
 
   const newVer = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8')).version;
   cfg.version = newVer;

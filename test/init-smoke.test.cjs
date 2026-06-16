@@ -35,7 +35,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
     '.cursor/hooks.json', '.cursor/hooks/git-guard.cjs', '.cursor/hooks/stop-reminder.cjs',
     '.cursor/rules/hero-vibe-kit.mdc',
-    '.hero-vibe-kit/config.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
+    '.hero-vibe-kit/config.json', '.hero-vibe-kit/session.json', 'docs/AGENCY_WORKFLOW.md', 'docs/ARTIFACTS_AND_STORAGE.md',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
     'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/PHASE_HANDOFF_PROTOCOL.md',
     'docs/CONTEXT_BUDGET.md', 'docs/HANDOFF_TEMPLATES.md', 'docs/templates/PRD_AI_FEATURE.md',
@@ -115,6 +115,11 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.strictEqual(config.projectName, 'SmokeApp');
   assert.deepStrictEqual(config.ideTargets, ['claude-code', 'cursor']);
   assert.ok(!Object.prototype.hasOwnProperty.call(config, 'lang'), 'new config should not include lang');
+
+  const session = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), 'utf8'));
+  assert.strictEqual(session.schemaVersion, 1, 'session.json must have schemaVersion 1');
+  assert.strictEqual(session.phase, null, 'fresh session phase must be null');
+  assert.ok(Object.prototype.hasOwnProperty.call(session, 'loop'), 'session must have loop field');
 
   const doc = cli(['doctor', '--dir', dir]);
   assert.strictEqual(doc.status, 0, 'doctor should pass: ' + doc.stdout + doc.stderr);

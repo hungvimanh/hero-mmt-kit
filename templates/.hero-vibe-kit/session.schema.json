@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "hero-vibe-kit session state",
+  "description": "Observable workflow pointer written by phase-handoff at every real phase boundary. Agents write this; doctor reads it; the commit gate checks it. Authoritative state lives in handoff artifacts and ACTIVE_STATE.md — this file is a derived convenience pointer.",
+  "type": "object",
+  "required": ["schemaVersion"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "workItem": { "type": ["string", "null"], "description": "Slug or identifier of the current work item" },
+    "path": {
+      "type": ["string", "null"],
+      "enum": ["read-only", "fast", "standard", "full", "timeboxed", null],
+      "description": "Active workflow path from AGENCY_WORKFLOW router"
+    },
+    "mode": {
+      "type": ["string", "null"],
+      "enum": ["tiny", "small", "standard", "full", null],
+      "description": "Handoff ceremony mode"
+    },
+    "phase": {
+      "type": ["string", "null"],
+      "enum": ["discovery", "planning", "implementation", "review", "delivery", null],
+      "description": "Current workflow phase"
+    },
+    "reviewBudget": {
+      "type": ["string", "null"],
+      "enum": ["none", "single-combined-review", "targeted-specialist-review", "full-multi-stage-review", null]
+    },
+    "gates": {
+      "type": "object",
+      "properties": {
+        "prd": { "$ref": "#/definitions/gate" },
+        "plan": { "$ref": "#/definitions/gate" }
+      }
+    },
+    "reportSlug": { "type": ["string", "null"], "description": "Directory name under docs/reports/ for this work item" },
+    "canonicalHandoff": { "type": ["string", "null"], "description": "Path to the latest handoff artifact" },
+    "resumePath": { "type": ["string", "null"], "description": "Path to resume.md — the hot-path entry point for fresh sessions" },
+    "nextAction": { "type": ["string", "null"], "description": "First concrete action for the next phase" },
+    "lastCheckpoint": { "type": ["string", "null"], "description": "ISO 8601 timestamp of last session write (reserved)" },
+    "loop": {
+      "type": "object",
+      "properties": {
+        "retryCount": { "type": "integer", "minimum": 0 },
+        "maxRetries": { "type": "integer", "minimum": 1 },
+        "lastAction": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "definitions": {
+    "gate": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "boolean" },
+        "status": {
+          "type": "string",
+          "enum": ["not-applicable", "pending", "approved", "blocked"]
+        },
+        "evidence": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
