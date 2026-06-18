@@ -241,3 +241,46 @@ test('edit-gate: HVK_SKIP_EDIT_GATE=1 overrides block', () => {
   });
   assert.strictEqual(r.status, 0);
 });
+
+const SB = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'session-bridge.cjs');
+const postToolPayload = (cwd) => ({ tool_name: 'Bash', tool_input: { command: 'ls' }, cwd });
+
+test('session-bridge: no session.json exits 0 silently', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-sb-'));
+  fs.mkdirSync(path.join(dir, '.hero-vibe-kit'), { recursive: true });
+  const r = run(SB, postToolPayload(dir));
+  assert.strictEqual(r.code, 0);
+  assert.strictEqual(r.err, '');
+});
+test('session-bridge: injects context to stderr on first call', () => {
+  const dir = egDir(null);
+  const session = { schemaVersion: 1, path: 'standard', phase: 'implementation',
+    workItem: 'TICKET-42', nextAction: 'implement foo',
+    gates: { plan: { required: true, status: 'approved' } } };
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), JSON.stringify(session));
+  const r = run(SB, postToolPayload(dir));
+  assert.strictEqual(r.code, 0);
+  assert.match(r.err, /hero-vibe-kit/);
+  assert.match(r.err, /TICKET-42/);
+  assert.match(r.err, /implementation/);
+  assert.match(r.err, /approved/);
+});
+test('session-bridge: creates flag file after injection', () => {
+  const dir = egDir(null);
+  const session = { schemaVersion: 1, path: 'standard', phase: 'implementation',
+    gates: { plan: { required: true, status: 'approved' } } };
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), JSON.stringify(session));
+  run(SB, postToolPayload(dir));
+  assert.ok(fs.existsSync(path.join(dir, '.hero-vibe-kit', 'session-injected.flag')));
+});
+test('session-bridge: silent on second call when flag exists', () => {
+  const dir = egDir(null);
+  const session = { schemaVersion: 1, path: 'standard', phase: 'implementation',
+    gates: { plan: { required: true, status: 'approved' } } };
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session.json'), JSON.stringify(session));
+  // Create flag manually — simulates second call
+  fs.writeFileSync(path.join(dir, '.hero-vibe-kit', 'session-injected.flag'), '');
+  const r = run(SB, postToolPayload(dir));
+  assert.strictEqual(r.code, 0);
+  assert.strictEqual(r.err, '');
+});
