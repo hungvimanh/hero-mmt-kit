@@ -4,24 +4,35 @@
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/git-guard.cjs"
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/workflow-check.cjs"
-          }
+          { "type": "command", "command": "node .claude/hooks/git-guard.cjs" },
+          { "type": "command", "command": "node .claude/hooks/workflow-check.cjs" }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/edit-gate.cjs" }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/edit-gate.cjs" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/session-bridge.cjs" }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/stop-reminder.cjs"
-          }
+          { "type": "command", "command": "node .claude/hooks/stop-reminder.cjs" }
         ]
       }
     ]
