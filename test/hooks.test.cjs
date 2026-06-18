@@ -87,6 +87,47 @@ test('workflow-check: cursor non-commit exits 0', () => {
   assert.strictEqual(run(WC, wcCursor('git status', process.cwd())).code, 0);
 });
 
+// P3: git add warn tests
+test('workflow-check: git add on lean path exits 0 silently', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'fast', mode: null, reportSlug: null });
+  spawnSync('git', ['init'], { cwd: dir, encoding: 'utf8' });
+  const r = run(WC, wcBash('git add src/foo.js', dir));
+  assert.strictEqual(r.code, 0);
+  assert.strictEqual(r.err, '');
+});
+test('workflow-check: git add on standard path with staged non-checkpoint warns', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'standard', mode: 'standard', reportSlug: null,
+    gates: { plan: { required: true, status: 'pending' } } });
+  spawnSync('git', ['init'], { cwd: dir, encoding: 'utf8' });
+  spawnSync('git', ['commit', '--allow-empty', '-m', 'init'], { cwd: dir, encoding: 'utf8' });
+  // Stage a non-checkpoint file
+  fs.mkdirSync(path.join(dir, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'src', 'foo.js'), 'x');
+  spawnSync('git', ['add', 'src/foo.js'], { cwd: dir, encoding: 'utf8' });
+  // Now intercept another git add — should warn because staged files have no checkpoint
+  const r = run(WC, wcBash('git add src/bar.js', dir));
+  assert.strictEqual(r.code, 0);
+  assert.match(r.err, /⚠/);
+});
+test('workflow-check: git add no warn when checkpoint is staged', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'standard', mode: 'standard', reportSlug: null });
+  spawnSync('git', ['init'], { cwd: dir, encoding: 'utf8' });
+  spawnSync('git', ['commit', '--allow-empty', '-m', 'init'], { cwd: dir, encoding: 'utf8' });
+  // Stage checkpoint file
+  spawnSync('git', ['add', '.hero-vibe-kit/session.json'], { cwd: dir, encoding: 'utf8' });
+  const r = run(WC, wcBash('git add src/foo.js', dir));
+  assert.strictEqual(r.code, 0);
+  assert.strictEqual(r.err, '');
+});
+test('workflow-check: git add no warn when staging area is empty', () => {
+  const dir = tmpWithSession({ schemaVersion: 1, path: 'standard', mode: 'standard', reportSlug: null });
+  spawnSync('git', ['init'], { cwd: dir, encoding: 'utf8' });
+  spawnSync('git', ['commit', '--allow-empty', '-m', 'init'], { cwd: dir, encoding: 'utf8' });
+  const r = run(WC, wcBash('git add src/foo.js', dir));
+  assert.strictEqual(r.code, 0);
+  assert.strictEqual(r.err, '');
+});
+
 const EG = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'edit-gate.cjs');
 const edit = (filePath, cwd) => ({ tool_name: 'Edit', tool_input: { file_path: filePath }, cwd });
 const write = (filePath, cwd) => ({ tool_name: 'Write', tool_input: { file_path: filePath }, cwd });

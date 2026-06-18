@@ -30,11 +30,15 @@ process.stdin.on('end', () => {
   if (!command) process.exit(0);
   if (payload.tool_name && payload.tool_name !== 'Bash') process.exit(0);
 
-  // Only act on git commit
-  if (!/\bgit\b/.test(command) || !/\bcommit\b/.test(command)) process.exit(0);
+  // Must be a git command
+  if (!/\bgit\b/.test(command)) process.exit(0);
 
-  // Emergency override
-  if (process.env.HVK_SKIP_STATE_GATE === '1') process.exit(0);
+  const isAdd = /\badd\b/.test(command) && !/\bcommit\b/.test(command);
+  const isCommit = /\bcommit\b/.test(command);
+  if (!isAdd && !isCommit) process.exit(0);
+
+  // Emergency override — commit gate only
+  if (isCommit && process.env.HVK_SKIP_STATE_GATE === '1') process.exit(0);
 
   const cwd = (payload && payload.cwd) || process.cwd();
   const cursor = isCursorPayload(payload);
@@ -54,6 +58,12 @@ process.stdin.on('end', () => {
   const gated = ['standard', 'full'];
   if (!gated.includes(session.path) && !gated.includes(session.mode)) process.exit(0);
 
+  // P3: warn on git add with non-checkpoint staged files
+  if (isAdd) {
+    warnOnAdd(session, cwd);
+    process.exit(0);
+  }
+
   // Get staged + working tree files
   let gitStatus = '';
   try {
@@ -67,21 +77,13 @@ process.stdin.on('end', () => {
     .filter(Boolean)
     .map((line) => line.slice(3).trim());
 
-  const slug = session.reportSlug;
-  function isCheckpoint(f) {
-    if (f === '.hero-vibe-kit/session.json') return true;
-    if (f === 'docs/ACTIVE_STATE.md') return true;
-    if (slug && f.startsWith(`docs/reports/${slug}/`)) return true;
-    if (!slug && f.startsWith('docs/reports/')) return true;
-    return false;
-  }
-
-  if (changedFiles.some(isCheckpoint)) {
+  if (changedFiles.some((f) => isCheckpoint(f, session.reportSlug))) {
     if (cursor) process.stdout.write(JSON.stringify({ permission: 'allow' }));
     process.exit(0);
   }
 
   // Block
+  const slug = session.reportSlug;
   const slugDir = slug ? `docs/reports/${slug}/` : 'docs/reports/<reportSlug>/';
   const msg =
     `hero-vibe-kit: commit blocked — ${session.path || session.mode} path requires a state checkpoint.\n` +
@@ -96,6 +98,39 @@ process.stdin.on('end', () => {
   if (cursor) process.stdout.write(JSON.stringify({ permission: 'deny', user_message: msg, agent_message: msg }));
   process.exit(2);
 });
+
+function warnOnAdd(session, cwd) {
+  let gitStatus = '';
+  try {
+    const r = spawnSync('git', ['status', '--porcelain'], { cwd, encoding: 'utf8', timeout: 5000 });
+    if (r.status !== 0 || r.error) return;
+    gitStatus = r.stdout || '';
+  } catch (_) { return; }
+
+  // Staged files: first char is not ' ' or '?'
+  const staged = gitStatus
+    .split('\n')
+    .filter(Boolean)
+    .filter((l) => l[0] !== ' ' && l[0] !== '?')
+    .map((l) => l.slice(3).trim());
+
+  if (staged.length === 0) return;
+  if (staged.some((f) => isCheckpoint(f, session.reportSlug))) return;
+
+  const gateStatus = (session.gates && session.gates.plan && session.gates.plan.status) || 'pending';
+  process.stderr.write(
+    `⚠ hero-vibe-kit: staging non-checkpoint files on ${session.path || session.mode} path.\n` +
+    `Plan gate: ${gateStatus}. Remember to touch session.json or ACTIVE_STATE.md before committing.\n`
+  );
+}
+
+function isCheckpoint(f, slug) {
+  if (f === '.hero-vibe-kit/session.json') return true;
+  if (f === 'docs/ACTIVE_STATE.md') return true;
+  if (slug && f.startsWith(`docs/reports/${slug}/`)) return true;
+  if (!slug && f.startsWith('docs/reports/')) return true;
+  return false;
+}
 
 function extractCommand(payload) {
   if (payload.tool_input && payload.tool_input.command) return String(payload.tool_input.command);
