@@ -79,11 +79,11 @@ async function init(opts) {
   // ---- 3. Claude Code hooks + settings ----
   if (ideTargets.includes('claude-code')) {
     ensureDir(path.join(target, '.claude', 'hooks'));
-    for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'workflow-check.cjs']) {
+    for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'workflow-check.cjs', 'edit-gate.cjs', 'session-bridge.cjs']) {
       fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
     }
     mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
-    log.ok('Claude  : git-guard + stop-reminder + workflow-check → .claude/hooks; settings.json merged');
+    log.ok('Claude  : git-guard + stop-reminder + workflow-check + edit-gate + session-bridge → .claude/hooks; settings.json merged');
   }
 
   // ---- 3a. Cursor rules + hooks ----

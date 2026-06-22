@@ -5,6 +5,14 @@ All notable changes to hero-vibe-kit are documented here. Format based on
 
 ## [Unreleased]
 
+## [2.1.3] - 2026-06-22
+### Fixed
+- **Missing hooks at init/update** — `edit-gate.cjs` and `session-bridge.cjs` were present in the package template but not copied by `init` or `update`. Both hooks are now installed alongside `git-guard`, `stop-reminder`, and `workflow-check`.
+
+## [2.1.2] - 2026-06-22
+### Fixed
+- npm publish of interactive IDE choice fix (2.1.1 patches).
+
 ## [2.1.1] - 2026-06-22
 ### Fixed
 - **`--ide=value` syntax** — `parseArgs` in `bin/hero-vibe-kit.js` now handles `--flag=value` form. Previously, `--ide=claude-code` was parsed as key `"ide=claude-code"` instead of `"ide"`, causing `Invalid --ide: undefined` at init time.
