@@ -9,9 +9,10 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith('--')) {
-      const key = a.slice(2);
-      if (argv[i + 1] !== undefined && !argv[i + 1].startsWith('--')) flags[key] = argv[++i];
-      else flags[key] = true;
+      const eqIdx = a.indexOf('=');
+      if (eqIdx !== -1) { flags[a.slice(2, eqIdx)] = a.slice(eqIdx + 1); }
+      else if (argv[i + 1] !== undefined && !argv[i + 1].startsWith('--')) { flags[a.slice(2)] = argv[++i]; }
+      else { flags[a.slice(2)] = true; }
     } else if (a.startsWith('-') && a.length === 2) {
       flags[a.slice(1)] = true;
     } else pos.push(a);

@@ -5,6 +5,10 @@ All notable changes to hero-vibe-kit are documented here. Format based on
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-06-22
+### Fixed
+- **`--ide=value` syntax** — `parseArgs` in `bin/hero-vibe-kit.js` now handles `--flag=value` form. Previously, `--ide=claude-code` was parsed as key `"ide=claude-code"` instead of `"ide"`, causing `Invalid --ide: undefined` at init time.
+
 ## [2.1.0] - 2026-06-19
 ### Added
 - **Enforcement hooks** — hard enforcement gates that block Edit/Write tool calls before code is written without authorization. Converts advisory workflow from "Claude should follow" to "Claude must follow".
