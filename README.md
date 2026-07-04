@@ -181,9 +181,9 @@ npx hero-vibe-kit doctor --strict # exit 1 on any compliance failure (CI-safe)
 | Tool | What it is | What init does | Tier |
 |---|---|---|---|
 | Core process skills | Bundled process skills from `obra/superpowers` (MIT) | Installs selected skills into `.claude/skills/` | Recommended |
-| taste-skill | UI/design skills from `Leonxlnx/taste-skill` | Offers external install; pick one visual direction | Optional |
-| GitNexus | Code-intelligence CLI/MCP | Offers `npx gitnexus analyze` | Optional |
-| Serena | Semantic code-intelligence MCP | Detects existing `.serena/` and can seed pointer notes | Optional |
+| taste-skill | UI/design skills from `Leonxlnx/taste-skill` | Auto-installed for `vibecode` profile or `frontend`/`fullstack` surface; skipped for `backend` + `coding-assistant` | Auto (no prompt) |
+| GitNexus | Code-intelligence CLI/MCP | Auto-runs `npx gitnexus analyze` only if this repo already has a `.gitnexus/` index; otherwise skipped | Auto (no prompt) |
+| Serena | Semantic code-intelligence MCP | Auto-seeds pointer notes only if `.serena/` already exists; otherwise skipped | Auto (no prompt) |
 
 Required: Node.js 18+ and Claude Code **or** Cursor. Everything else is optional.
 
@@ -207,7 +207,6 @@ Flags:
 --surface fullstack|backend|frontend
 --verify strict|pragmatic|minimal
 --ide claude-code|cursor|both
---name <name>
 --yes
 --skip-integrations
 --strict      (doctor only) treat compliance warnings as failures — for CI use

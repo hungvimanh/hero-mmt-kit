@@ -23,7 +23,7 @@ skills.manifest.json  vendored core (process) + referenced design/taste skills
 ## Rules of thumb
 - **Zero runtime dependencies.** CLI uses only Node built-ins. Keep it that way.
 - **English-only templates.** Framework docs, rules, templates, and vendored skills are authored in English. User-facing chat language is adaptive: answer in the user's language unless they ask otherwise.
-- **Placeholders**: use `{{PROJECT_NAME}}`, `{{DATE}}`, `{{TEAM_SIZE}}`, `{{BRANCHING_MODEL}}` for values rendered at init. Use `<TBD>` for values the *user* fills later (e.g. stack commands).
+- **Placeholders**: use `{{DATE}}` (and profile vars like `{{ASSISTANCE_PROFILE}}`) for values rendered at init. Use `<TBD>` for values the *user* fills later (e.g. stack commands).
 - **Managed regions**: never instruct users to hand-edit inside `<!-- hero-vibe-kit:start/end -->`.
 - **Skills.** Only the curated MIT-licensed core process skills are vendored under `templates/skills/` (with `NOTICE` attribution); they install into a consumer's `.claude/skills/`. Reference everything else (design/taste, GitNexus, Serena) in `skills.manifest.json` and install via their CLI — don't redistribute non-permissive or unattributed skills/tools.
 - **Hooks must stay portable** (Node, cross-platform) and fail-safe (never block on parse errors).

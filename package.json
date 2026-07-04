@@ -1,6 +1,6 @@
 {
   "name": "hero-vibe-kit",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "An opinionated, AI-assisted software development workflow for Claude Code and Cursor — task-type router, gates, enforcement hooks, human↔AI communication protocol, and security/performance standards. Works for new and existing (brownfield) projects.",
   "keywords": [
     "claude-code",

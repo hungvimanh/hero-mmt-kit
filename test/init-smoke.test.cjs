@@ -29,7 +29,7 @@ function replaceManagedBlock(text, replacement) {
 
 test('init new project: files + no leftover placeholders + doctor passes', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'SmokeApp', '--ide', 'both']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'both']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
@@ -59,7 +59,6 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'en')), 'consumer docs should not include duplicate en tree');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'vi')), 'consumer docs should not include duplicate vi tree');
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
-  assert.match(claude, /SmokeApp/);
   assert.match(claude, /hero-vibe-kit:start/);
   assert.match(claude, /docs\/AGENCY_WORKFLOW\.md/);
   assert.match(claude, /single source of truth/i);
@@ -109,10 +108,8 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.ok(JSON.stringify(cursorHooks.hooks).includes('git-guard.cjs'));
   const cursorRule = fs.readFileSync(path.join(dir, '.cursor', 'rules', 'hero-vibe-kit.mdc'), 'utf8');
   assert.match(cursorRule, /alwaysApply: true/);
-  assert.match(cursorRule, /SmokeApp/);
   assert.match(cursorRule, /Plan mode/);
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
-  assert.strictEqual(config.projectName, 'SmokeApp');
   assert.deepStrictEqual(config.ideTargets, ['claude-code', 'cursor']);
   assert.ok(!Object.prototype.hasOwnProperty.call(config, 'lang'), 'new config should not include lang');
 
@@ -134,7 +131,7 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE\n');
   fs.writeFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'CUSTOM DISCOVERY\n');
 
-  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy', '--ide', 'both']).status, 0);
+  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'both']).status, 0);
   let claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
   assert.strictEqual((claude.match(/hero-vibe-kit:start/g) || []).length, 1);
@@ -142,7 +139,7 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   assert.match(fs.readFileSync(path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md'), 'utf8'), /CUSTOM DISCOVERY/);
 
   // idempotent second run
-  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Legacy', '--ide', 'both']).status, 0);
+  assert.strictEqual(cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'both']).status, 0);
   claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.strictEqual((claude.match(/hero-vibe-kit:start/g) || []).length, 1, 'block not duplicated');
   const settings = JSON.parse(fs.readFileSync(path.join(dir, '.claude', 'settings.json'), 'utf8'));
@@ -195,7 +192,7 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
 
 test('init --yes writes default assistance profile config and docs', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'ProfileDefault', '--ide', 'claude-code']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
@@ -218,7 +215,7 @@ test('init --yes writes default assistance profile config and docs', () => {
 
 test('init accepts vibecode backend flags and derives strict verification', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'VibeBackend', '--profile', 'vibecode', '--surface', 'backend', '--ide', 'claude-code']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'vibecode', '--surface', 'backend', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
@@ -235,7 +232,7 @@ test('init accepts vibecode backend flags and derives strict verification', () =
 
 test('init accepts coding assistant frontend minimal verification flags', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'FrontAssist', '--profile', 'coding-assistant', '--surface', 'frontend', '--verify', 'minimal', '--ide', 'claude-code']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'coding-assistant', '--surface', 'frontend', '--verify', 'minimal', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
@@ -253,7 +250,7 @@ test('init accepts coding assistant frontend minimal verification flags', () => 
 
 test('init --yes without --ide fails before writing config', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'NoIde']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations']);
   assert.notStrictEqual(r.status, 0);
   assert.match(r.stderr + r.stdout, /requires --ide/i);
   assert.ok(!fs.existsSync(path.join(dir, '.hero-vibe-kit', 'config.json')));
@@ -261,7 +258,7 @@ test('init --yes without --ide fails before writing config', () => {
 
 test('init --ide cursor installs cursor surfaces only', () => {
   const dir = mkdir();
-  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'CursorOnly', '--ide', 'cursor']);
+  const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'cursor']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   assert.ok(fs.existsSync(path.join(dir, '.cursor', 'rules', 'hero-vibe-kit.mdc')));
@@ -286,7 +283,7 @@ test('init rejects invalid profile flags before writing config', () => {
 
 test('update backfills profile fields and accepts overrides', () => {
   const dir = mkdir();
-  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'Migrated', '--ide', 'claude-code']);
+  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'claude-code']);
   assert.strictEqual(init.status, 0, init.stderr);
 
   const configPath = path.join(dir, '.hero-vibe-kit', 'config.json');

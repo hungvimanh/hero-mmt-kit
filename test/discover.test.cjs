@@ -23,13 +23,13 @@ test('discover creates a brownfield report for code with docs outside docs', () 
   fs.writeFileSync(path.join(dir, '.github', 'copilot-instructions.md'), '# Instructions\n');
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ scripts: { test: 'node --test', build: 'tsc' } }, null, 2));
 
-  const r = cli(['discover', '--dir', dir, '--name', 'LegacyApp']);
+  const r = cli(['discover', '--dir', dir]);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const reportPath = path.join(dir, 'docs', 'BROWNFIELD_DISCOVERY.md');
   assert.ok(fs.existsSync(reportPath), 'report created');
   const report = fs.readFileSync(reportPath, 'utf8');
-  assert.match(report, /LegacyApp/);
+  assert.match(report, /Brownfield Discovery/);
   assert.match(report, /README\.md/);
   assert.match(report, /architecture\/ADR-001\.md/);
   assert.match(report, /\.github\/copilot-instructions\.md/);

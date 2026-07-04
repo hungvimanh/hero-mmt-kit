@@ -20,5 +20,5 @@ jobs:
       - name: Smoke init + doctor
         run: |
           tmp="$(mktemp -d)"
-          node bin/hero-vibe-kit.js init --dir "$tmp" --yes --skip-integrations --name CI --ide claude-code
+          node bin/hero-vibe-kit.js init --dir "$tmp" --yes --skip-integrations --ide claude-code
           node bin/hero-vibe-kit.js doctor --dir "$tmp"

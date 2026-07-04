@@ -176,23 +176,64 @@ Output: What changed, evidence, files/artifacts, risks, user-facing result, and 
 
 ### QA sub-agent prompt
 
+Use this for Verify / QA:
+
 ```text
-Role: QA sub-agent.
-Goal: Independently verify the phase output and try to find high-signal failures before handover.
-Inputs: Active handoff file, canonical report paths, changed files, commands to run, and known risks.
-Required context: DEFINITION_OF_DONE.md, AGENCY_WORKFLOW.md QA requirements, and relevant standards documents.
-Constraints: Do not rubber-stamp. Do not broaden scope. Summarize long logs and cite commands/files. If evidence is missing, say so.
-Output format: Status, checks performed, evidence, failures or gaps, risk assessment, and recommendation: PASS, PASS_WITH_CONCERNS, FIX_REQUIRED, or BLOCKED.
-Done criteria: Main Agent can either fix specific issues or hand over with defensible evidence.
+You are the QA reviewer for this task.
+
+Read first:
+- docs/reports/<slug>/resume.md
+- docs/reports/<slug>/handoffs/04-test-to-qa.md
+
+Run the structured sanity check using this exact format:
+- Branch: pass | warn | block — note
+- Working tree: pass | warn | block — note
+- Canonical handoff freshness: pass | warn | block — note
+- Required files exist: pass | warn | block — note
+- Changed files summary: pass | warn | block — note
+- Required commands available: pass | warn | block — note
+- Open blockers: pass | warn | block — note
+- Decision: continue | continue-with-warning | stop
+
+Read implementation files only when needed to verify a specific claim or finding.
+Do not reread broad repository context.
+Do not paste full logs, full diffs, full files, or transcript.
+
+Return only:
+- verdict: pass | yellow | fail | blocked (see PHASE_HANDOFF_PROTOCOL.md § Status, verdict, and severity model),
+- top 5 findings by severity,
+- evidence summary,
+- file:line citations,
+- required fixes,
+- commands run and result,
+- report/log paths.
+
+If evidence or findings are long, write them to docs/reports/<slug>/reviews/qa-review.md and return only the path plus summary.
 ```
+
+Coverage rule: if QA finds more than 5 issues, list the top 5 by severity in the chat response and write the full finding list to `reviews/qa-review.md`. A bounded response cap is not a coverage cap; it is a chat-output cap.
 
 ### Short next-phase prompt
 
+Use this when opening a fresh session or handing off to a sub-agent:
+
 ```text
-Continue from: docs/reports/YYYY-MM-DD-<slug>/handoffs/<phase-to-phase>.md
-Read first: resume.md, the active handoff, and the canonical report paths listed there.
-Do not read: Raw transcripts or superseded scratch files unless the handoff explicitly says to.
-Next action: Complete the first action in the handoff, produce the expected artifact, and return a bounded report.
+Continue this task artifact-first, not chat-first.
+
+Read first:
+- docs/reports/<slug>/resume.md
+- docs/reports/<slug>/handoffs/<latest-canonical-handoff>.md
+
+Do not read old transcripts, full logs, full diffs, or broad docs.
+Read referenced files only if the handoff says they are required.
+Do not paste full files/logs/diffs into chat.
+
+Start with the structured sanity check, then confirm in <= 5 lines:
+- mode,
+- current phase,
+- status,
+- latest handoff,
+- next action.
 ```
 
 ## 2. BA Discovery Prompt

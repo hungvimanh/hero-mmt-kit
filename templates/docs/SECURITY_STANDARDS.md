@@ -1,6 +1,6 @@
 # Security Standards
 
-> A **measurable** security baseline for {{PROJECT_NAME}}. It is the bar `security-review` (Phase 4) grades against and part of [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md). Shift-left: most of it is considered during **threat modeling in Phase 2** ([AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md)).
+> A **measurable** security baseline for this project. It is the bar `security-review` (Phase 4) grades against and part of [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md). Shift-left: most of it is considered during **threat modeling in Phase 2** ([AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md)).
 >
 > Fill the `<TBD>`s per your stack/compliance when locked in the first PRD/TDD.
 
@@ -28,6 +28,7 @@
 - Don't bypass hooks/CI "to go faster".
 
 ## 4. Automated tools (optional — degrade if absent)
+> None of the hooks bundled by hero-vibe-kit (§3: `git-guard`, `workflow-check`, `edit-gate`, `session-bridge`, `stop-reminder`) run secret scanning, dependency audit, or SAST. These are placeholders for the consuming project to wire up (e.g. a `gitleaks` pre-commit hook, an `<AUDIT_CMD>` step in CI). Do not assume any of §4 is enforced until the project has actually wired it — check for the tool/hook before claiming this baseline is met.
 - **Secret scanning**: e.g. `gitleaks` (can run as a pre-commit hook to **block**). `<TBD: on/off>`
 - **`<AUDIT_CMD>`** in CI / the `doctor` command.
 - **SAST** (stack-dependent): `<TBD>`.

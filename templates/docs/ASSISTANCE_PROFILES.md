@@ -50,14 +50,16 @@ Verification level changes how much evidence is required; it does not remove the
 
 ## Adaptive review budget
 
+This is the canonical definition of the review-budget tiers. Other docs and skills (e.g. `TEAM_ROSTER.md` §3, the `subagent-driven-development` skill) apply or extend this table by path/profile — they do not redefine it.
+
 Use the smallest review budget that supports the completion claim:
 
 | Budget | Use when | Evidence |
 |---|---|---|
-| None | Low-risk, localized work with clear targeted checks. | Main-agent self-review, targeted verification, and explicit verified/unverified handoff. |
-| Single combined review | Medium-risk behavior change, moderate diff, or uncertainty about fit/quality. | One reviewer checks requirements, correctness, tests/docs, and overengineering. |
-| Targeted specialist review | Specific sensitive or technical risk exists. | Security, performance, API/data, UI/accessibility, or other specialist review for that risk. |
-| Full multi-stage review | HIGH/CRITICAL, broad multi-area work, or user asks for full process. | Separate acceptance/spec and quality/security review only when each pass has a distinct purpose. |
+| `none` | Low-risk, localized work with clear targeted checks. | Main-agent self-review, targeted verification, and explicit verified/unverified handoff. |
+| `single-combined-review` | Medium-risk behavior change, moderate diff, or uncertainty about fit/quality. | One reviewer checks requirements, correctness, tests/docs, and overengineering. |
+| `targeted-specialist-review` | Specific sensitive or technical risk exists. | Security, performance, API/data, UI/accessibility, or other specialist review for that risk. |
+| `full-multi-stage-review` | HIGH/CRITICAL, broad multi-area work, or user asks for full process. | Separate acceptance/spec and quality/security review only when each pass has a distinct purpose. |
 
 Do not run final review over the same scope already covered by an earlier reviewer. Use final integration review only for multiple independent task streams, high-risk/core changes, or narrow prior reviews.
 

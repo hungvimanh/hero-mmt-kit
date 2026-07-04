@@ -58,6 +58,16 @@
         { "name": "phase-handoff", "source": "hero-vibe-kit", "description": "Loop executor at real phase boundaries — writes handoff artifact, checkpoints session.json (phase/resumePath/nextAction), and outputs the next-phase prompt. Invoke at every Standard/Full boundary; optional for Tiny/Small." }
       ]
     },
+    "communication-style": {
+      "tier": "optional",
+      "bundled": true,
+      "source": "hero-vibe-kit",
+      "license": "hero-vibe-kit authored (concept adapted from JuliusBrussee/caveman, MIT; see templates/skills/NOTICE)",
+      "description": "Opt-in output-style skill, bundled under templates/skills/ but not part of the process baseline — install only if the user wants compressed replies.",
+      "skills": [
+        { "name": "concise-output", "source": "hero-vibe-kit", "description": "Compresses reply prose while preserving code/commands/technical accuracy verbatim; reverts to full clarity for safety-critical or irreversible-action content." }
+      ]
+    },
     "brand": {
       "tier": "optional",
       "description": "Brand/identity skill. Use once per product/brand.",

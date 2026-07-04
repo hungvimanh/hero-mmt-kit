@@ -19,6 +19,8 @@ Default when the product type is unknown: **branded-product**, confirmed at the 
 
 ## §3 Design skill routing — job → skill
 > Install via the `skills` CLI per `skills.manifest.json` groups. **Pick exactly ONE visual direction** and lock it.
+>
+> **Availability caveat:** in `skills.manifest.json`, `gpt-taste` (design-direction) and all of `design-tools` (`imagegen-frontend-web`, `imagegen-frontend-mobile`, `image-to-code`, `redesign-existing-projects`) currently have `"source": "<TBD>"` — no installable source is wired yet. Before routing to any of these, verify with the `skills` CLI that the skill actually installed; if it didn't, fall back to a skill with a real source (e.g. `design-taste-frontend`, `minimalist-ui`) or do the step manually. Do not assume the row below means the skill is installable today.
 
 | Need | Skill | When |
 |---|---|---|

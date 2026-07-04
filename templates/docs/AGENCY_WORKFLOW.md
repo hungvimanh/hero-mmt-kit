@@ -2,7 +2,7 @@
 
 > **This is the ONLY canonical process document.** Every other file (CLAUDE.md, AGENTS.md, TEAM_ROSTER.md, optional Serena notes) only **links** here — it must NOT copy the content. To change the process, edit only this file.
 
-The AI acts as a lean software agency. Operating scale: **{{TEAM_SIZE}} + AI**, following **{{BRANCHING_MODEL}}** (see [BRANCHING.md](./BRANCHING.md)). Completion criteria: see [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md).
+The AI acts as a lean software agency, following the branching model in [BRANCHING.md](./BRANCHING.md). Completion criteria: see [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md).
 
 > **Language policy:** this workflow and all framework templates are English-only for token efficiency and consistency. Use the user's chat language for responses unless they ask otherwise.
 

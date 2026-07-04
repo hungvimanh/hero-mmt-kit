@@ -11,6 +11,8 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.
 
+**See also:** `using-git-worktrees` — this skill finishes and cleans up the workspace that `using-git-worktrees` sets up. Directory ownership and provenance conventions are defined there.
+
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
 ## The Process
@@ -180,7 +182,7 @@ WORKTREE_PATH=$(git rev-parse --show-toplevel)
 
 **If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.
 
-**If worktree path is under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`:** Superpowers created this worktree — we own cleanup.
+**If the worktree path is under one of the owned directories defined in `using-git-worktrees` § Directory Selection (`.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`):** Superpowers created this worktree — we own cleanup.
 
 ```bash
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
@@ -224,7 +226,7 @@ git worktree prune  # Self-healing: clean up any stale registrations
 
 **Cleaning up harness-owned worktrees**
 - **Problem:** Removing a worktree the harness created causes phantom state
-- **Fix:** Only clean up worktrees under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`
+- **Fix:** Only clean up worktrees under the owned directories from `using-git-worktrees` § Directory Selection (`.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`)
 
 **No confirmation for discard**
 - **Problem:** Accidentally delete work

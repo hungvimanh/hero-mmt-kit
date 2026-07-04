@@ -31,7 +31,7 @@ Rules:
 - Do not hardcode model IDs in handoff prompts outside this table; cite the tier and effort instead.
 
 ## 3. Adaptive delegation and review budget
-Sub-agent delegation reduces main-thread context and adds specialist judgment. Use the smallest budget that fits the risk; the user does not need to ask for required risk review.
+Sub-agent delegation reduces main-thread context and adds specialist judgment. Review budget tiers (`none` / `single-combined-review` / `targeted-specialist-review` / `full-multi-stage-review`) are defined once in `docs/ASSISTANCE_PROFILES.md` § Adaptive review budget; the user does not need to ask for required risk review. The rules below map path/profile combinations onto that same tier set — they do not add new tiers.
 
 - **Fast path** → sub-agents usually unnecessary; main agent implements directly and runs targeted checks.
 - **Standard path + Coding Assistant** → default to direct implementation + targeted verification; use one combined reviewer for broad, risky, or ambiguous work; escalate before editing HIGH/CRITICAL risk changes.
@@ -73,7 +73,7 @@ Sub-agents do NOT inherit the Main Agent's conversation, skills, or context. Use
 
 ## 5. Design direction & profile
 Design standards, skill routing, and the "pick exactly one direction" rule live in [DESIGN_STANDARDS.md](./DESIGN_STANDARDS.md). Lock these per project (in the first PRD/Design Brief):
-- Design profile for {{PROJECT_NAME}}: **`<TBD — system-strict | branded-product | expressive>`**
+- Design profile: **`<TBD — system-strict | branded-product | expressive>`**
 - Chosen visual direction: **`<TBD — fill when the first UI feature appears>`**
 
 ## 6. Parallelization and worktrees

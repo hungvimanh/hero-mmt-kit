@@ -1,6 +1,6 @@
 # Branching & Commit Convention
 
-> Model: **{{BRANCHING_MODEL}}** for a {{TEAM_SIZE}} team. `main` is always deployable.
+> `main` is always deployable.
 
 ## Branches
 - **`main`** — protected. NO direct commits/pushes. All changes land via a **Merge/Pull Request (MR/PR)**.

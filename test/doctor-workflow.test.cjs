@@ -11,7 +11,7 @@ function cli(args, opts) { return spawnSync('node', [BIN, ...args], Object.assig
 function mkdir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-dr-')); }
 
 function initDir(dir) {
-  return cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--name', 'DoctorTest', '--ide', 'claude-code']);
+  return cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--ide', 'claude-code']);
 }
 
 test('doctor passes on fresh init (no session data)', () => {

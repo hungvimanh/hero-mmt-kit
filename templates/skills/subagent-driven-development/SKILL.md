@@ -23,6 +23,8 @@ Use this skill when all are true:
 
 Do **not** use this skill for small, localized, low-risk work where the main agent can implement and verify directly.
 
+No plan yet, or purely ad-hoc investigation/debugging (e.g. unrelated test failures with no task list)? Use `dispatching-parallel-agents` instead.
+
 ```dot
 digraph when_to_use {
     "Have implementation plan?" [shape=diamond];
@@ -45,12 +47,14 @@ digraph when_to_use {
 
 Pick the smallest review budget that fits the risk. Do not run multiple review passes unless each pass has a distinct purpose not already covered.
 
-| Budget | Use when | Review action |
-|---|---|---|
-| `none` | Low-risk, localized work; Coding Assistant `minimal`/`pragmatic`; good targeted checks exist | Main-agent self-review + targeted verification + explicit verified/unverified handoff |
-| `single-combined-review` | Medium-risk behavior change, moderate diff, uncertainty about requirements or quality | One reviewer checks requirement fit, correctness, tests/docs, and overengineering |
-| `targeted-specialist-review` | Specific risk area: security, performance, API contract, data migration, UI accessibility | One specialist reviewer for that risk; do not also run generic review unless needed |
-| `full-multi-stage-review` | High-risk/core/security-sensitive work, many independent tasks, or user explicitly asks for full process | Spec/acceptance review and quality/security review may be separate |
+Budget tiers and when to use each are defined canonically in `docs/ASSISTANCE_PROFILES.md` § Adaptive review budget. For each tier, this skill's review action is:
+
+| Budget | Review action |
+|---|---|
+| `none` | Main-agent self-review + targeted verification + explicit verified/unverified handoff |
+| `single-combined-review` | One reviewer checks requirement fit, correctness, tests/docs, and overengineering |
+| `targeted-specialist-review` | One specialist reviewer for that risk; do not also run generic review unless needed |
+| `full-multi-stage-review` | Spec/acceptance review and quality/security review may be separate |
 
 **Final review is conditional.** Run a final integration review only when there were multiple independent task streams, high-risk/core changes, or prior reviews were narrow. If one combined review already covered the entire change, do not review the same scope again.
 

@@ -26,6 +26,17 @@ Framework-authored skills shipped by hero-vibe-kit:
 Design / visual-direction skills are NOT vendored — they are referenced in
 skills.manifest.json and installed from their original sources on demand.
 
+The concise-output skill is an original hero-vibe-kit rewrite inspired by the
+compression-mode concept from:
+
+  caveman — https://github.com/JuliusBrussee/caveman
+  Copyright (c) Julius Brussee
+  License: MIT
+
+No text was copied verbatim; only the underlying concept (compress output,
+preserve technical accuracy, revert to full clarity for safety-critical
+content) was adapted. Reproduced below per MIT attribution practice.
+
 ---------------------------------------------------------------------------
 MIT License
 

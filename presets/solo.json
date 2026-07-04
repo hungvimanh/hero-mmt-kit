@@ -1,5 +1,3 @@
 {
-  "teamSize": "solo",
-  "branchingModel": "trunk",
   "enforceLevel": "soft"
 }

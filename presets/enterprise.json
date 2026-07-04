@@ -1,5 +1,3 @@
 {
-  "teamSize": "enterprise",
-  "branchingModel": "gitlab-flow",
   "enforceLevel": "hard"
 }

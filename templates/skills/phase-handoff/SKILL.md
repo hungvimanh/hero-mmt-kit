@@ -145,7 +145,7 @@ Capture only what the next phase needs:
 
 ## Base Handoff Shape
 
-Use this shape for Standard or Full mode. See also optional YAML frontmatter in [HANDOFF_TEMPLATES.md](../../docs/HANDOFF_TEMPLATES.md).
+Use this shape for Standard or Full mode. See also optional YAML frontmatter in `docs/HANDOFF_TEMPLATES.md`.
 
 ```markdown
 # Phase Handoff

@@ -8,9 +8,6 @@ const { normalizeProfileConfig, buildProfileVars, skillDestinations } = require(
 const { refreshCursor } = require('./cursor.cjs');
 const { defaultSession } = require('./workflow-state.cjs');
 
-const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
-const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
-
 async function update(opts) {
   const { pkgRoot, target, flags } = opts;
   const templates = path.join(pkgRoot, 'templates');
@@ -26,10 +23,7 @@ async function update(opts) {
   }
 
   const vars = Object.assign({
-    PROJECT_NAME: cfg.projectName,
     DATE: new Date().toISOString().slice(0, 10),
-    TEAM_SIZE: TEAM_LABELS[cfg.teamSize] || cfg.teamSize,
-    BRANCHING_MODEL: BRANCH_LABELS[cfg.branchingModel] || cfg.branchingModel,
   }, buildProfileVars(cfg));
 
   const ideTargets = cfg.ideTargets || [];
@@ -52,7 +46,7 @@ async function update(opts) {
   // Managed blocks (content outside markers preserved)
   const claudeInner = renderString(fs.readFileSync(path.join(templates, 'CLAUDE.md.tmpl'), 'utf8'), vars);
   const agentsInner = renderString(fs.readFileSync(path.join(templates, 'AGENTS.md.tmpl'), 'utf8'), vars);
-  log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, cfg.projectName)}`);
+  log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, 'Project')}`);
   log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
   if (ideTargets.includes('claude-code')) {

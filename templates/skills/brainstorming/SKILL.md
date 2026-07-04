@@ -123,6 +123,8 @@ After writing the spec document, look at it with fresh eyes:
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
+**Higher-assurance alternative:** For high-risk or `full-multi-stage-review` work, dispatch a separate reviewer subagent instead of self-review — see `spec-document-reviewer-prompt.md` in this skill's directory.
+
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 

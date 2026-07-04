@@ -1,9 +1,11 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+description: Use for ad-hoc investigation/debugging with 2+ independent problem domains and no formal plan (e.g. unrelated test failures). If a plan or task list already exists, use subagent-driven-development instead.
 ---
 
 # Dispatching Parallel Agents
+
+> Scope: no formal plan exists yet — independent investigation/debugging work (e.g. unrelated test failures across files). If you already have an implementation plan or task list, use `subagent-driven-development` instead; it adds review budget, model-tier selection, and phase-handoff integration on top of the same parallel-dispatch idea.
 
 ## Overview
 

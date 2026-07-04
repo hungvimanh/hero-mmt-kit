@@ -9,9 +9,6 @@ const { collectProfileConfig, buildProfileVars, skillDestinations } = require('.
 const { installCursor } = require('./cursor.cjs');
 const { defaultSession } = require('./workflow-state.cjs');
 
-const TEAM_LABELS = { solo: 'solo (you + AI)', 'small-team': 'small team (2–5)', enterprise: 'larger team (6+)' };
-const BRANCH_LABELS = { 'gitlab-flow': 'GitLab flow', 'github-flow': 'GitHub flow', trunk: 'trunk-based' };
-
 async function init(opts) {
   const { pkgRoot, target, flags } = opts;
   const templates = path.join(pkgRoot, 'templates');
@@ -31,9 +28,6 @@ async function init(opts) {
     cfg = JSON.parse(fs.readFileSync(pf, 'utf8'));
     log.ok(`Preset : ${flags.preset}`);
   }
-  cfg.projectName = flags.name || cfg.projectName || (auto ? path.basename(target) : await ask.text('Project name', path.basename(target)));
-  if (!cfg.teamSize) cfg.teamSize = auto ? 'small-team' : await ask.choice('Team size:', ['solo', 'small-team', 'enterprise'], 1);
-  if (!cfg.branchingModel) cfg.branchingModel = auto ? 'github-flow' : await ask.choice('Branching model:', ['github-flow', 'gitlab-flow', 'trunk'], 0);
   try {
     cfg = await collectProfileConfig(cfg, flags, ask, auto);
   } catch (e) {
@@ -47,10 +41,7 @@ async function init(opts) {
   cfg.brownfield = d.brownfield;
 
   const vars = Object.assign({
-    PROJECT_NAME: cfg.projectName,
     DATE: new Date().toISOString().slice(0, 10),
-    TEAM_SIZE: TEAM_LABELS[cfg.teamSize] || cfg.teamSize,
-    BRANCHING_MODEL: BRANCH_LABELS[cfg.branchingModel] || cfg.branchingModel,
   }, buildProfileVars(cfg));
 
   const ideTargets = cfg.ideTargets || [];
@@ -73,7 +64,7 @@ async function init(opts) {
   // ---- 2. CLAUDE.md / AGENTS.md managed block ----
   const claudeInner = renderString(fs.readFileSync(path.join(templates, 'CLAUDE.md.tmpl'), 'utf8'), vars);
   const agentsInner = renderString(fs.readFileSync(path.join(templates, 'AGENTS.md.tmpl'), 'utf8'), vars);
-  log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, cfg.projectName)}`);
+  log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, 'Project')}`);
   log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
   // ---- 3. Claude Code hooks + settings ----
@@ -118,7 +109,7 @@ async function init(opts) {
 
   // ---- 5. optional integrations ----
   if (!flags['skip-integrations']) {
-    await require('./integrations.cjs').run({ target, cfg, detect: d, ask, pkgRoot });
+    await require('./integrations.cjs').run({ target, cfg, detect: d, pkgRoot });
   } else {
     log.warn('Skipped integrations (design skills / gitnexus / serena). Core skills are bundled regardless.');
   }

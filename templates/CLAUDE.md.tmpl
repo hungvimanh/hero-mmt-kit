@@ -1,6 +1,6 @@
 ## 🧭 hero-vibe-kit workflow
 
-> **READ BEFORE DOING ANYTHING:** [`docs/AGENCY_WORKFLOW.md`](docs/AGENCY_WORKFLOW.md) is the **single source of truth** for the {{PROJECT_NAME}} development process. Classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). Don't run the heavy process for small tasks.
+> **READ BEFORE DOING ANYTHING:** [`docs/AGENCY_WORKFLOW.md`](docs/AGENCY_WORKFLOW.md) is the **single source of truth** for this project's development process. Classify every request via the router table → pick a path (Read-only / Fast / Standard / Full). Don't run the heavy process for small tasks.
 
 > **Active operating profile:**
 > - Active assistance profile: {{ASSISTANCE_PROFILE_LABEL}} (`{{ASSISTANCE_PROFILE}}`)
@@ -17,7 +17,7 @@
 
 ### Non-negotiables
 - **Gates:** when a path requires a Gate, use Plan Mode (`EnterPlanMode` → `ExitPlanMode`) for real sign-off — not a prose promise.
-- **Enforcement:** `git-guard` (PreToolUse) + `stop-reminder` (Stop) hooks are installed under `.claude/`. Don't bypass them.
+- **Enforcement:** hooks installed under `.claude/` — `git-guard` and `workflow-check` (PreToolUse on Bash), `edit-gate` (PreToolUse on Edit/Write), `session-bridge` (PostToolUse), `stop-reminder` (Stop). Don't bypass them.
 - **GitNexus (if installed):** skip on empty repos; use impact/context analysis for Standard/Full code changes and stale-index checks per [AGENCY_WORKFLOW](docs/AGENCY_WORKFLOW.md).
 - **Skills (if installed):** invoke relevant process skills via the `Skill` tool; do not load unrelated skill/docs context.
 - **Language:** framework instructions, skills, rules, and templates are English-only. Respond to the user in the same language they use in chat unless they request another language.

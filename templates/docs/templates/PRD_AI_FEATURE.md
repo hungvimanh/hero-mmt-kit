@@ -26,12 +26,13 @@
 - Max questions before it must act: `<TBD>`
 
 ## 4. Tone & Persona
+> Reference [INTERACTION_PATTERNS.md](../INTERACTION_PATTERNS.md) P9 (Tone & Consistency).
 - Voice (formal/friendly/concise…):
 - Things the assistant must **never** say/do stylistically:
 - Supported languages:
 
 ## 5. Guardrails & Safety  ⭐
-> Follow [SECURITY_STANDARDS.md](../SECURITY_STANDARDS.md) — especially §2 (OWASP LLM Top 10).
+> Follow [SECURITY_STANDARDS.md](../SECURITY_STANDARDS.md) — especially §2 (OWASP LLM Top 10). Reference [INTERACTION_PATTERNS.md](../INTERACTION_PATTERNS.md) P5 (Refusal) and P8 (Memory & Privacy).
 - **Refusal policy:** which requests must be refused + how (see the Refusal pattern in INTERACTION_PATTERNS).
 - **Sensitive data / PII:** what's collected, what's stored, how it's masked, which regulations.
 - **Prompt injection / abuse:** defenses (separate system/user content, check output…).
@@ -52,6 +53,7 @@
 - Relation to DoD: add to [DEFINITION_OF_DONE.md](../DEFINITION_OF_DONE.md) for AI features.
 
 ## 8. Fallback & Human-in-the-loop  ⭐
+> Reference [INTERACTION_PATTERNS.md](../INTERACTION_PATTERNS.md) P4 (Error & Graceful Degradation), P6 (Handoff to Human), P7 (Conversation Repair).
 - When the model **fails / times out / is low-confidence** → what does the assistant do? (apologize + suggest / return partial / hand off to a human).
 - **Human checkpoints (HITL):** which actions need human approval before execution?
 - Behavior when a dependent tool/API fails.

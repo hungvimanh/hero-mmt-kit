@@ -1,6 +1,6 @@
 # Performance Standards
 
-> A **measurable** performance budget for {{PROJECT_NAME}}. Part of [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md), considered at **Phase 2 (set the budget)** + **Phase 4 (verify)** in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md).
+> A **measurable** performance budget for this project. Part of [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md), considered at **Phase 2 (set the budget)** + **Phase 4 (verify)** in [AGENCY_WORKFLOW.md](./AGENCY_WORKFLOW.md).
 >
 > Fill the `<TBD>`s per product requirements when locked in the first PRD/TDD.
 

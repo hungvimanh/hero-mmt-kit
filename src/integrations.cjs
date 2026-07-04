@@ -12,13 +12,6 @@ function installableSources(group) {
   return uniqueSources(group).filter((src) => src && src !== '<TBD>');
 }
 
-function buildMediaGenConfig(ans) {
-  if (!ans || !ans.enabled) return 'skipped';
-  const cfg = { provider: ans.provider, apiKeyEnv: ans.apiKeyEnv };
-  if (ans.model) cfg.model = ans.model;
-  return cfg;
-}
-
 function runCmd(cmd, args, cwd) {
   try {
     const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
@@ -46,21 +39,22 @@ const SERENA_MEMOS = {
 };
 
 async function run(ctx) {
-  const { target, cfg, detect, ask, pkgRoot } = ctx;
+  const { target, cfg, detect, pkgRoot } = ctx;
   const manifest = readJSON(path.join(pkgRoot, 'skills.manifest.json'), { groups: {} });
   cfg.integrations = cfg.integrations || {};
 
-  log.title('Integrations (optional — Enter to accept default)');
+  log.title('Integrations (auto-detected — no prompts)');
 
   // ---- Skills (process core) ----
   // Core process skills are now VENDORED and installed by init/update into
   // .claude/skills/ (no `skills` CLI needed). Nothing to do here.
   cfg.integrations.skills = 'bundled';
 
-  // ---- Skills (design — optional, grouped) ----
+  // ---- Skills (design — auto-install for vibecode / frontend / fullstack; skip for backend coding-assistant) ----
+  const wantsDesign = cfg.assistanceProfile === 'vibecode' || cfg.projectSurface === 'frontend' || cfg.projectSurface === 'fullstack';
   const designGroups = ['brand', 'design-direction', 'design-tools'];
   const designSources = Array.from(new Set(designGroups.flatMap((name) => installableSources(manifest.groups && manifest.groups[name]))));
-  if (designSources.length && await ask.yesno('Install design/UI skill packs? (pick your ONE direction afterwards)', false)) {
+  if (wantsDesign && designSources.length) {
     for (const src of designSources) runCmd('npx', ['--yes', 'skills', 'add', src, '--yes'], target);
     cfg.integrations.design = 'installed';
     log.ok('Design packs installed — set ONE direction + profile in docs/TEAM_ROSTER.md §3.');
@@ -68,20 +62,8 @@ async function run(ctx) {
     cfg.integrations.design = 'skipped';
   }
 
-  // ---- AI media generation provider (optional; no secrets stored) ----
-  if (await ask.yesno('Configure an AI media-generation provider? (stores provider + env-var name only, never the key)', false)) {
-    const provider = await ask.text('Media-generation provider', '');
-    const apiKeyEnv = await ask.text('API key environment variable name', 'MEDIA_GEN_API_KEY');
-    const model = await ask.text('Media-generation model', '');
-    cfg.integrations.mediaGen = buildMediaGenConfig({ enabled: true, provider, apiKeyEnv, model });
-    log.ok(`Media-generation provider configured (${provider || 'provider TBD'}, key env: ${apiKeyEnv}).`);
-  } else {
-    cfg.integrations.mediaGen = 'skipped';
-    log.warn('Media generation provider skipped. Fallback: use Claude subagents for media prompts/specs.');
-  }
-
-  // ---- GitNexus (optional) ----
-  if (await ask.yesno('Index this repo with GitNexus now? (npx gitnexus analyze — enables impact analysis)', detect.hasGitnexus)) {
+  // ---- GitNexus (auto-run only if this repo already has a .gitnexus index) ----
+  if (detect.hasGitnexus) {
     log.step('npx gitnexus analyze');
     cfg.integrations.gitnexus = runCmd('npx', ['--yes', 'gitnexus', 'analyze'], target) ? 'indexed' : 'failed';
     if (cfg.integrations.gitnexus === 'failed') log.warn('GitNexus not run. Install/retry later: npx gitnexus analyze');
@@ -89,8 +71,8 @@ async function run(ctx) {
     cfg.integrations.gitnexus = 'skipped';
   }
 
-  // ---- Serena (optional — semantic code intelligence; notes are pointers only) ----
-  if (detect.hasSerena || await ask.yesno('Add lightweight Serena pointer notes? (Serena is primarily for semantic code intelligence)', detect.hasSerena)) {
+  // ---- Serena (auto-seed pointer notes only if Serena is already installed) ----
+  if (detect.hasSerena) {
     const memDir = path.join(target, '.serena', 'memories', 'project');
     ensureDir(memDir);
     for (const [name, content] of Object.entries(SERENA_MEMOS)) {
@@ -105,4 +87,4 @@ async function run(ctx) {
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
 }
 
-module.exports = { run, buildMediaGenConfig };
+module.exports = { run };

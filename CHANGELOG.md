@@ -3,7 +3,22 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [3.0.0] - 2026-07-04
+### Added
+- **`concise-output` skill** — new opt-in communication-style skill (`templates/skills/concise-output/SKILL.md`), bundled but outside the process baseline (`skills.manifest.json` new `communication-style` group, `tier: optional`). Compresses reply prose across lite/standard/ultra intensity levels while keeping code, commands, error strings, and the user's own language verbatim; reverts to full clarity for security warnings, irreversible actions, and ambiguous multi-step sequences. Concept adapted (not copied) from `JuliusBrussee/caveman` (MIT); attribution recorded in `templates/skills/NOTICE`.
+
+### Changed
+- **Docs/skills de-duplication and cross-referencing audit** — resolved overlapping or ambiguous content found across `templates/docs/*.md` and `templates/skills/*/SKILL.md`:
+  - `HANDOFF_TEMPLATES.md` / `PHASE_HANDOFF_PROTOCOL.md` — templates and prompts (base handoff, 5 phase handoffs, QA sub-agent prompt, short next-phase prompt) now live only in `HANDOFF_TEMPLATES.md`; `PHASE_HANDOFF_PROTOCOL.md` links to it instead of repeating them. QA verdict vocabulary in the QA sub-agent prompt aligned to the canonical `pass | yellow | fail | blocked` (was `PASS/PASS_WITH_CONCERNS/FIX_REQUIRED/BLOCKED`).
+  - `INTERACTION_PATTERNS.md` / `templates/PRD_AI_FEATURE.md` — PRD template §4 (Tone), §5 (Guardrails), §8 (Fallback) now reference the matching INTERACTION_PATTERNS.md pattern numbers (P9, P5/P8, P4/P6/P7) instead of restating them.
+  - `ASSISTANCE_PROFILES.md` / `TEAM_ROSTER.md` / `subagent-driven-development` skill — review-budget tiers (`none` / `single-combined-review` / `targeted-specialist-review` / `full-multi-stage-review`) now defined once in `ASSISTANCE_PROFILES.md` § Adaptive review budget; tier names normalized from Title Case to kebab-case; the other two now apply/extend rather than redefine.
+  - `dispatching-parallel-agents` / `subagent-driven-development` skills — narrowed `dispatching-parallel-agents` frontmatter trigger to ad-hoc/no-plan investigation work, added reciprocal "see also" cross-references between the two skills.
+  - `using-git-worktrees` / `finishing-a-development-branch` skills — added reciprocal "see also" cross-references (setup vs. teardown of the same workspace lifecycle); `finishing-a-development-branch` now references `using-git-worktrees` § Directory Selection instead of re-listing owned worktree directories.
+  - `brainstorming` / `writing-plans` skills — re-linked previously orphaned `spec-document-reviewer-prompt.md` and `plan-document-reviewer-prompt.md` templates as an optional higher-assurance subagent-review alternative to inline self-review.
+  - `DESIGN_STANDARDS.md` §3 — added an availability caveat: `gpt-taste`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `image-to-code`, `redesign-existing-projects` have `"source": "<TBD>"` in `skills.manifest.json` (no installable source wired yet); routing to them now requires verifying actual installation first.
+  - `SECURITY_STANDARDS.md` §4 — clarified that none of the bundled hooks (`git-guard`, `workflow-check`, `edit-gate`, `session-bridge`, `stop-reminder`) perform secret scanning, dependency audit, or SAST; these remain placeholders the consuming project must wire up.
+  - `CLAUDE.md.tmpl` — Enforcement line now lists all 5 bundled hooks (was only `git-guard` + `stop-reminder`, missing `workflow-check`, `edit-gate`, `session-bridge`).
+  - Fixed a broken relative link in `phase-handoff/SKILL.md` (`../../docs/HANDOFF_TEMPLATES.md` resolved to the wrong install-time depth) — replaced with a plain-text path reference.
 
 ## [2.1.1] - 2026-06-22
 ### Fixed

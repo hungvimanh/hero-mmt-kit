@@ -37,7 +37,6 @@ Commands:
 Flags:
   --dir <path>          Target project dir (default: current dir)
   --preset <name>       solo | small-team | enterprise
-  --name <name>         Project name (default: dir name)
   --profile <name>      Assistance profile: vibecode | coding-assistant
   --surface <name>      Project surface: fullstack | backend | frontend
   --verify <level>      Verification level: strict | pragmatic | minimal

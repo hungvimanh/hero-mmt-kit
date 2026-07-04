@@ -89,9 +89,9 @@ function scan(target) {
   };
 }
 
-function contentEn(projectName, date, d, s) {
+function contentEn(date, d, s) {
   return [
-    `# Brownfield Discovery — ${projectName}`,
+    '# Brownfield Discovery',
     '',
     `Generated: ${date}`,
     '',
@@ -134,17 +134,14 @@ function contentEn(projectName, date, d, s) {
 }
 
 async function discover(opts) {
-  const { target, flags } = opts;
-  const cfg = readJSON(path.join(target, '.hero-vibe-kit', 'config.json'), {});
-
+  const { target } = opts;
   log.title('hero-vibe-kit · brownfield discovery');
   log.step(`Target : ${target}`);
 
-  const projectName = flags.name || cfg.projectName || path.basename(target);
   const date = new Date().toISOString().slice(0, 10);
   const d = detect(target);
   const s = scan(target);
-  const inner = contentEn(projectName, date, d, s);
+  const inner = contentEn(date, d, s);
   const out = path.join(target, 'docs', 'BROWNFIELD_DISCOVERY.md');
   ensureDir(path.dirname(out));
   const result = mergeManagedBlock(out, inner, 'Brownfield Discovery');

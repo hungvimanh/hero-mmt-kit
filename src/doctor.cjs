@@ -61,7 +61,7 @@ async function doctor(opts) {
   const cfg = readJSON(path.join(target, '.hero-vibe-kit', 'config.json'), null);
   const ideTargets = resolveIdeTargets(cfg || {}, {});
   if (cfg) {
-    ok(`config: v${cfg.version} · ${cfg.projectName} · ${cfg.brownfield ? 'brownfield' : 'new'} · IDE: ${ideTargets.join(', ')}`);
+    ok(`config: v${cfg.version} · ${cfg.brownfield ? 'brownfield' : 'new'} · IDE: ${ideTargets.join(', ')}`);
   } else er('config missing (.hero-vibe-kit/config.json) — run `hero-vibe-kit init`');
 
   if (ideTargets.includes('claude-code')) {
