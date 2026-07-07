@@ -3,6 +3,20 @@
 All notable changes to hero-vibe-kit are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [4.0.0] - 2026-07-07
+### Breaking
+- **Profile model overhaul** — bundled process skills are now installed in full for every profile. Profiles control workflow posture and when skills are used, not which core process skills are available.
+- **Vibecode surface selection removed** — `vibecode` no longer asks for backend/frontend/fullstack and normalizes to fullstack lifecycle handling; Coding Assistant keeps the explicit surface selection.
+
+### Added
+- **`security-review` skill** — new bundled OWASP-focused process skill for security-sensitive work, Full-path QA, auth/authz, sensitive data, and AI/LLM risk review.
+- Integration tests for design/taste install gating and additional profile/skill coverage for full-suite process skill installation.
+
+### Changed
+- **Design/taste install gating** — Vibecode auto-installs installable design/taste sources; Coding Assistant installs them only for frontend or fullstack surfaces and skips them for backend-only projects.
+- **Workflow docs** — clarified Vibecode as a high-agency AI software-team mode and Coding Assistant as a human-orchestrated phase workflow for planning, executing, review, testing, and security review.
+- `init`/`update` logs and manifest metadata now describe bundled core skills instead of selected profile-dependent skills.
+
 ## [3.0.0] - 2026-07-04
 ### Added
 - **`concise-output` skill** — new opt-in communication-style skill (`templates/skills/concise-output/SKILL.md`), bundled but outside the process baseline (`skills.manifest.json` new `communication-style` group, `tier: optional`). Compresses reply prose across lite/standard/ultra intensity levels while keeping code, commands, error strings, and the user's own language verbatim; reverts to full clarity for security warnings, irreversible actions, and ambiguous multi-step sequences. Concept adapted (not copied) from `JuliusBrussee/caveman` (MIT); attribution recorded in `templates/skills/NOTICE`.

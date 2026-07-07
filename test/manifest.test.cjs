@@ -4,9 +4,10 @@ const assert = require('node:assert');
 const path = require('node:path');
 const manifest = require(path.join(__dirname, '..', 'skills.manifest.json'));
 
-test('manifest has the 3 design groups', () => {
+test('manifest has process, communication-style, and the 3 design groups', () => {
   const g = manifest.groups;
   assert.ok(g.process, 'process group present');
+  assert.ok(g['communication-style'], 'communication-style group present');
   assert.ok(g.brand, 'brand group present');
   assert.ok(g['design-direction'], 'design-direction group present');
   assert.ok(g['design-tools'], 'design-tools group present');
@@ -34,19 +35,15 @@ test('design-direction contains the taste skills and brand is separate', () => {
   assert.deepStrictEqual(manifest.groups.brand.skills.map((s) => s.name), ['brandkit']);
 });
 
-test('process skill selection metadata references only vendored process skills', () => {
+test('process skill selection metadata installs the full bundled suite', () => {
   const proc = manifest.groups.process;
   const selection = proc.selection;
   assert.ok(selection, 'process selection metadata present');
-  assert.strictEqual(selection.mode, 'derived');
-  assert.deepStrictEqual(selection.deriveFrom, ['assistanceProfile', 'projectSurface', 'verificationLevel']);
-  assert.match(selection.updatePolicy, /preserve existing unselected/);
-
-  const valid = new Set(proc.skills.map((s) => s.name));
-  for (const key of ['baseline', 'strictVerificationAdds', 'fullstackSurfaceAdds', 'vibecodeProfileAdds']) {
-    assert.ok(Array.isArray(selection[key]), `${key} should be an array`);
-    for (const name of selection[key]) assert.ok(valid.has(name), `${key} references unknown process skill: ${name}`);
-  }
+  assert.strictEqual(selection.mode, 'all');
+  assert.deepStrictEqual(selection.deriveFrom, []);
+  assert.match(selection.installPolicy, /full bundled process suite/);
+  assert.match(selection.updatePolicy, /preserve user-added/);
+  assert.ok(proc.skills.map((s) => s.name).includes('security-review'));
 });
 
 test('optional design groups remain external and unbundled', () => {

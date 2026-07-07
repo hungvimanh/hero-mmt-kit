@@ -12,6 +12,14 @@ function installableSources(group) {
   return uniqueSources(group).filter((src) => src && src !== '<TBD>');
 }
 
+function wantsDesignIntegration(cfg) {
+  return !!(cfg && (
+    cfg.assistanceProfile === 'vibecode'
+    || (cfg.assistanceProfile === 'coding-assistant'
+      && (cfg.projectSurface === 'frontend' || cfg.projectSurface === 'fullstack'))
+  ));
+}
+
 function runCmd(cmd, args, cwd) {
   try {
     const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
@@ -51,7 +59,7 @@ async function run(ctx) {
   cfg.integrations.skills = 'bundled';
 
   // ---- Skills (design — auto-install for vibecode / frontend / fullstack; skip for backend coding-assistant) ----
-  const wantsDesign = cfg.assistanceProfile === 'vibecode' || cfg.projectSurface === 'frontend' || cfg.projectSurface === 'fullstack';
+  const wantsDesign = wantsDesignIntegration(cfg);
   const designGroups = ['brand', 'design-direction', 'design-tools'];
   const designSources = Array.from(new Set(designGroups.flatMap((name) => installableSources(manifest.groups && manifest.groups[name]))));
   if (wantsDesign && designSources.length) {
@@ -87,4 +95,4 @@ async function run(ctx) {
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);
 }
 
-module.exports = { run };
+module.exports = { installableSources, run, wantsDesignIntegration };

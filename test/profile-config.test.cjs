@@ -4,7 +4,9 @@ const assert = require('node:assert');
 const {
   normalizeProfileConfig,
   buildProfileVars,
+  collectProfileConfig,
   defaultVerification,
+  skillDestinations,
 } = require('../src/profile-config.cjs');
 
 test('profile config defaults to coding assistant fullstack pragmatic', () => {
@@ -23,14 +25,14 @@ test('vibecode defaults verification to strict', () => {
   assert.strictEqual(defaultVerification('vibecode'), 'strict');
 });
 
-test('explicit verification flag overrides profile default', () => {
+test('explicit verification flag overrides profile default while vibecode ignores surface', () => {
   const cfg = normalizeProfileConfig({}, {
     profile: 'vibecode',
     surface: 'backend',
     verify: 'minimal',
   });
   assert.strictEqual(cfg.assistanceProfile, 'vibecode');
-  assert.strictEqual(cfg.projectSurface, 'backend');
+  assert.strictEqual(cfg.projectSurface, 'fullstack');
   assert.strictEqual(cfg.verificationLevel, 'minimal');
 });
 
@@ -43,7 +45,7 @@ test('profile flag resets verification when verify flag is absent', () => {
     profile: 'vibecode',
   });
   assert.strictEqual(cfg.assistanceProfile, 'vibecode');
-  assert.strictEqual(cfg.projectSurface, 'frontend');
+  assert.strictEqual(cfg.projectSurface, 'fullstack');
   assert.strictEqual(cfg.verificationLevel, 'strict');
 });
 
@@ -56,6 +58,50 @@ test('existing verification is preserved when profile is not overridden', () => 
   assert.strictEqual(cfg.assistanceProfile, 'coding-assistant');
   assert.strictEqual(cfg.projectSurface, 'frontend');
   assert.strictEqual(cfg.verificationLevel, 'minimal');
+});
+
+test('collectProfileConfig skips surface prompt for vibecode', async () => {
+  const prompts = [];
+  const ask = {
+    choice(label, choices, defaultIndex) {
+      prompts.push(label);
+      if (label === 'Assistance profile:') return 'vibecode';
+      if (label === 'IDE target:') return 'claude-code';
+      return choices[defaultIndex];
+    },
+  };
+
+  const cfg = await collectProfileConfig({}, {}, ask, false);
+
+  assert.deepStrictEqual(prompts, ['Assistance profile:', 'IDE target:']);
+  assert.strictEqual(cfg.assistanceProfile, 'vibecode');
+  assert.strictEqual(cfg.projectSurface, 'fullstack');
+  assert.strictEqual(cfg.verificationLevel, 'strict');
+});
+
+test('collectProfileConfig asks surface for coding assistant', async () => {
+  const prompts = [];
+  const ask = {
+    choice(label, choices, defaultIndex) {
+      prompts.push(label);
+      if (label === 'Assistance profile:') return 'coding-assistant';
+      if (label === 'Project surface:') return 'backend';
+      if (label === 'IDE target:') return 'claude-code';
+      return choices[defaultIndex];
+    },
+  };
+
+  const cfg = await collectProfileConfig({}, {}, ask, false);
+
+  assert.deepStrictEqual(prompts, ['Assistance profile:', 'Project surface:', 'IDE target:']);
+  assert.strictEqual(cfg.assistanceProfile, 'coding-assistant');
+  assert.strictEqual(cfg.projectSurface, 'backend');
+});
+
+test('skillDestinations maps IDE targets to skill directories', () => {
+  assert.deepStrictEqual(skillDestinations(['claude-code']), ['.claude/skills']);
+  assert.deepStrictEqual(skillDestinations(['cursor']), ['.cursor/skills']);
+  assert.deepStrictEqual(skillDestinations(['claude-code', 'cursor']), ['.claude/skills', '.cursor/skills']);
 });
 
 test('profile render vars are human-readable', () => {

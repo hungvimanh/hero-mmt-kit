@@ -63,11 +63,11 @@ async function update(opts) {
     log.ok('Cursor rule + hooks refreshed');
   }
 
-  // Refresh selected vendored core skills (framework-managed; user-added skills untouched)
+  // Refresh bundled core skills (framework-managed; user-added skills untouched)
   const skills = require('./skills.cjs');
   const selectedSkills = skills.selectProcessSkills(cfg);
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
-  log.ok(`Skills refreshed: ${sk.skills} selected core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
+  log.ok(`Skills refreshed: ${sk.skills} bundled core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
 
   const sessionPath = path.join(target, '.hero-vibe-kit', 'session.json');
   if (!exists(sessionPath)) {

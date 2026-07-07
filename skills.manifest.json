@@ -1,5 +1,5 @@
 {
-  "$comment": "Skills the hero-vibe-kit workflow references. The `process` core skills are bundled under templates/skills/ and installed by init/update into .claude/skills/ — most are a curated, lightly trimmed MIT-licensed copy from obra/superpowers, while phase-handoff is authored by hero-vibe-kit (attribution: templates/skills/NOTICE). Design/taste skills are NOT bundled — they are referenced here and (optionally, with consent) installed via the `skills` CLI from their ORIGINAL sources. See docs: TEAM_ROSTER / AGENCY_WORKFLOW.",
+  "$comment": "Skills the hero-vibe-kit workflow references. The `process` core skills are bundled under templates/skills/ and installed by init/update into .claude/skills/ — most are a curated, lightly trimmed MIT-licensed copy from obra/superpowers, while phase-handoff and security-review are authored by hero-vibe-kit (attribution: templates/skills/NOTICE). Design/taste skills are NOT bundled — they are referenced here and installed via the `skills` CLI from their ORIGINAL sources when the active profile/surface calls for them. See docs: TEAM_ROSTER / AGENCY_WORKFLOW.",
   "schema": 1,
   "installer": "skills",
   "groups": {
@@ -8,38 +8,12 @@
       "bundled": true,
       "source": "mixed",
       "license": "MIT for obra/superpowers skills; hero-vibe-kit authored for phase-handoff",
-      "description": "Core process skills the workflow invokes by name. Bundled under templates/skills/ and installed into .claude/skills/ by init/update; most are a curated, lightly trimmed copy of obra/superpowers, and phase-handoff is authored by hero-vibe-kit (attribution in templates/skills/NOTICE). The workflow still runs without them (gates/hooks/router intact) but loses skill-guided depth.",
+      "description": "Core process skills the workflow invokes by name. Bundled under templates/skills/ and installed into .claude/skills/ by init/update; most are a curated, lightly trimmed copy of obra/superpowers, while phase-handoff and security-review are authored by hero-vibe-kit (attribution in templates/skills/NOTICE). The workflow still runs without them (gates/hooks/router intact) but loses skill-guided depth.",
       "selection": {
-        "mode": "derived",
-        "deriveFrom": ["assistanceProfile", "projectSurface", "verificationLevel"],
-        "baseline": [
-          "using-superpowers",
-          "brainstorming",
-          "writing-plans",
-          "executing-plans",
-          "systematic-debugging",
-          "verification-before-completion",
-          "phase-handoff"
-        ],
-        "strictVerificationAdds": [
-          "test-driven-development",
-          "requesting-code-review",
-          "receiving-code-review"
-        ],
-        "fullstackSurfaceAdds": [
-          "dispatching-parallel-agents",
-          "subagent-driven-development"
-        ],
-        "vibecodeProfileAdds": [
-          "test-driven-development",
-          "requesting-code-review",
-          "receiving-code-review",
-          "dispatching-parallel-agents",
-          "subagent-driven-development",
-          "using-git-worktrees",
-          "finishing-a-development-branch"
-        ],
-        "updatePolicy": "refresh selected skills only; preserve existing unselected and user-added skill directories"
+        "mode": "all",
+        "deriveFrom": [],
+        "installPolicy": "install the full bundled process suite for every assistance profile; profiles control when skills are used, not whether they are installed",
+        "updatePolicy": "refresh all framework-managed bundled process skills; preserve user-added skill directories"
       },
       "skills": [
         { "name": "using-superpowers", "source": "obra/superpowers" },
@@ -55,6 +29,7 @@
         { "name": "subagent-driven-development", "source": "obra/superpowers" },
         { "name": "using-git-worktrees", "source": "obra/superpowers" },
         { "name": "finishing-a-development-branch", "source": "obra/superpowers" },
+        { "name": "security-review", "source": "hero-vibe-kit", "description": "OWASP-focused security review for vulnerable surfaces, sensitive data, auth/authz, and AI/LLM risks before completion." },
         { "name": "phase-handoff", "source": "hero-vibe-kit", "description": "Loop executor at real phase boundaries — writes handoff artifact, checkpoints session.json (phase/resumePath/nextAction), and outputs the next-phase prompt. Invoke at every Standard/Full boundary; optional for Tiny/Small." }
       ]
     },

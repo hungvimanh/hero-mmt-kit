@@ -83,11 +83,13 @@ function normalizeProfileConfig(input, flags, opts) {
     hasProfileFlag ? flags.profile : (input.assistanceProfile || DEFAULTS.assistanceProfile),
     PROFILES
   );
-  const projectSurface = validate(
-    'surface',
-    hasSurfaceFlag ? flags.surface : (input.projectSurface || DEFAULTS.projectSurface),
-    SURFACES
-  );
+  const projectSurface = assistanceProfile === 'vibecode'
+    ? DEFAULTS.projectSurface
+    : validate(
+      'surface',
+      hasSurfaceFlag ? flags.surface : (input.projectSurface || DEFAULTS.projectSurface),
+      SURFACES
+    );
 
   let verificationLevel;
   if (hasVerifyFlag) {
@@ -124,7 +126,10 @@ async function collectProfileConfig(input, flags, ask, auto) {
       ? DEFAULTS.assistanceProfile
       : await ask.choice('Assistance profile:', PROFILES, PROFILES.indexOf(DEFAULTS.assistanceProfile));
   }
-  if (!Object.prototype.hasOwnProperty.call(promptFlags, 'surface') && !collected.projectSurface) {
+  if (collected.assistanceProfile === 'vibecode' || promptFlags.profile === 'vibecode') {
+    collected.projectSurface = DEFAULTS.projectSurface;
+    delete promptFlags.surface;
+  } else if (!Object.prototype.hasOwnProperty.call(promptFlags, 'surface') && !collected.projectSurface) {
     collected.projectSurface = auto
       ? DEFAULTS.projectSurface
       : await ask.choice('Project surface:', SURFACES, SURFACES.indexOf(DEFAULTS.projectSurface));

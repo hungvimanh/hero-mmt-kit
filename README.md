@@ -78,7 +78,7 @@ your-project/
 | Setting | Values | Purpose |
 |---|---|---|
 | Assistance profile | `vibecode`, `coding-assistant` | Chooses high-agency AI execution vs developer-led collaboration. |
-| Project surface | `fullstack`, `backend`, `frontend` | Tunes routing, checks, and selected skills to the project shape. |
+| Project surface | `fullstack`, `backend`, `frontend` | Coding Assistant only: tunes routing, checks, and optional taste/design install to the project shape. Vibecode uses implicit `fullstack`. |
 | Verification level | `strict`, `pragmatic`, `minimal` | Controls evidence requirements without encouraging false completion claims. |
 | IDE target | `claude-code`, `cursor`, `both` | Chooses which assistant surfaces to install (interactive prompt if omitted). |
 
@@ -93,11 +93,11 @@ ide    : (required — pass --ide claude-code | cursor | both)
 
 ### Vibecode
 
-Use when the user wants the AI to own technical execution end-to-end. Vibecode installs the full bundled process suite and uses sub-agents/review when risk, scope, or parallel work justifies them.
+Use when the user wants the AI to own technical execution end-to-end. Vibecode does not ask for backend/frontend/fullstack; it uses implicit `fullstack`, auto-installs installable design/taste skills, and coordinates sub-agents/review when risk, scope, or parallel work justifies them.
 
 ### Coding Assistant
 
-Use when the user is a developer who wants Claude to code and verify pragmatically while the developer remains the final review gate. Normal tasks should stay lean:
+Use when the user is a developer who wants Claude to code and verify pragmatically while the developer remains the orchestrator and final review gate. Coding Assistant asks for backend/frontend/fullstack and installs design/taste skills only for frontend or fullstack. Normal tasks should stay lean:
 
 1. understand the request,
 2. make a short plan only when useful,
@@ -118,20 +118,15 @@ Sub-agents are no longer default ceremony. The workflow uses the smallest review
 
 Do not run spec review, quality review, and final review over the same scope unless each pass has a distinct purpose. Final integration review is for multiple independent task streams, high-risk/core changes, or narrow prior reviews.
 
-## Selected bundled process skills
+## Bundled process skills
 
-Core process skills are bundled under `templates/skills/` as a curated MIT-licensed copy of `obra/superpowers` with attribution in `templates/skills/NOTICE`.
+Core process skills are bundled under `templates/skills/` as a curated MIT-licensed copy of `obra/superpowers` plus hero-vibe-kit-authored skills, with attribution in `templates/skills/NOTICE`.
 
-`init` selects bundled skills from the active config:
+`init` installs the full bundled process suite for every profile: superpowers, brainstorming, planning, executing plans, TDD, debugging, code review, delegation, worktrees, branch finishing, security review, verification, and phase handoff. Profiles control when the workflow uses these skills, not whether they are available.
 
-| Active config | Installed skills |
-|---|---|
-| All profiles | Baseline process skills: superpowers, brainstorming, planning, executing plans, debugging, verification, phase handoff. |
-| `verify: strict` | Adds TDD and code-review helper skills. |
-| `surface: fullstack` | Adds delegation helpers for cross-layer coordination. |
-| `profile: vibecode` | Installs the full bundled process suite. |
+Optional design/taste skills are installed separately from their original sources: Vibecode installs them automatically, while Coding Assistant installs them only for `frontend` or `fullstack` surfaces.
 
-`update` refreshes selected framework-managed skills and preserves existing unselected or user-added skill directories. To shrink an older project initialized before selective installation, manually delete unwanted skill directories after review.
+`update` refreshes framework-managed bundled process skills and preserves user-added skill directories.
 
 ## Task router
 
@@ -180,7 +175,7 @@ npx hero-vibe-kit doctor --strict # exit 1 on any compliance failure (CI-safe)
 
 | Tool | What it is | What init does | Tier |
 |---|---|---|---|
-| Core process skills | Bundled process skills from `obra/superpowers` (MIT) | Installs selected skills into `.claude/skills/` | Recommended |
+| Core process skills | Bundled process skills from `obra/superpowers` (MIT) plus hero-vibe-kit-authored skills | Installs the full bundled suite into `.claude/skills/` and/or `.cursor/skills/` | Recommended |
 | taste-skill | UI/design skills from `Leonxlnx/taste-skill` | Auto-installed for `vibecode` profile or `frontend`/`fullstack` surface; skipped for `backend` + `coding-assistant` | Auto (no prompt) |
 | GitNexus | Code-intelligence CLI/MCP | Auto-runs `npx gitnexus analyze` only if this repo already has a `.gitnexus/` index; otherwise skipped | Auto (no prompt) |
 | Serena | Semantic code-intelligence MCP | Auto-seeds pointer notes only if `.serena/` already exists; otherwise skipped | Auto (no prompt) |

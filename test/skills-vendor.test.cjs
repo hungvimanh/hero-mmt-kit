@@ -10,7 +10,7 @@ const VENDORED = [
   'systematic-debugging', 'verification-before-completion', 'requesting-code-review',
   'receiving-code-review', 'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'finishing-a-development-branch', 'using-superpowers',
-  'phase-handoff',
+  'security-review', 'phase-handoff',
 ];
 
 test('every curated core skill is vendored with a SKILL.md + frontmatter', () => {
@@ -50,11 +50,17 @@ test('vendored set matches the manifest process group', () => {
   assert.deepStrictEqual(names, [...VENDORED].sort());
 });
 
-test('phase-handoff skill is authored locally and avoids placeholders', () => {
-  const skill = fs.readFileSync(path.join(SKILLS_DIR, 'phase-handoff', 'SKILL.md'), 'utf8');
-  assert.match(skill, /^name: phase-handoff$/m);
-  assert.match(skill, /^description: Use when/m);
-  assert.match(skill, /artifact-first/);
-  assert.match(skill, /Sanity check/);
-  assert.doesNotMatch(skill, /TBD|TODO|implement later|fill in details/i);
+test('hero-vibe-kit-authored skills avoid placeholders', () => {
+  const phaseHandoff = fs.readFileSync(path.join(SKILLS_DIR, 'phase-handoff', 'SKILL.md'), 'utf8');
+  assert.match(phaseHandoff, /^name: phase-handoff$/m);
+  assert.match(phaseHandoff, /^description: Use when/m);
+  assert.match(phaseHandoff, /artifact-first/);
+  assert.match(phaseHandoff, /Sanity check/);
+  assert.doesNotMatch(phaseHandoff, /TBD|TODO|implement later|fill in details/i);
+
+  const securityReview = fs.readFileSync(path.join(SKILLS_DIR, 'security-review', 'SKILL.md'), 'utf8');
+  assert.match(securityReview, /^name: security-review$/m);
+  assert.match(securityReview, /OWASP/i);
+  assert.match(securityReview, /auth\/authz/i);
+  assert.doesNotMatch(securityReview, /TBD|TODO|implement later|fill in details/i);
 });

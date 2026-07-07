@@ -14,16 +14,20 @@ This document defines the active operating profile for this project. It is the c
 
 | Profile | Meaning | Default posture |
 |---|---|---|
-| Vibecode (`vibecode`) | High-agency AI development where the agent owns routing, gates, implementation, review, and evidence unless the user overrides. | More autonomous; uses sub-agents and delegated review when risk, scope, or parallel work justifies them. |
-| Coding Assistant (`coding-assistant`) | Human-led development where the agent assists, proposes, implements bounded edits, and keeps the developer in the final review loop. | Pragmatic by default; normal tasks use direct implementation, targeted checks, and explicit developer-review handoff. |
+| Vibecode (`vibecode`) | High-agency AI development where the user gives the brief or idea and the AI team owns clarification, routing, planning, implementation, testing, SQA/review, and evidence unless blocked. | Professional software-company posture: clarify ambiguity, coordinate specialists, produce artifacts, and report decisions/evidence proactively. |
+| Coding Assistant (`coding-assistant`) | Human-led development where the developer owns orchestration and invokes the agent through explicit planning, executing, review, and testing phases. | Pragmatic by default; the agent brainstorms and implements bounded phase work, then hands back developer-readable artifacts and evidence. |
 
 ## Project surface
+
+Vibecode does not ask for a surface. It treats the project as full-lifecycle/fullstack by default so the AI team can coordinate product, design, backend, frontend, testing, and SQA as needed.
+
+Coding Assistant asks for the project surface because the human developer is choosing which phase checks and optional taste/design skills should be active.
 
 | Surface | Use when | Routing emphasis |
 |---|---|---|
 | Fullstack (`fullstack`) | The project can touch UI, API/backend, data, deployment, or cross-layer contracts. | Lock interface contracts before parallel FE/BE work; apply frontend and backend checks when touched. |
-| Backend (`backend`) | The project primarily changes services, APIs, data, infra, CLIs, or jobs. | Emphasize contracts, data safety, authz, migrations, performance, and API consumers. |
-| Frontend (`frontend`) | The project primarily changes UI, state, client routing, design systems, or browser/mobile behavior. | Emphasize design standards, accessibility, responsive states, visual QA, and API contract expectations. |
+| Backend (`backend`) | The project primarily changes services, APIs, data, infra, CLIs, or jobs. | Emphasize contracts, data safety, authz, migrations, performance, and API consumers. Taste/design skills are skipped for Coding Assistant backend-only projects. |
+| Frontend (`frontend`) | The project primarily changes UI, state, client routing, design systems, or browser/mobile behavior. | Emphasize design standards, accessibility, responsive states, visual QA, and API contract expectations. Taste/design skills are installed for Coding Assistant frontend/fullstack projects. |
 
 ## Verification level
 
@@ -37,16 +41,17 @@ Verification level changes how much evidence is required; it does not remove the
 
 ## Bundled process skills
 
-`init` installs a selected subset of bundled process skills into `.claude/skills/` from the active config above. Optional design/taste, GitNexus, and Serena capabilities are not redistributed as bundled skills; they remain referenced or installed from their original sources.
+`init` installs the full bundled process skill suite into `.claude/skills/` and/or `.cursor/skills/` for every profile. Profile and verification settings control when the workflow uses those skills; they no longer control whether the skills are available.
 
-| Active config | Bundled process skills installed |
+The bundled process suite includes planning, execution, debugging, TDD, review, delegation, worktree, branch-finishing, security-review, verification, and phase-handoff skills. Optional design/taste, GitNexus, and Serena capabilities are not redistributed as bundled process skills; they remain referenced or installed from their original sources.
+
+| Active config | Optional design/taste install behavior |
 |---|---|
-| All profiles | Baseline process skills: `using-superpowers`, `brainstorming`, `writing-plans`, `executing-plans`, `systematic-debugging`, `verification-before-completion`, `phase-handoff`. |
-| Verification `strict` | Adds `test-driven-development`, `requesting-code-review`, and `receiving-code-review`. |
-| Surface `fullstack` | Adds `dispatching-parallel-agents` and `subagent-driven-development` for cross-layer coordination. |
-| Profile `vibecode` | Installs the full bundled process suite, making review, delegation, worktree, and branch-finishing skills available when the adaptive workflow calls for them. |
+| Profile `vibecode` | Auto-installs installable brand/design/taste sources because the AI team owns full product delivery. |
+| Profile `coding-assistant` + surface `frontend` or `fullstack` | Installs installable brand/design/taste sources for UI/design work. |
+| Profile `coding-assistant` + surface `backend` | Skips taste/design install. |
 
-`update` refreshes the selected skills for the current config. It preserves existing unselected skill directories because they may be user-added or intentionally retained. To shrink an older project that was initialized before selective installation, delete unwanted skill directories manually after review.
+`update` refreshes all bundled process skills for the current framework version. It preserves user-added skill directories that are not part of the framework-managed process suite.
 
 ## Adaptive review budget
 

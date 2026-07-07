@@ -21,7 +21,7 @@ Vendored skills from obra/superpowers:
   finishing-a-development-branch, using-superpowers
 
 Framework-authored skills shipped by hero-vibe-kit:
-  phase-handoff
+  phase-handoff, security-review
 
 Design / visual-direction skills are NOT vendored — they are referenced in
 skills.manifest.json and installed from their original sources on demand.

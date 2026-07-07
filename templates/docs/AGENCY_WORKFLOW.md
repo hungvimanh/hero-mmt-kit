@@ -88,12 +88,13 @@ Apply the active profile from [ASSISTANCE_PROFILES.md](./ASSISTANCE_PROFILES.md)
 
 | Area | Vibecode | Coding Assistant |
 |---|---|---|
-| Default posture | Agent owns routing, gates, implementation, and evidence unless blocked. | Human-led; agent assists, proposes, and keeps developer review central. |
-| New features | Full path by default, with PRD and TDD gates. | Full path for broad features; bounded enhancements may stay Standard with user agreement. |
-| Plan Mode gates | Treat required gates as strict blockers. | Treat required gates as blockers; keep plans concise for developer approval. |
-| Verification | Run the active verification level and report evidence before claims. | Run the active verification level; prefer targeted checks plus developer-readable evidence. |
-| Review/QA sub-agent | Required for HIGH/CRITICAL, security-sensitive, or broad multi-area work; otherwise choose the smallest review budget that proves the claim. | Required for HIGH/CRITICAL or sensitive work; optional for normal tasks, with targeted verification and explicit developer handoff. |
-| Phase handoff | Use artifact-first handoffs at real phase boundaries. | Use handoffs when context, role, or review boundaries make them useful. |
+| Default posture | AI team acts like a professional software company: the user gives a brief/idea, then the agent clarifies ambiguity, routes, plans, delegates, implements, tests, reviews/SQA, and reports evidence unless blocked. | Human-led orchestration: the developer chooses the phase, invokes the relevant skills, and keeps final review central. |
+| New features | Full path by default, with PRD, technical plan, implementation, testing, security/SQA, and handoff artifacts. | Full path for broad features; bounded enhancements may stay Standard with user agreement and explicit phase artifacts. |
+| Plan Mode gates | Treat required gates as strict blockers; proactively ask to close unclear product/technical decisions. | Treat required gates as blockers; use `brainstorming` with the human, then write a concise `.md` plan for approval. |
+| Verification | Run the active verification level and report evidence before claims. | Run the active verification level; prefer targeted checks plus developer-readable evidence and handoff docs. |
+| Review/QA sub-agent | Required for HIGH/CRITICAL, security-sensitive, or broad multi-area work; otherwise choose the smallest review budget that proves the claim. | Review is a separate phase: read planning + execution artifacts + code, check build/syntax/conventions/plan completeness, and do not write unit tests there. |
+| Testing | Own test strategy, including TDD when appropriate, and coordinate fixes until evidence supports the claim. | Separate testing phase supports either post-implementation unit tests or TDD-first tests before execution. |
+| Phase handoff | Use artifact-first handoffs at real phase boundaries. | Use handoffs between planning → executing → review → testing/security when context, role, or evidence boundaries change. |
 
 ### Lightweight Main Agent Protocol
 
@@ -117,6 +118,16 @@ Main Agent does directly:
 - pragmatic verification and final accountability before completion claims.
 
 Sub-agents should handle broad reading, MCP exploration, noisy command execution, independent implementation tracks, QA, security, performance review, and log analysis when that protects main-thread context or adds specialist value.
+
+### Coding Assistant phase model
+
+In Coding Assistant mode, orchestration belongs to the human developer. The agent should stay inside the current phase unless the user asks it to advance or the workflow requires a gate/handoff.
+
+1. **Planning:** trigger `brainstorming`; clarify goals, requirements, constraints, edge cases, and open questions with the human; then write the agreed solution and detailed implementation plan to a `.md` artifact.
+2. **Executing:** read the planning artifact plus any TDD/test plan; implement the plan; use `subagent-driven-development` and `dispatching-parallel-agents` to run dependent work sequentially and independent work in parallel; then write an execution handoff `.md` describing what changed, evidence collected, and remaining risks.
+3. **Review:** read the planning artifact, execution handoff, and changed code. Check build success, syntax, project conventions, and whether the implementation matches the plan. Do **not** write unit tests in this phase.
+4. **Testing:** choose one mechanism: post-implementation unit tests based on the plan + execution handoff, or TDD-first tests written before execution that the implementation must make pass. Run tests and write a test result report.
+5. **Security review:** trigger `security-review` for sensitive surfaces, Full path work, or any OWASP/security-relevant change; record findings and required fixes before completion.
 
 ### Context Budget Protocol
 

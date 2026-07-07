@@ -42,20 +42,19 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     'docs/templates/DESIGN_BRIEF.md',
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
     '.claude/skills/dispatching-parallel-agents/SKILL.md', '.claude/skills/subagent-driven-development/SKILL.md',
-    '.claude/skills/phase-handoff/SKILL.md',
+    '.claude/skills/security-review/SKILL.md', '.claude/skills/phase-handoff/SKILL.md',
     '.cursor/skills/NOTICE', '.cursor/skills/brainstorming/SKILL.md',
     '.cursor/skills/dispatching-parallel-agents/SKILL.md', '.cursor/skills/subagent-driven-development/SKILL.md',
-    '.cursor/skills/phase-handoff/SKILL.md']) {
+    '.cursor/skills/security-review/SKILL.md', '.cursor/skills/phase-handoff/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
-  // vendored skills carry MIT attribution; default Coding Assistant installs a selected subset
+  // vendored skills carry MIT attribution; every profile installs the full bundled process suite
   assert.match(fs.readFileSync(path.join(dir, '.claude/skills/NOTICE'), 'utf8'), /obra\/superpowers/);
   assert.ok(!fs.existsSync(path.join(dir, '.claude/skills/writing-skills')), 'writing-skills excluded from vendored set');
-  assert.ok(!hasSkill(dir, 'test-driven-development'), 'default pragmatic Coding Assistant should not install TDD skill');
-  assert.ok(!hasSkill(dir, 'requesting-code-review'), 'default pragmatic Coding Assistant should not install review skill');
-  assert.ok(!hasSkill(dir, 'using-git-worktrees'), 'default pragmatic Coding Assistant should not install worktree skill');
-  assert.ok(!hasSkill(dir, 'finishing-a-development-branch'), 'default pragmatic Coding Assistant should not install branch finishing skill');
-  assert.ok(hasSkill(dir, 'brainstorming', '.cursor/skills'), 'cursor skills should mirror claude selection');
+  for (const name of PROCESS_SKILLS) {
+    assert.ok(hasSkill(dir, name), `claude should install ${name}`);
+    assert.ok(hasSkill(dir, name, '.cursor/skills'), `cursor should install ${name}`);
+  }
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'en')), 'consumer docs should not include duplicate en tree');
   assert.ok(!fs.existsSync(path.join(dir, 'docs', 'vi')), 'consumer docs should not include duplicate vi tree');
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
@@ -158,18 +157,18 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
     replaceManagedBlock(fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8') + '\nUSER AGENTS FOOTER\n', 'STALE AGENTS MANAGED GUIDANCE')
   );
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE AFTER INIT\n');
-  // corrupt a selected framework-managed vendored skill; update must refresh it
+  // corrupt a framework-managed vendored skill; update must refresh it
   const skillFile = path.join(dir, '.claude', 'skills', 'brainstorming', 'SKILL.md');
   fs.writeFileSync(skillFile, 'CORRUPTED\n');
-  // Existing unselected skill dirs are preserved, not pruned or refreshed.
-  const unselectedSkill = path.join(dir, '.claude', 'skills', 'using-git-worktrees', 'SKILL.md');
+  // User-added skill dirs outside the framework-managed process suite are preserved.
+  const unselectedSkill = path.join(dir, '.claude', 'skills', 'custom-user-skill', 'SKILL.md');
   fs.mkdirSync(path.dirname(unselectedSkill), { recursive: true });
-  fs.writeFileSync(unselectedSkill, 'CUSTOM UNSELECTED SKILL\n');
+  fs.writeFileSync(unselectedSkill, 'CUSTOM USER SKILL\n');
 
   const upd = cli(['update', '--dir', dir]);
   assert.strictEqual(upd.status, 0, upd.stderr);
   assert.doesNotMatch(fs.readFileSync(skillFile, 'utf8'), /^CORRUPTED/, 'update should refresh selected vendored skill');
-  assert.strictEqual(fs.readFileSync(unselectedSkill, 'utf8'), 'CUSTOM UNSELECTED SKILL\n', 'update should preserve unselected skills');
+  assert.strictEqual(fs.readFileSync(unselectedSkill, 'utf8'), 'CUSTOM USER SKILL\n', 'update should preserve user-added skills');
 
   claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
@@ -213,21 +212,21 @@ test('init --yes writes default assistance profile config and docs', () => {
   assert.ok(fs.existsSync(path.join(dir, 'docs', 'ASSISTANCE_PROFILES.md')), 'missing profile reference doc');
 });
 
-test('init accepts vibecode backend flags and derives strict verification', () => {
+test('init accepts vibecode flags, ignores surface, and derives strict verification', () => {
   const dir = mkdir();
   const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations', '--profile', 'vibecode', '--surface', 'backend', '--ide', 'claude-code']);
   assert.strictEqual(r.status, 0, r.stderr);
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-vibe-kit', 'config.json'), 'utf8'));
   assert.strictEqual(config.assistanceProfile, 'vibecode');
-  assert.strictEqual(config.projectSurface, 'backend');
+  assert.strictEqual(config.projectSurface, 'fullstack');
   assert.strictEqual(config.verificationLevel, 'strict');
 
   for (const name of PROCESS_SKILLS) assert.ok(hasSkill(dir, name), `vibecode should install ${name}`);
 
   const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /Active assistance profile: Vibecode/);
-  assert.match(claude, /Project surface: Backend/);
+  assert.match(claude, /Project surface: Fullstack/);
 });
 
 test('init accepts coding assistant frontend minimal verification flags', () => {
@@ -240,12 +239,7 @@ test('init accepts coding assistant frontend minimal verification flags', () => 
   assert.strictEqual(config.projectSurface, 'frontend');
   assert.strictEqual(config.verificationLevel, 'minimal');
 
-  for (const name of ['using-superpowers', 'brainstorming', 'writing-plans', 'executing-plans', 'systematic-debugging', 'verification-before-completion', 'phase-handoff']) {
-    assert.ok(hasSkill(dir, name), `frontend minimal should install ${name}`);
-  }
-  for (const name of ['test-driven-development', 'requesting-code-review', 'dispatching-parallel-agents', 'subagent-driven-development', 'using-git-worktrees', 'finishing-a-development-branch']) {
-    assert.ok(!hasSkill(dir, name), `frontend minimal should not install ${name}`);
-  }
+  for (const name of PROCESS_SKILLS) assert.ok(hasSkill(dir, name), `frontend minimal should install ${name}`);
 });
 
 test('init --yes without --ide fails before writing config', () => {
@@ -298,10 +292,10 @@ test('update backfills profile fields and accepts overrides', () => {
 
   const migrated = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   assert.strictEqual(migrated.assistanceProfile, 'vibecode');
-  assert.strictEqual(migrated.projectSurface, 'backend');
+  assert.strictEqual(migrated.projectSurface, 'fullstack');
   assert.strictEqual(migrated.verificationLevel, 'minimal');
 
   const agents = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
   assert.match(agents, /Active assistance profile: Vibecode/);
-  assert.match(agents, /Project surface: Backend/);
+  assert.match(agents, /Project surface: Fullstack/);
 });

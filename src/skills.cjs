@@ -17,6 +17,7 @@ const CORE_SKILL_ORDER = [
   'subagent-driven-development',
   'using-git-worktrees',
   'finishing-a-development-branch',
+  'security-review',
   'phase-handoff',
 ];
 
@@ -61,12 +62,8 @@ function uniqueCoreSkills(names) {
   return CORE_SKILL_ORDER.filter((name) => selected.has(name));
 }
 
-function selectProcessSkills(cfg) {
-  const selected = BASELINE_SKILLS.slice();
-  if (cfg && cfg.verificationLevel === 'strict') selected.push(...STRICT_VERIFICATION_SKILLS);
-  if (cfg && cfg.projectSurface === 'fullstack') selected.push(...FULLSTACK_SURFACE_SKILLS);
-  if (cfg && cfg.assistanceProfile === 'vibecode') selected.push(...VIBECODE_PROFILE_SKILLS);
-  return uniqueCoreSkills(selected);
+function selectProcessSkills() {
+  return CORE_SKILL_ORDER.slice();
 }
 
 // Recursively copy a directory tree, returning the number of files written.
@@ -91,8 +88,8 @@ function sourceEntries(src, selectedSkills) {
 
 // Install vendored core skills (templates/skills/<name>/) into the consumer's
 // native skills dirs (.claude/skills/ and/or .cursor/skills/). Framework-managed:
-// overwrites selected framework skill dirs and the NOTICE file, but never deletes
-// skill dirs the user added or skills not selected for the active profile.
+// overwrites requested framework skill dirs and the NOTICE file, but never deletes
+// user-added skill dirs outside the framework-managed process suite.
 function installSkills(pkgRoot, target, opts) {
   opts = opts || {};
   const src = path.join(pkgRoot, 'templates', 'skills');

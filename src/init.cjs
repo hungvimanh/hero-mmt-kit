@@ -87,7 +87,7 @@ async function init(opts) {
   const skills = require('./skills.cjs');
   const selectedSkills = skills.selectProcessSkills(cfg);
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
-  log.ok(`Skills  : ${sk.skills} selected core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
+  log.ok(`Skills  : ${sk.skills} bundled core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
 
   // ---- 4. config + session state ----
   writeJSON(path.join(target, '.hero-vibe-kit', 'config.json'), cfg);

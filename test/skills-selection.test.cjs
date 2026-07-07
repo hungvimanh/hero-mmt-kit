@@ -13,71 +13,20 @@ const {
 } = require('../src/skills.cjs');
 
 function mkdir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-skills-')); }
-function hasSkill(dir, name) { return fs.existsSync(path.join(dir, '.claude', 'skills', name, 'SKILL.md')); }
+function hasSkill(dir, name, rel = '.claude/skills') { return fs.existsSync(path.join(dir, rel, name, 'SKILL.md')); }
 
-const BASELINE = [
-  'using-superpowers',
-  'brainstorming',
-  'writing-plans',
-  'executing-plans',
-  'systematic-debugging',
-  'verification-before-completion',
-  'phase-handoff',
-];
-
-test('selectProcessSkills returns lean baseline for coding assistant frontend minimal', () => {
-  const selected = selectProcessSkills({
-    assistanceProfile: 'coding-assistant',
-    projectSurface: 'frontend',
-    verificationLevel: 'minimal',
-  });
-
-  assert.deepStrictEqual(selected, BASELINE);
-  for (const name of ['test-driven-development', 'requesting-code-review', 'receiving-code-review', 'using-git-worktrees', 'finishing-a-development-branch']) {
-    assert.ok(!selected.includes(name), `${name} should not be selected`);
+test('selectProcessSkills returns the full process suite for every profile', () => {
+  for (const cfg of [
+    { assistanceProfile: 'coding-assistant', projectSurface: 'backend', verificationLevel: 'minimal' },
+    { assistanceProfile: 'coding-assistant', projectSurface: 'frontend', verificationLevel: 'pragmatic' },
+    { assistanceProfile: 'coding-assistant', projectSurface: 'fullstack', verificationLevel: 'strict' },
+    { assistanceProfile: 'vibecode', projectSurface: 'fullstack', verificationLevel: 'strict' },
+  ]) {
+    assert.deepStrictEqual(selectProcessSkills(cfg), CORE_SKILL_ORDER);
   }
 });
 
-test('selectProcessSkills adds fullstack delegation helpers for pragmatic coding assistant', () => {
-  const selected = selectProcessSkills({
-    assistanceProfile: 'coding-assistant',
-    projectSurface: 'fullstack',
-    verificationLevel: 'pragmatic',
-  });
-
-  assert.ok(selected.includes('dispatching-parallel-agents'));
-  assert.ok(selected.includes('subagent-driven-development'));
-  assert.ok(!selected.includes('test-driven-development'));
-  assert.ok(!selected.includes('requesting-code-review'));
-  assert.ok(!selected.includes('using-git-worktrees'));
-  assert.ok(!selected.includes('finishing-a-development-branch'));
-});
-
-test('selectProcessSkills adds strict verification helpers for coding assistant', () => {
-  const selected = selectProcessSkills({
-    assistanceProfile: 'coding-assistant',
-    projectSurface: 'backend',
-    verificationLevel: 'strict',
-  });
-
-  for (const name of ['test-driven-development', 'requesting-code-review', 'receiving-code-review']) {
-    assert.ok(selected.includes(name), `${name} should be selected`);
-  }
-  assert.ok(!selected.includes('using-git-worktrees'));
-  assert.ok(!selected.includes('finishing-a-development-branch'));
-});
-
-test('selectProcessSkills installs the full process suite for vibecode', () => {
-  const selected = selectProcessSkills({
-    assistanceProfile: 'vibecode',
-    projectSurface: 'backend',
-    verificationLevel: 'strict',
-  });
-
-  assert.deepStrictEqual(selected, CORE_SKILL_ORDER);
-});
-
-test('installSkills copies only selected skill directories plus NOTICE', () => {
+test('installSkills copies selected skill directories plus NOTICE', () => {
   const dir = mkdir();
   const result = installSkills(PKG_ROOT, dir, { selectedSkills: ['using-superpowers', 'brainstorming'] });
 
@@ -88,6 +37,23 @@ test('installSkills copies only selected skill directories plus NOTICE', () => {
   assert.ok(hasSkill(dir, 'brainstorming'));
   assert.ok(fs.existsSync(path.join(dir, '.claude', 'skills', 'brainstorming', 'scripts', 'server.cjs')), 'nested skill scripts should be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'test-driven-development')));
+});
+
+test('installSkills copies all process skills selected by profile selection', () => {
+  const dir = mkdir();
+  const result = installSkills(PKG_ROOT, dir, { selectedSkills: selectProcessSkills({ assistanceProfile: 'coding-assistant', projectSurface: 'backend' }) });
+
+  assert.strictEqual(result.skills, CORE_SKILL_ORDER.length);
+  assert.deepStrictEqual(result.selectedSkills, CORE_SKILL_ORDER);
+  for (const name of CORE_SKILL_ORDER) assert.ok(hasSkill(dir, name), `missing ${name}`);
+});
+
+test('installSkills mirrors selected skills to multiple destinations', () => {
+  const dir = mkdir();
+  installSkills(PKG_ROOT, dir, { selectedSkills: ['brainstorming'], destinations: ['.claude/skills', '.cursor/skills'] });
+
+  assert.ok(hasSkill(dir, 'brainstorming', '.claude/skills'));
+  assert.ok(hasSkill(dir, 'brainstorming', '.cursor/skills'));
 });
 
 test('installSkills preserves unselected existing skill directories', () => {
