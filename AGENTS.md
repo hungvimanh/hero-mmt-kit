@@ -1,6 +1,6 @@
 # AGENTS.md — hero-mmt-kit (framework repo)
 
-This repository/branch is the hero-mmt-kit framework itself — a hard fork of hero-vibe-kit. hero-vibe-kit is the AI-led agency workflow kit; hero-mmt-kit is the human-led, Claude-Code-only coding assistant kit. No shared migration path — don't cherry-pick between the two. Any agent working here:
+This repository/branch is the hero-mmt-kit framework itself — the human-led, Claude-Code-only coding assistant kit. It is not a consumer project. Any agent working here:
 
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md) first.
 - Workflow skill sources live in `templates/skills/using-hero/` and the `hero-*` skills; consumer projects receive the same skills installed into `.claude/skills/`.
@@ -13,7 +13,7 @@ This repository/branch is the hero-mmt-kit framework itself — a hard fork of h
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **hero-vibe-kit** (2069 symbols, 2447 relationships, 19 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **hero-mmt-kit** (2069 symbols, 2447 relationships, 19 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -36,10 +36,10 @@ This project is indexed by GitNexus as **hero-vibe-kit** (2069 symbols, 2447 rel
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/hero-vibe-kit/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/hero-vibe-kit/clusters` | All functional areas |
-| `gitnexus://repo/hero-vibe-kit/processes` | All execution flows |
-| `gitnexus://repo/hero-vibe-kit/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/hero-mmt-kit/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/hero-mmt-kit/clusters` | All functional areas |
+| `gitnexus://repo/hero-mmt-kit/processes` | All execution flows |
+| `gitnexus://repo/hero-mmt-kit/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 
