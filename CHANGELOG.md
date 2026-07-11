@@ -4,6 +4,31 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.0] - 2026-07-11
+
+### Added
+
+- `hero-report`, an on-demand report writer for coding, reviewing, and unit-test phases when a durable report is explicitly wanted.
+- `active-state-bridge.cjs`, which injects `docs/ACTIVE_STATE.md` context at session start and makes that file the single durable workflow-state source.
+- Expanded `hero-security` into a standalone OWASP + AI/LLM security engineering workflow with a 14-domain control baseline, release gates, verification requirements, and residual-risk reporting.
+- Regression coverage to ensure `security-review` stays merged into `hero-security` and `hero-security` retains a standalone `docs/security-reports/YYYY-MM-DD-<slug>.md` artifact convention.
+
+### Changed
+
+- `hero-security` is now an independent security-review flow that always writes its own report under `docs/security-reports/...`; security findings are not appended into coding/review/test reports as a substitute.
+- `hero-coding`, `hero-reviewing`, `hero-unit-test`, and `hero-strict` now recommend or link related independent phases instead of embedding security or report-writing work.
+- Reports for coding/review/test phases are on-demand via `hero-report`; chat summaries remain the default for those phases.
+- `docs/ACTIVE_STATE.md` replaces `.hero-mmt-kit/session.json` as the workflow state source used by init/update/doctor guidance.
+- `git-guard` behavior was tightened to avoid false positives such as branch names containing `main`, while keeping dangerous git commands guarded.
+- README, framework guidance, manifest metadata, and vendored skill documentation now describe the report-on-demand model and standalone security-report exception consistently.
+
+### Removed
+
+- Bundled `security-review` skill; its OWASP + AI/LLM review content now lives in `hero-security`.
+- `session-bridge.cjs`, `.hero-mmt-kit/session.schema.json`, and session-pointer state logic.
+- `finishing-a-development-branch` from the bundled process-skill set.
+- Legacy presets and workflow-state tests tied to the removed session/profile model.
+
 ## [1.0.0] - 2026-07-10
 
 ### Added

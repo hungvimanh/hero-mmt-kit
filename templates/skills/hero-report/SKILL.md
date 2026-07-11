@@ -14,7 +14,7 @@ hero-report is the on-demand report writer for the hero-* workflow. `hero-coding
 - The user explicitly asks for a report, or for the work to be written down.
 - The change is Standard-or-larger and a durable artifact would matter for handoff, audit, or review — flag this to the user and let them decide rather than writing unasked.
 - `hero-strict` needs to append a verification section to a report that doesn't exist yet.
-- `hero-security` needs to append findings to a report that doesn't exist yet.
+- A completed `hero-security` report needs a link from another report for traceability.
 
 Skip it for Tiny/Fast work where a chat summary is enough and nobody asked for a file.
 
@@ -32,7 +32,7 @@ Skip it for Tiny/Fast work where a chat summary is enough and nobody asked for a
 4. Write the file at the conventional path (create parent directories as needed).
 5. If `docs/ACTIVE_STATE.md` has a row for this work item, add a one-line link to the new report.
 6. If asked to report on multiple stages, write one file per stage — never merge coding/review/test reports into a single file.
-7. If invoked by `hero-security` or `hero-strict` to append a section to a report that doesn't exist yet, write the underlying report first (per its owning skill's convention), then append the requested section.
+7. If invoked after `hero-security`, do not recreate or replace the security report; link to the standalone `docs/security-reports/...` artifact from the relevant coding/review/test report when traceability is needed.
 
 ## Definition of Done
 
@@ -43,4 +43,4 @@ Skip it for Tiny/Fast work where a chat summary is enough and nobody asked for a
 ## Related Skills
 
 - Reads the artifact convention from `hero-coding`, `hero-reviewing`, or `hero-unit-test` — does not duplicate it.
-- Invoked by `hero-security` or `hero-strict` to create a missing report before appending findings/verification.
+- May link to `hero-security`'s standalone `docs/security-reports/...` artifact from another report when traceability is useful.

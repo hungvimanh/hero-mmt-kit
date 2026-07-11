@@ -307,8 +307,9 @@ Check input validation, path traversal, upload handling, redirects, CORS/CSRF, X
 8. Rank gaps by risk: Critical, High, Medium, Low.
 9. Define remediation actions with owner and due date when the user needs an auditable plan.
 10. Run or cite verification tests, scans, config checks, and log checks before a release verdict.
-11. State findings and a verdict (Pass / Pass with follow-ups / Blocked) in chat. If a written coding/review report already exists for this work, append the findings to it; if one was requested but doesn't exist yet, invoke `hero-report` to write the underlying report first, then append.
-12. If any Critical/High findings exist, they must be fixed or explicitly accepted with a documented reason before the work is considered done.
+11. Write a standalone security report at `docs/security-reports/YYYY-MM-DD-<slug>.md` with a verdict: Pass / Pass with follow-ups / Blocked.
+12. State the verdict and report path in chat.
+13. If any Critical/High findings exist, they must be fixed or explicitly accepted with a documented reason before the work is considered done.
 
 Do not run exploitative tests against external systems. Do not recommend detection evasion, persistence, destructive actions, destructive payloads, denial-of-service, credential theft, supply-chain compromise, or broad targeting.
 
@@ -326,9 +327,58 @@ Block release when any of the following is true:
 - AI/tool-calling feature can perform irreversible, external, privileged, or high-risk action without confirmation and least privilege.
 - File upload accepts executable, oversized, path-traversal, or parser-confusion payloads without effective controls.
 
-## Output
+## Output Artifact
 
-Findings are stated in chat and, if a report exists (or is requested), appended to it (`docs/coding-reports/...` or `docs/reviews/...`) via `hero-report`. hero-security has no artifact convention of its own — it never creates a standalone security report file.
+`docs/security-reports/YYYY-MM-DD-<slug>.md` — a standalone security review report. `hero-security` owns this artifact; do not append its findings into coding/review/test reports as a substitute for the security report.
+
+Use this format:
+
+```markdown
+# Security Review: <slug>
+
+## Scope reviewed
+- Files / modules:
+- Endpoints / services / clients:
+- Data class and exposure:
+- Account types and identity model:
+- Artifacts:
+- Commands or evidence read:
+
+## Applied domains
+- Domain numbers and names:
+- Domains not applicable:
+- Domains not reviewed:
+
+## Findings
+| Severity | Area | Evidence | Exploit path | Risk / impact | Recommendation | Status |
+|---|---|---|---|---|---|---|
+
+## Required fixes before release
+- ...
+
+## Recommended improvements
+- ...
+
+## Verification
+- Tests / scans / config checks / log checks performed:
+- Missing verification:
+
+## OWASP coverage
+- Web Top 10 categories checked:
+- AI/LLM categories checked, if applicable:
+
+## Residual risks
+- Accepted risk:
+- Owner:
+- Deadline:
+
+## Not reviewed / uncertainty
+- ...
+
+## Verdict
+- Pass / Pass with follow-ups / Blocked
+- Required fixes before completion:
+```
 
 Severity guide:
 - **Critical:** likely unauthorized access, data loss/exfiltration, RCE, secret exposure, supply-chain compromise, payment compromise, or tenant isolation break.
@@ -362,7 +412,8 @@ Flag these explicitly when observed:
 - Relevant baseline domains are marked Verified, Missing, Not applicable, or Not reviewed.
 - No unresolved Critical/High findings remain: each is either fixed or explicitly accepted with owner, reason, and deadline.
 - Release-gate blockers are resolved before Pass.
-- Findings and verdict are stated, at minimum in chat; appended to the invoking report if one exists or was requested, noting any missing inputs, missing verification, residual risks, or unreviewed surfaces.
+- Standalone security report is saved at `docs/security-reports/YYYY-MM-DD-<slug>.md`.
+- Findings and verdict are stated in chat with a link/path to the standalone report, noting any missing inputs, missing verification, residual risks, or unreviewed surfaces.
 
 ## ACTIVE_STATE.md Update
 
@@ -373,4 +424,4 @@ Flag these explicitly when observed:
 - Independent of `hero-coding` and `hero-reviewing`; those skills may recommend this security pass but do not invoke it as a wrapper.
 - Complements `hero-strict`: strict verification can flag that this security review is still missing.
 - Points at `docs/SECURITY_STANDARDS.md` for project-level policy and standards.
-- Use `hero-report` if findings need to be appended to a report that doesn't exist yet.
+- Does not use `hero-report` as a substitute for its own report; security findings belong in `docs/security-reports/...`.

@@ -66,18 +66,18 @@ your-project/
 
 Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The six operative skills:
 
-| Skill | Use when | Report (on request via `hero-report`) |
+| Skill | Use when | Artifact / report |
 |---|---|---|
 | `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written; it's the deliverable, not a report |
 | `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings appended to the invoking report, if one exists/was requested. |
+| `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
 | `hero-strict` | Extra rigor wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 
 A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact. Each phase is "done" on its own terms — there's no automatic full-pipeline run; the developer chooses what to invoke next.
 
-`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A seventh, on-demand skill, `hero-report`, writes the report file when the user actually wants one, at the path convention the source skill defines.
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A seventh, on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. `hero-security` is the exception: it is an independent security flow and always writes its own `docs/security-reports/...` artifact.
 
 These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` is a standalone security review skill rather than a wrapper. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
 

@@ -11,13 +11,13 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 
 ## The core skills
 
-| Skill | Use when | Report (on request via `hero-report`) |
+| Skill | Use when | Artifact / report |
 |---|---|---|
 | `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written (it's the deliverable, not a report) |
 | `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings appended to the invoking report, if one exists/was requested. |
+| `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
 | `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 | `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
@@ -27,7 +27,7 @@ A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or 
 
 ## Report writing
 
-`hero-coding`, `hero-reviewing`, and `hero-unit-test` end each phase with a concise chat summary, not a report file by default. If a written report is wanted, invoke `hero-report` — it writes to the path convention documented in the source skill's own SKILL.md. `hero-planning`'s plan file is the exception: it's the phase's actual deliverable (read by `hero-coding` and needed for approval), so it's always written, not on-demand.
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` end each phase with a concise chat summary, not a report file by default. If a written report is wanted for those phases, invoke `hero-report` — it writes to the path convention documented in the source skill's own SKILL.md. `hero-planning`'s plan file is always written because it's the phase's deliverable. `hero-security` is also independent and always writes its own `docs/security-reports/...` artifact; do not replace that with an appended section in another report.
 
 ## Session state
 

@@ -62,6 +62,8 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.match(heroSecurity, /OWASP/i);
   assert.match(heroSecurity, /auth\/authz/i);
   assert.match(heroSecurity, /standalone security review/i);
+  assert.match(heroSecurity, /docs\/security-reports\/YYYY-MM-DD-<slug>\.md/i);
+  assert.doesNotMatch(heroSecurity, /has no artifact convention|never creates a standalone security report|appended to the invoking report/i);
   assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
   const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report'];
