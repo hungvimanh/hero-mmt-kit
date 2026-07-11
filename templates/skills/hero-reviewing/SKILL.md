@@ -62,5 +62,5 @@ Review style:
 
 - Wraps the vendored `requesting-code-review` and `receiving-code-review` skills — this skill is the hero-shaped wrapper around their discipline, not a replacement for it.
 - Reads output from `hero-planning` (the plan) and `hero-coding` (the report and diff).
-- May trigger `hero-security` if the review surfaces a sensitive-surface concern (auth, data, secrets, external input, AI/LLM behavior).
+- May recommend a separate `hero-security` pass if the review surfaces a sensitive-surface concern (auth, data, secrets, external input, AI/LLM behavior).
 - Complements `hero-unit-test`: the two are a parallel, independent stage — neither is a prerequisite for the other.

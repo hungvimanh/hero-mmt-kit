@@ -17,10 +17,10 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 | `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings recorded in the invoking report. |
+| `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` |
 | `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | n/a — appends to the current report. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Invoke `hero-security` separately when you want a dedicated security pass. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
 
 ## Session state
 
@@ -33,7 +33,7 @@ Resuming work in a fresh session:
 
 ## Related vendored skills
 
-The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`, `security-review`. Each hero-* skill names the vendored skill(s) it invokes.
+The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`. `hero-security` is the standalone security review skill rather than a wrapper.
 
 ## Output Style
 

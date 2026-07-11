@@ -39,7 +39,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     'docs/templates/PRD_AI_FEATURE.md', 'docs/templates/DESIGN_BRIEF.md',
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
     '.claude/skills/dispatching-parallel-agents/SKILL.md', '.claude/skills/subagent-driven-development/SKILL.md',
-    '.claude/skills/security-review/SKILL.md', '.claude/skills/using-hero/SKILL.md',
+    '.claude/skills/using-hero/SKILL.md',
     '.claude/skills/hero-planning/SKILL.md', '.claude/skills/hero-coding/SKILL.md',
     '.claude/skills/hero-reviewing/SKILL.md', '.claude/skills/hero-unit-test/SKILL.md',
     '.claude/skills/hero-security/SKILL.md', '.claude/skills/hero-strict/SKILL.md']) {

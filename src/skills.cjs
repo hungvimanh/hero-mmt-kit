@@ -18,7 +18,6 @@ const CORE_SKILL_ORDER = [
   'subagent-driven-development',
   'using-git-worktrees',
   'finishing-a-development-branch',
-  'security-review',
   'hero-planning',
   'hero-coding',
   'hero-reviewing',
