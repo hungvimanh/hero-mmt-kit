@@ -1,0 +1,16 @@
+# Agent Instructions
+
+> This is a human-led Claude Code workflow: the developer decides what to work on and invokes the relevant skill directly. Use `using-hero` for the overview when it's unclear which skill applies next.
+
+Core Hero skills: `hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-strict`.
+
+Minimum non-negotiables:
+1. Use `using-hero` to pick the right skill; don't run heavy process for small tasks.
+2. **Resume (fast path):** read `.hero-mmt-kit/session.json` first → then the `resumePath` it names → then the latest artifact. Read [ACTIVE_STATE](docs/ACTIVE_STATE.md) only to switch work items or when session is blank/stale.
+3. Use Plan Mode for risky or hard-to-reverse changes before editing.
+4. Read only the docs the current skill needs; avoid loading unrelated context.
+5. Framework instructions, skills, rules, and templates are English-only; respond to the user in the same language they use in chat unless they request another language.
+6. Do not bypass hooks, checks, or verification.
+7. Use GitNexus for impact/context analysis on non-trivial code changes when available.
+8. Sub-agent delegation is optional, not automatic — use it for research and review when it helps; not every task needs one. Don't hardcode model IDs.
+9. Keep outputs concise: findings, decisions, risks, next steps.

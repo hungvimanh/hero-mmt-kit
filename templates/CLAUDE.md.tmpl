@@ -1,0 +1,23 @@
+## 🧭 hero-mmt-kit workflow
+
+> This is a human-led Claude Code workflow: you (the developer) decide what to work on and invoke the relevant skill directly. There is no router doc and no hard gate — use `using-hero` for the overview when it's unclear which skill applies next.
+
+Core Hero skills:
+- `hero-planning` — turn a request into an agreed, written plan before code changes.
+- `hero-coding` — implement an approved plan (or a small change that doesn't need one).
+- `hero-reviewing` — fresh-eyes check of an implementation against its plan, before merge.
+- `hero-unit-test` — verify correctness, TDD-first or post-implementation.
+- `hero-security` — focused security pass when a sensitive surface is touched.
+- `hero-strict` — opt-in full verification pass before a "done" claim.
+
+### Context loading
+- **Resume (fast path):** read `.hero-mmt-kit/session.json` first → then the `resumePath` it names → then the latest artifact only if needed. Read [ACTIVE_STATE](docs/ACTIVE_STATE.md) only to switch work items or when session is blank/stale.
+- **Read on demand:** [SECURITY_STANDARDS](docs/SECURITY_STANDARDS.md), [PERFORMANCE_STANDARDS](docs/PERFORMANCE_STANDARDS.md), [DESIGN_STANDARDS](docs/DESIGN_STANDARDS.md), [BROWNFIELD_DISCOVERY](docs/BROWNFIELD_DISCOVERY.md), and templates under `docs/templates/` only when the current skill requires them.
+
+### Non-negotiables
+- **Gates:** for risky or hard-to-reverse changes, use Plan Mode (`EnterPlanMode` → `ExitPlanMode`) for real sign-off — not a prose promise.
+- **Enforcement:** hooks installed under `.claude/` — `git-guard` (PreToolUse on Bash), `session-bridge` (PostToolUse), `stop-reminder` (Stop). Don't bypass them.
+- **GitNexus (if installed):** skip on empty repos; use impact/context analysis for non-trivial code changes and stale-index checks.
+- **Skills (if installed):** invoke relevant process skills via the `Skill` tool; do not load unrelated skill/docs context.
+- **Language:** framework instructions, skills, rules, and templates are English-only. Respond to the user in the same language they use in chat unless they request another language.
+- **Sub-agent delegation is optional, not automatic.** Sub-agents are best for research and review; use one when it helps, and skip it when direct work is clearer. Don't hardcode model IDs — let the harness resolve the active model.

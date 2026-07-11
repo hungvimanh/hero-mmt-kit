@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "hero-mmt-kit session state",
+  "description": "Observable workflow pointer for resuming work across sessions. Hero skills update this at checkpoints; doctor reads it. Authoritative state lives in ACTIVE_STATE.md and artifact files under docs/ — this file is a derived convenience pointer.",
+  "type": "object",
+  "required": ["schemaVersion"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "currentSkill": { "type": ["string", "null"], "description": "Name of the hero-* skill currently in progress" },
+    "lastCheckpoint": { "type": ["string", "null"], "description": "ISO 8601 timestamp of the last session write" },
+    "resumePath": { "type": ["string", "null"], "description": "Path to the artifact/report to resume from" },
+    "nextAction": { "type": ["string", "null"], "description": "First concrete action for continuing the work" },
+    "updatedAt": { "type": ["string", "null"], "description": "ISO 8601 timestamp of the last update" }
+  }
+}

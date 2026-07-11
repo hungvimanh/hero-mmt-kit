@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Tool caches / generated indexes (not part of the framework distribution)
+.gitnexus/
+
+# Core process skills are VENDORED (tracked) under templates/skills/ (MIT, from
+# obra/superpowers; attribution in templates/skills/NOTICE) and installed into a
+# consumer's .claude/skills/ by init/update. The dogfood copies below are NOT part
+# of the distribution — design/taste skills still belong to their upstream repos:
+.agents/
+.claude/skills/
+
+# hero-mmt-kit per-project runtime config (created by `init` in a consumer repo)
+.hero-mmt-kit/
+# but track the schema template that ships in the package
+!templates/.hero-mmt-kit/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.bak
+*.log
