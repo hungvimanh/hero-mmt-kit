@@ -17,7 +17,7 @@
       },
       "skills": [
         { "name": "using-superpowers", "source": "obra/superpowers" },
-        { "name": "using-hero", "source": "hero-mmt-kit", "description": "Overview and router for the hero-* skills — explains which skill to invoke next and how session state carries across sessions." },
+        { "name": "using-hero", "source": "hero-mmt-kit", "description": "Overview and router for the hero-* skills — explains which skill to invoke next and how workflow state carries across sessions." },
         { "name": "brainstorming", "source": "obra/superpowers" },
         { "name": "writing-plans", "source": "obra/superpowers" },
         { "name": "executing-plans", "source": "obra/superpowers" },
@@ -29,14 +29,14 @@
         { "name": "dispatching-parallel-agents", "source": "obra/superpowers" },
         { "name": "subagent-driven-development", "source": "obra/superpowers" },
         { "name": "using-git-worktrees", "source": "obra/superpowers" },
-        { "name": "finishing-a-development-branch", "source": "obra/superpowers" },
         { "name": "security-review", "source": "hero-mmt-kit", "description": "OWASP-focused security review for vulnerable surfaces, sensitive data, auth/authz, and AI/LLM risks before completion." },
         { "name": "hero-planning", "source": "hero-mmt-kit", "description": "Turn a request into an agreed, written plan before code changes." },
         { "name": "hero-coding", "source": "hero-mmt-kit", "description": "Implement an approved plan, or a small change that doesn't need one." },
         { "name": "hero-reviewing", "source": "hero-mmt-kit", "description": "Fresh-eyes check of an implementation against its plan, before merge." },
         { "name": "hero-unit-test", "source": "hero-mmt-kit", "description": "Verify implementation correctness — TDD-first or post-implementation." },
         { "name": "hero-security", "source": "hero-mmt-kit", "description": "Dispatch a focused security-review pass when a sensitive surface is touched." },
-        { "name": "hero-strict", "source": "hero-mmt-kit", "description": "Opt-in full verification pass before a \"done\" claim." }
+        { "name": "hero-strict", "source": "hero-mmt-kit", "description": "Opt-in full verification pass before a \"done\" claim." },
+        { "name": "hero-report", "source": "hero-mmt-kit", "description": "On-demand report writer — writes the coding/review/test report at the source skill's conventional path, only when requested." }
       ]
     },
     "brand": {

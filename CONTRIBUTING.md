@@ -6,18 +6,17 @@ Thanks for helping improve hero-mmt-kit! This repo hosts two related but indepen
 ```
 bin/        CLI entry (hero-mmt-kit.js)
 src/        CLI logic (detect, discover, profile-config, render, merge, init, update, doctor,
-            integrations, links, workflow-state, skills, util)
+            integrations, links, skills, util)
 templates/  what gets installed into a consumer project
   docs/      English-only framework docs (ACTIVE_STATE, BROWNFIELD_DISCOVERY, SECURITY_STANDARDS,
              DESIGN_STANDARDS, PERFORMANCE_STANDARDS, INTERACTION_PATTERNS)
     templates/  PRD_AI_FEATURE.md, DESIGN_BRIEF.md
-  common/.claude/ hooks (git-guard, session-bridge, stop-reminder) + settings.json (Claude Code only)
+  common/.claude/ hooks (git-guard, active-state-bridge, stop-reminder) + settings.json (Claude Code only)
   skills/         VENDORED core process skills (MIT, from obra/superpowers) + hero-mmt-kit-authored
                   skills (`using-hero`, `hero-planning`, `hero-coding`, `hero-reviewing`,
-                  `hero-unit-test`, `hero-security`, `hero-strict`, `security-review`) + NOTICE
+                  `hero-unit-test`, `hero-security`, `hero-strict`, `hero-report`, `security-review`) + NOTICE
   CLAUDE.md.tmpl AGENTS.md.tmpl
-presets/    solo | small-team | enterprise (sets enforceLevel only)
-test/       node:test suites (hooks, doctor-workflow, workflow-state, links, init-smoke, manifest,
+test/       node:test suites (hooks, doctor-workflow, links, init-smoke, manifest,
             skills-vendor, skills-selection, profile-config, integrations, discover)
 skills.manifest.json  vendored core (process) skills + referenced design/taste skills
 ```
@@ -28,11 +27,12 @@ skills.manifest.json  vendored core (process) skills + referenced design/taste s
 - **Placeholders**: use `{{DATE}}` for values rendered at init. Use `<TBD>` for values the *user* fills later (e.g. stack commands).
 - **Managed regions**: never instruct users to hand-edit inside `<!-- hero-mmt-kit:start/end -->`.
 - **Skills.** Only the curated MIT-licensed core process skills (plus the hero-mmt-kit-authored `hero-*`/`using-hero`/`security-review` skills) are vendored under `templates/skills/` (with `NOTICE` attribution); they install into a consumer's `.claude/skills/`. Reference everything else (design/taste, GitNexus, Serena) in `skills.manifest.json` and install via their CLI — don't redistribute non-permissive or unattributed skills/tools.
-- **Hooks must stay portable** (Node, cross-platform) and fail-safe (never block on parse errors). There are only three: `git-guard.cjs`, `session-bridge.cjs`, `stop-reminder.cjs` — all soft/non-blocking, no hard gates.
+- **Hooks must stay portable** (Node, cross-platform) and fail-safe (never block on parse errors). There are only three: `git-guard.cjs`, `active-state-bridge.cjs`, `stop-reminder.cjs` — all soft/non-blocking, no hard gates.
+- **No deep git automation.** The kit doesn't script commit/branch/push/merge/PR decisions on the user's behalf beyond `git-guard`'s narrow block list — those stay with the human.
 
 ## Before opening a PR
 ```bash
-npm test          # hooks + doctor-workflow + workflow-state + links + init-smoke + manifest +
+npm test          # hooks + doctor-workflow + links + init-smoke + manifest +
                    # skills-vendor + skills-selection + profile-config + integrations + discover
 node bin/hero-mmt-kit.js init --dir /tmp/x --yes --skip-integrations && node bin/hero-mmt-kit.js doctor --dir /tmp/x
 # For CI: add --strict to catch compliance gaps

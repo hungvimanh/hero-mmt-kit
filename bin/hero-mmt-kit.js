@@ -37,7 +37,6 @@ Commands:
 Flags:
   --dir <path>          Target project dir (default: current dir)
   --taste               Install the taste/design skill (default: off)
-  --preset <name>       Load a bundled preset (enterprise | small-team | solo)
   --yes                 Non-interactive; accept defaults
   --skip-integrations   Skip skills / gitnexus / serena prompts
   --strict              (doctor only) treat warnings as failures — for CI use`);

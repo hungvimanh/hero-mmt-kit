@@ -31,12 +31,12 @@ Typically triggered from `hero-coding` or `hero-reviewing` once a sensitive surf
 1. Confirm the surface is actually sensitive (see When to Use). If not, state that and skip the full review — don't run it as ceremony.
 2. Read `docs/SECURITY_STANDARDS.md` for any project-specific policy that applies to this surface.
 3. Invoke the `security-review` skill to run its OWASP Web Top 10 + AI/LLM checklist against the changed code and artifacts.
-4. Record findings and a verdict (pass / pass with follow-ups / blocked) back into the invoking report — the coding report or review report currently in progress.
+4. State findings and a verdict (pass / pass with follow-ups / blocked) in chat. If a written coding/review report already exists for this work, append the findings to it; if one was requested but doesn't exist yet, invoke `hero-report` to write the underlying report first, then append.
 5. If any Critical/High findings exist, they must be fixed or explicitly accepted with a documented reason before the work is considered done.
 
 ## Output
 
-Findings are appended to the invoking report (`docs/coding-reports/...` or `docs/reviews/...`). hero-security has no artifact convention of its own — it never creates a standalone security report file.
+Findings are stated in chat and, if a report exists (or is requested), appended to it (`docs/coding-reports/...` or `docs/reviews/...`) via `hero-report`. hero-security has no artifact convention of its own — it never creates a standalone security report file.
 
 Security finding style:
 - Do not over-compress risk explanations.
@@ -47,15 +47,15 @@ Security finding style:
 ## Definition of Done
 
 - No unresolved Critical/High findings remain: each is either fixed or explicitly accepted with a documented reason.
-- Findings and verdict are recorded in the invoking report.
+- Findings and verdict are stated, at minimum in chat; appended to the invoking report if one exists or was requested.
 
 ## ACTIVE_STATE.md Update
 
 - If a finding blocks the work, add it to the Blockers/Pending Actions section of `docs/ACTIVE_STATE.md`.
-- `.hero-mmt-kit/session.json`'s `currentSkill`/`nextAction` follow whichever skill invoked hero-security — this skill does not own its own session state.
 
 ## Related Skills
 
 - Wraps `security-review` for the actual checklist and review process.
 - Points at `docs/SECURITY_STANDARDS.md` for project-level policy and standards.
 - Typically invoked from `hero-coding` or `hero-reviewing`.
+- Use `hero-report` if findings need to be appended to a report that doesn't exist yet.

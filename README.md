@@ -1,6 +1,6 @@
 # hero-mmt-kit
 
-> A focused, human-led coding workflow for **Claude Code** — six direct-use skills (planning, coding, reviewing, unit testing, security, strict verification), simple session state, and soft safety hooks. Zero runtime dependencies.
+> A focused, human-led coding workflow for **Claude Code** — six direct-use skills (planning, coding, reviewing, unit testing, security, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
 
 hero-vibe-kit is the AI-led agency workflow kit. hero-mmt-kit is the human-led Claude Code coding assistant kit. This repository hosts both as a hard fork: hero-mmt-kit has its own package, its own version history (starting at 0.1.0), and no shared migration path or cherry-picking between them.
 
@@ -8,10 +8,11 @@ hero-vibe-kit is the AI-led agency workflow kit. hero-mmt-kit is the human-led C
 
 `hero-mmt-kit` installs a small, disciplined workflow into your repository. Unlike an AI-led framework, it does not route tasks, gate commits, or enforce phases — the developer decides what to work on and invokes skills directly:
 
-- **Six operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them.
+- **Six operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them. Each phase is done on its own — finishing one never auto-triggers the next.
+- **Report writing is on-demand** — `hero-coding`/`hero-reviewing`/`hero-unit-test` end with a concise chat summary; a written report is only produced when asked, via the separate `hero-report` skill.
 - **No router, no gates** — there is no task-classification doc and no hard PreToolUse enforcement. `using-hero` is a map, not a controller.
-- **Soft hooks only** — `git-guard` blocks a small set of genuinely dangerous git commands and reminds (never blocks) on ordinary commits; `stop-reminder` nudges you to update state when you stop with uncommitted changes; `session-bridge` injects session state into context once per session.
-- **Lightweight session state** — `.hero-mmt-kit/session.json` is a small resume pointer (`currentSkill`, `lastCheckpoint`, `resumePath`, `nextAction`), not a workflow engine.
+- **Soft hooks only** — `git-guard` blocks a small set of genuinely dangerous git commands and reminds (never blocks) on ordinary commits; `stop-reminder` nudges you to update state when you stop with uncommitted changes; `active-state-bridge` injects `docs/ACTIVE_STATE.md` into context once per session start.
+- **Durable state lives in one place** — `docs/ACTIVE_STATE.md`'s Active Features table, not a separate session pointer file.
 - **Full skill suite, every install** — the bundled process skills install unconditionally; there's no profile/surface logic deciding what you get.
 - **Standards docs** for security, performance, design, and interaction patterns, plus PRD/design-brief templates.
 
@@ -49,11 +50,10 @@ your-project/
                      # templates/PRD_AI_FEATURE, templates/DESIGN_BRIEF
   .claude/
     settings.json    # hooks merged into existing settings, not clobbered
-    hooks/           # git-guard.cjs, stop-reminder.cjs, session-bridge.cjs
+    hooks/           # git-guard.cjs, stop-reminder.cjs, active-state-bridge.cjs
     skills/          # full bundled skill suite (see below)
   .hero-mmt-kit/
-    config.json      # { installTasteSkill, enforceLevel, version, brownfield, integrations }
-    session.json     # resume pointer: currentSkill/lastCheckpoint/resumePath/nextAction
+    config.json      # { installTasteSkill, version, brownfield, integrations }
 ```
 
 - **New project:** scaffolds the workflow from scratch.
@@ -64,30 +64,26 @@ your-project/
 
 ## Workflow skills
 
-Invoke `using-hero` first for an overview — it explains which skill applies next and how session state carries across sessions. The six operative skills:
+Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The six operative skills:
 
-| Skill | Use when | Output artifact |
+| Skill | Use when | Report (on request via `hero-report`) |
 |---|---|---|
-| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` |
+| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written; it's the deliverable, not a report |
 | `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings recorded in the invoking report. |
-| `hero-strict` | Extra rigor wanted before a "done" claim — a full verification pass. | Appends to the current report. |
+| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings appended to the invoking report, if one exists/was requested. |
+| `hero-strict` | Extra rigor wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact. Each phase is "done" on its own terms — there's no automatic full-pipeline run; the developer chooses what to invoke next.
 
-These six skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`, plus a hero-mmt-kit-authored `security-review` skill. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A seventh, on-demand skill, `hero-report`, writes the report file when the user actually wants one, at the path convention the source skill defines.
+
+These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, plus a hero-mmt-kit-authored `security-review` skill. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
 
 ## Session state
 
-`.hero-mmt-kit/session.json` is a small resume pointer, not a workflow engine. Each hero-* skill's Definition of Done includes writing it plus updating `docs/ACTIVE_STATE.md`.
-
-Resuming work in a fresh session:
-
-1. Read `.hero-mmt-kit/session.json` (~100 tokens) → `currentSkill`, `resumePath`, `nextAction`.
-2. Read the artifact at `resumePath` for concrete next steps.
-3. If `session.json` is blank/stale, read `docs/ACTIVE_STATE.md`'s Active Features table instead.
+`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. Each hero-* skill's Definition of Done includes updating it. The `active-state-bridge` hook injects it into context automatically at the start of a session, so resuming usually needs no extra reading — otherwise, read `docs/ACTIVE_STATE.md` directly.
 
 ## Commands
 
@@ -97,7 +93,7 @@ Resuming work in a fresh session:
 | `update` | Re-render managed regions while preserving user edits and working files. |
 | `discover` | Scan a brownfield codebase and create `docs/BROWNFIELD_DISCOVERY.md`. |
 | `brownfield` | Alias for `discover`. |
-| `doctor` | Validate hooks, settings, session state, doc links, and tool presence. `--strict` for CI. |
+| `doctor` | Validate hooks, settings, workflow state, doc links, and tool presence. `--strict` for CI. |
 | `version` | Print the package version. |
 | `help` | Show usage. |
 
@@ -106,7 +102,6 @@ Flags:
 ```text
 --dir <path>          Target project dir (default: current dir)
 --taste                Install the taste/design skill (default: off)
---preset <name>        Load a bundled preset (enterprise | small-team | solo) — sets enforceLevel only
 --yes                  Non-interactive; accept defaults
 --skip-integrations    Skip design-skill / GitNexus / Serena integration steps
 --strict               (doctor only) treat compliance warnings as failures — for CI use

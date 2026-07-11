@@ -38,11 +38,11 @@ Missing artifacts are not a blocker — they're a gap to flag in step 4 of the p
    - `doctor --strict` for hero-mmt-kit's own install health, when the change touches the kit itself.
 3. **Use `verification-before-completion`'s discipline throughout**: don't claim a check passed unless you actually ran it and read the output. No inferring success from "it should work."
 4. **Flag stages that should have run but didn't** — e.g. a risky change with no review. Either run the corresponding hero-* skill (`hero-reviewing`, `hero-unit-test`, `hero-security`) or note the gap explicitly; don't silently skip it.
-5. **Summarize the strict pass** — what was checked, what passed, what didn't — and append it to whichever existing report is most relevant. Don't create a new report file for this.
+5. **Summarize the strict pass** in chat — what was checked, what passed, what didn't. If a written report exists (or the user wants one), append a "Strict verification" section to it via `hero-report`; don't create a new report file for this.
 
 ## Output
 
-A "Strict verification" section appended to the most relevant existing report (coding report, review report, or test report). hero-strict has no artifact convention of its own — it never produces a standalone file.
+A "Strict verification" summary in chat, appended to the most relevant existing report (coding report, review report, or test report) via `hero-report` if one exists or is requested. hero-strict has no artifact convention of its own — it never produces a standalone file.
 
 ```markdown
 ## Strict verification
@@ -66,12 +66,12 @@ Strict verification style:
 - Every check listed is backed by actual evidence — a command and its result — not an assumption.
 - Any stage that should have run but didn't is explicitly called out, not silently skipped.
 - Nothing is claimed "done" without evidence.
-- The strict verification section is appended to the relevant report.
+- The strict verification summary was given in chat, and appended to the relevant report via `hero-report` if one exists or was requested.
 
 ## ACTIVE_STATE.md Update
 
-hero-strict doesn't own `currentSkill`/`nextAction` in `session.json` — those follow whichever skill invoked or preceded it (typically `hero-coding`, `hero-reviewing`, or `hero-unit-test`). If the strict pass surfaces new blockers, add them to the Blockers/Pending Actions section of `docs/ACTIVE_STATE.md`.
+If the strict pass surfaces new blockers, add them to the Blockers/Pending Actions section of `docs/ACTIVE_STATE.md`.
 
 ## Related Skills
 
-Wraps `verification-before-completion` for its evidence discipline. Can trigger a re-run of `hero-unit-test`, `hero-reviewing`, or `hero-security` if a gap is found. Typically invoked after `hero-coding`, `hero-reviewing`, or `hero-unit-test` have already run once — see `using-hero` for the full skill map.
+Wraps `verification-before-completion` for its evidence discipline. Can trigger a re-run of `hero-unit-test`, `hero-reviewing`, or `hero-security` if a gap is found. Typically invoked after `hero-coding`, `hero-reviewing`, or `hero-unit-test` have already run once — see `using-hero` for the full skill map. Use `hero-report` to append its section to an existing (or newly written) report.

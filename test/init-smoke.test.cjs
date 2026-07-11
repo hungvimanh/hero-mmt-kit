@@ -33,7 +33,8 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.strictEqual(r.status, 0, r.stderr);
 
   for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
-    '.hero-mmt-kit/config.json', '.hero-mmt-kit/session.json',
+    '.claude/hooks/active-state-bridge.cjs',
+    '.hero-mmt-kit/config.json',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
     'docs/DESIGN_STANDARDS.md', 'docs/BROWNFIELD_DISCOVERY.md', 'docs/INTERACTION_PATTERNS.md',
     'docs/templates/PRD_AI_FEATURE.md', 'docs/templates/DESIGN_BRIEF.md',
@@ -42,9 +43,13 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     '.claude/skills/security-review/SKILL.md', '.claude/skills/using-hero/SKILL.md',
     '.claude/skills/hero-planning/SKILL.md', '.claude/skills/hero-coding/SKILL.md',
     '.claude/skills/hero-reviewing/SKILL.md', '.claude/skills/hero-unit-test/SKILL.md',
-    '.claude/skills/hero-security/SKILL.md', '.claude/skills/hero-strict/SKILL.md']) {
+    '.claude/skills/hero-security/SKILL.md', '.claude/skills/hero-strict/SKILL.md',
+    '.claude/skills/hero-report/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
+  assert.ok(!fs.existsSync(path.join(dir, '.hero-mmt-kit', 'session.json')), 'session.json should no longer be seeded');
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'session-bridge.cjs')), 'session-bridge hook should no longer be installed');
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'finishing-a-development-branch')), 'finishing-a-development-branch should not be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.cursor')), 'no .cursor artifacts should be created');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'edit-gate.cjs')), 'edit-gate hook should not be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'workflow-check.cjs')), 'workflow-check hook should not be installed');
@@ -91,16 +96,13 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
 
   const settings = JSON.parse(fs.readFileSync(path.join(dir, '.claude', 'settings.json'), 'utf8'));
   assert.ok(JSON.stringify(settings.hooks).includes('git-guard.cjs'));
+  assert.ok(JSON.stringify(settings.hooks).includes('active-state-bridge.cjs'));
+  assert.ok(settings.hooks.SessionStart, 'active-state-bridge should be wired on SessionStart');
+  assert.ok(!settings.hooks.PostToolUse, 'no PostToolUse hook should remain (session-bridge removed)');
 
   const config = JSON.parse(fs.readFileSync(path.join(dir, '.hero-mmt-kit', 'config.json'), 'utf8'));
   assert.strictEqual(config.installTasteSkill, false);
   assert.ok(!Object.prototype.hasOwnProperty.call(config, 'lang'), 'new config should not include lang');
-
-  const session = JSON.parse(fs.readFileSync(path.join(dir, '.hero-mmt-kit', 'session.json'), 'utf8'));
-  assert.strictEqual(session.schemaVersion, 1, 'session.json must have schemaVersion 1');
-  assert.strictEqual(session.currentSkill, null, 'fresh session currentSkill must be null');
-  assert.ok(!Object.prototype.hasOwnProperty.call(session, 'loop'), 'simplified session must not have a loop field');
-  assert.ok(!Object.prototype.hasOwnProperty.call(session, 'gates'), 'simplified session must not have a gates field');
 
   const doc = cli(['doctor', '--dir', dir]);
   assert.strictEqual(doc.status, 0, 'doctor should pass: ' + doc.stdout + doc.stderr);

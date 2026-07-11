@@ -261,7 +261,6 @@ Useful companion skills:
 - **superpowers:requesting-code-review** - Provides a reviewer prompt when review budget calls for it.
 - **superpowers:verification-before-completion** - Ensures final claims match evidence.
 - **superpowers:using-git-worktrees** - Use when parallel agents may conflict or the user requests isolation.
-- **superpowers:finishing-a-development-branch** - Use when finishing branch/MR work.
 
 Subagents may use **superpowers:test-driven-development** when the selected workflow requires tests-first development or the task is a bugfix/behavior change.
 

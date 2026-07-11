@@ -29,14 +29,14 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
-After completing a task group (a set of related tasks that form a logical unit), checkpoint durable state: update `ACTIVE_STATE.md` and `.hero-mmt-kit/session.json`.
+After completing a task group (a set of related tasks that form a logical unit), checkpoint durable state: update `ACTIVE_STATE.md`.
 
 ### Step 3: Complete Development
 
 After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
-- Follow that skill to verify tests, present options, execute choice
+- Re-run the full verification the plan specifies (tests, build, lint) and confirm it passes.
+- Report completion to your human partner with a concise summary of what changed and the evidence collected.
+- Leave branch, merge, and PR decisions to the human — don't take git actions beyond what the plan or the human explicitly asked for.
 
 ## When to Stop and Ask for Help
 
@@ -69,4 +69,3 @@ After all tasks complete and verified:
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:finishing-a-development-branch** - Complete development after all tasks

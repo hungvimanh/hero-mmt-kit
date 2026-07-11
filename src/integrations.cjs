@@ -29,7 +29,7 @@ const SERENA_MEMOS = {
     'Core skills: hero-planning (plan before code), hero-coding (implement), hero-reviewing (fresh-eyes check), ' +
     'hero-unit-test (TDD-first or post-implementation tests), hero-security (sensitive-surface review), ' +
     'hero-strict (opt-in full verification pass before a "done" claim).\n\n' +
-    'Session state: `.hero-mmt-kit/session.json` (currentSkill, resumePath, nextAction) + docs/ACTIVE_STATE.md.\n\n' +
+    'Session state: docs/ACTIVE_STATE.md\'s Active Features table (the single source of durable workflow state).\n\n' +
     'Details (always read the source files, do not duplicate here): docs/ACTIVE_STATE.md, docs/SECURITY_STANDARDS.md, ' +
     'docs/PERFORMANCE_STANDARDS.md.\n',
   'delegation_rules.md':

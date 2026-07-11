@@ -5,7 +5,6 @@ const { log, exists, backup, readJSON, writeJSON, ensureDir } = require('./util.
 const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
 const { normalizeProfileConfig } = require('./profile-config.cjs');
-const { defaultSession } = require('./workflow-state.cjs');
 
 async function update(opts) {
   const { pkgRoot, target, flags } = opts;
@@ -46,7 +45,7 @@ async function update(opts) {
   log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
   ensureDir(path.join(target, '.claude', 'hooks'));
-  for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'session-bridge.cjs']) {
+  for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'active-state-bridge.cjs']) {
     fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
   }
   mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
@@ -57,13 +56,6 @@ async function update(opts) {
   const selectedSkills = skills.selectProcessSkills(cfg);
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
   log.ok(`Skills refreshed: ${sk.skills} bundled core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
-
-  const sessionPath = path.join(target, '.hero-mmt-kit', 'session.json');
-  if (!exists(sessionPath)) {
-    ensureDir(path.dirname(sessionPath));
-    writeJSON(sessionPath, defaultSession());
-    log.ok('Session : .hero-mmt-kit/session.json (seeded — was missing)');
-  }
 
   const newVer = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8')).version;
   cfg.version = newVer;

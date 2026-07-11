@@ -17,7 +17,6 @@ const CORE_SKILL_ORDER = [
   'dispatching-parallel-agents',
   'subagent-driven-development',
   'using-git-worktrees',
-  'finishing-a-development-branch',
   'security-review',
   'hero-planning',
   'hero-coding',
@@ -25,6 +24,7 @@ const CORE_SKILL_ORDER = [
   'hero-unit-test',
   'hero-security',
   'hero-strict',
+  'hero-report',
 ];
 
 function uniqueCoreSkills(names) {

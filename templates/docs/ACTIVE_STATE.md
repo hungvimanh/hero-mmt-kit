@@ -8,7 +8,7 @@
 
 ## Active Features in Pipeline
 
-| Feature / Epic | Path | Current phase | Branch / MR | Status | PRD | TDD |
+| Feature / Epic | Path | Current phase | Branch | Status | PRD | TDD |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | N/A | N/A | N/A | - | Idle | - | - |
 
@@ -30,12 +30,10 @@ Do not paste long investigation notes, transcripts, screenshots, logs, PRDs, or 
 
 ## Session Resume Protocol
 
-`session.json` vs `ACTIVE_STATE.md`:
-- `.hero-mmt-kit/session.json` — a small derived pointer (`currentSkill`, `lastCheckpoint`, `resumePath`, `nextAction`). Read it first on resume; it is the fast path.
-- `ACTIVE_STATE.md` — the durable backlog index. Read it when switching work items or when session.json is absent/stale.
+This file is the single source of durable workflow state — there is no separate session pointer file. Its "Active Features" table above is injected into context automatically at the start of a session (via the `active-state-bridge` hook), so resuming usually needs no extra reading.
 
-*An AI starting or resuming tracked work READS in this order:*
-1. **Read `.hero-mmt-kit/session.json`** (~100 tokens) → get `currentSkill`, `resumePath`, `nextAction`. If populated and not stale, go directly to step 2.
-2. **Read the `resumePath`** it names (the latest artifact/report) → concrete next action.
-3. **Only if you need to switch work or session.json is blank/stale:** read the "Active Features" table above + any **open MRs** (`git branch`, MR list).
+*An AI starting or resuming tracked work:*
+1. Check the injected "Active Features" context (or read this table directly if it wasn't injected).
+2. If a row names an artifact (plan/report), open it for concrete next steps.
+3. If you need to switch work items, re-read this table plus `git branch` for local work in progress.
 4. Update this table when durable work state changes. When a work item completes, replace the row with a one-line link to the artifact.

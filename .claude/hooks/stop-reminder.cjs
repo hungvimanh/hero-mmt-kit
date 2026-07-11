@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 /*
- * Stop hook — nhắc mềm (non-blocking, exit 0).
- * Nếu có thay đổi chưa commit mà docs/ACTIVE_STATE.md chưa được động tới,
- * in nhắc nhở (hiển thị cho user). KHÔNG chặn việc dừng (không exit 2 -> tránh vòng lặp).
+ * Stop hook — soft reminder (non-blocking, exit 0).
+ * Claude Code: Stop — { hook_event_name, stop_hook_active, cwd }
+ * If there are uncommitted changes and docs/ACTIVE_STATE.md was not touched,
+ * print a reminder for the user. Do NOT block stopping (no exit 2 -> avoid loops).
  */
 const { execSync } = require('child_process');
 
@@ -12,7 +13,7 @@ process.stdin.on('data', (d) => { raw += d; });
 process.stdin.on('end', () => {
   let payload = {};
   try { payload = JSON.parse(raw || '{}'); } catch (_) { /* ignore */ }
-  if (payload.stop_hook_active) process.exit(0); // tránh kích hoạt lặp
+  if (payload.stop_hook_active) process.exit(0); // loop guard
 
   const cwd = payload.cwd || process.cwd();
   let status = '';
@@ -21,14 +22,14 @@ process.stdin.on('end', () => {
   } catch (_) { process.exit(0); }
 
   const lines = status.split('\n').map((l) => l.trim()).filter(Boolean);
-  if (lines.length === 0) process.exit(0); // không có gì thay đổi
+  if (lines.length === 0) process.exit(0); // no changes
 
   const stateTouched = lines.some((l) => /ACTIVE_STATE\.md$/.test(l));
   const otherChanged = lines.some((l) => !/ACTIVE_STATE\.md$/.test(l));
 
   if (otherChanged && !stateTouched) {
-    console.error('🔔 [stop-reminder] Có thay đổi chưa commit nhưng docs/ACTIVE_STATE.md chưa được cập nhật. ' +
-      'Nếu trạng thái công việc đã đổi, hãy cập nhật bảng pipeline + resume protocol (docs/AGENCY_WORKFLOW.md §0).');
+    console.error('🔔 [stop-reminder] There are uncommitted changes, but docs/ACTIVE_STATE.md was not updated. ' +
+      'If work state changed, update the Active Features table.');
   }
   process.exit(0);
 });

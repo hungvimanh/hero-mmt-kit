@@ -8,11 +8,10 @@
         ]
       }
     ],
-    "PostToolUse": [
+    "SessionStart": [
       {
-        "matcher": ".*",
         "hooks": [
-          { "type": "command", "command": "node .claude/hooks/session-bridge.cjs" }
+          { "type": "command", "command": "node .claude/hooks/active-state-bridge.cjs" }
         ]
       }
     ],

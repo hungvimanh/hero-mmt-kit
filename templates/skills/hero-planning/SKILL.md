@@ -23,7 +23,7 @@ Skip it for typo fixes, trivial config edits, or an obvious one-file change — 
 
 - The user's request or brief.
 - Existing codebase context — use GitNexus (`gitnexus_query`, `gitnexus_context`, `gitnexus_impact`) or Serena when available to understand what's already there; don't block on them if they aren't.
-- Any existing state to resume from: `docs/ACTIVE_STATE.md`'s Active Features table, or `.hero-mmt-kit/session.json`.
+- Any existing state to resume from: `docs/ACTIVE_STATE.md`'s Active Features table.
 
 ## Process
 
@@ -50,12 +50,7 @@ Plan writing style:
 
 ## ACTIVE_STATE.md Update
 
-- Add or update this work item's row in the Active Features table in `docs/ACTIVE_STATE.md`.
-- Write `.hero-mmt-kit/session.json` with:
-  - `currentSkill: "hero-planning"`
-  - `resumePath` pointing at the plan file
-  - `nextAction` describing the first concrete implementation step
-  - `updatedAt` (ISO timestamp)
+- Add or update this work item's row in the Active Features table in `docs/ACTIVE_STATE.md`: path, current phase, status, and a link to the plan file.
 
 ## Related Skills
 

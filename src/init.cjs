@@ -6,7 +6,6 @@ const { detect } = require('./detect.cjs');
 const { renderTree, renderString } = require('./render.cjs');
 const { mergeManagedBlock, mergeSettings } = require('./merge.cjs');
 const { collectProfileConfig } = require('./profile-config.cjs');
-const { defaultSession } = require('./workflow-state.cjs');
 
 async function init(opts) {
   const { pkgRoot, target, flags } = opts;
@@ -21,12 +20,6 @@ async function init(opts) {
 
   // ---- config ----
   let cfg = {};
-  if (flags.preset) {
-    const pf = path.join(pkgRoot, 'presets', String(flags.preset) + '.json');
-    if (!exists(pf)) { log.err(`Unknown preset: ${flags.preset}`); ask.close(); process.exit(1); }
-    cfg = JSON.parse(fs.readFileSync(pf, 'utf8'));
-    log.ok(`Preset : ${flags.preset}`);
-  }
   try {
     cfg = await collectProfileConfig(cfg, flags, ask);
   } catch (e) {
@@ -34,7 +27,6 @@ async function init(opts) {
     ask.close();
     process.exit(1);
   }
-  if (!cfg.enforceLevel) cfg.enforceLevel = 'mixed';
   delete cfg.lang;
   cfg.version = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8')).version;
   cfg.brownfield = d.brownfield;
@@ -65,11 +57,11 @@ async function init(opts) {
 
   // ---- 3. Claude Code hooks + settings ----
   ensureDir(path.join(target, '.claude', 'hooks'));
-  for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'session-bridge.cjs']) {
+  for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'active-state-bridge.cjs']) {
     fs.copyFileSync(path.join(templates, 'common', '.claude', 'hooks', h), path.join(target, '.claude', 'hooks', h));
   }
   mergeSettings(path.join(target, '.claude', 'settings.json'), path.join(templates, 'common', '.claude', 'settings.json'));
-  log.ok('Claude  : git-guard + stop-reminder + session-bridge → .claude/hooks; settings.json merged');
+  log.ok('Claude  : git-guard + stop-reminder + active-state-bridge → .claude/hooks; settings.json merged');
 
   // ---- 3a. selected vendored core skills ----
   const skills = require('./skills.cjs');
@@ -77,23 +69,9 @@ async function init(opts) {
   const sk = skills.installSkills(pkgRoot, target, { selectedSkills, destinations: skillDirs });
   log.ok(`Skills  : ${sk.skills} bundled core skill(s) → ${skillDirs.join(', ') || '(none)'}`);
 
-  // ---- 4. config + session state ----
+  // ---- 4. config ----
   writeJSON(path.join(target, '.hero-mmt-kit', 'config.json'), cfg);
   log.ok('Config  : .hero-mmt-kit/config.json');
-
-  const sessionPath = path.join(target, '.hero-mmt-kit', 'session.json');
-  if (!exists(sessionPath)) {
-    writeJSON(sessionPath, defaultSession());
-    log.ok('Session : .hero-mmt-kit/session.json (seeded)');
-  } else {
-    log.ok('Session : .hero-mmt-kit/session.json (preserved)');
-  }
-
-  const schemaSrc = path.join(pkgRoot, 'templates', '.hero-mmt-kit', 'session.schema.json');
-  if (exists(schemaSrc)) {
-    const schemaDest = path.join(target, '.hero-mmt-kit', 'session.schema.json');
-    if (!exists(schemaDest)) fs.copyFileSync(schemaSrc, schemaDest);
-  }
 
   // ---- 5. optional integrations ----
   if (!flags['skip-integrations']) {

@@ -1,6 +1,6 @@
 ---
 name: using-hero
-description: Use when starting any coding-assistant task in this project — routes to the right hero-* skill for the current stage of work and explains how session state carries across sessions
+description: Use when starting any coding-assistant task in this project — routes to the right hero-* skill for the current stage of work and explains how workflow state carries across sessions
 ---
 
 # Using Hero
@@ -11,29 +11,35 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 
 ## The core skills
 
-| Skill | Use when | Output artifact |
+| Skill | Use when | Report (on request via `hero-report`) |
 |---|---|---|
-| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` |
+| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written (it's the deliverable, not a report) |
 | `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings recorded in the invoking report. |
-| `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | n/a — appends to the current report. |
+| `hero-security` | The change touches a sensitive surface (auth, data, secrets, external input, AI/LLM behavior). | Findings appended to the invoking report, if one exists/was requested. |
+| `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
+| `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
 A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
 
+`hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are done per-phase, not gated into an automatic full pipeline — finishing one doesn't trigger the next; the developer decides what to invoke next.
+
+## Report writing
+
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` end each phase with a concise chat summary, not a report file by default. If a written report is wanted, invoke `hero-report` — it writes to the path convention documented in the source skill's own SKILL.md. `hero-planning`'s plan file is the exception: it's the phase's actual deliverable (read by `hero-coding` and needed for approval), so it's always written, not on-demand.
+
 ## Session state
 
-`.hero-mmt-kit/session.json` is a small resume pointer: `currentSkill`, `lastCheckpoint`, `resumePath`, `nextAction`, `updatedAt`. Each hero-* skill's Definition of Done includes writing this file plus updating `docs/ACTIVE_STATE.md`.
+`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. It's injected into context automatically at the start of a session. Each hero-* skill's Definition of Done includes updating it.
 
 Resuming work in a fresh session:
-1. Read `.hero-mmt-kit/session.json` (~100 tokens) → `currentSkill`, `resumePath`, `nextAction`.
-2. Read the artifact at `resumePath` for concrete next steps.
-3. If session.json is blank/stale, read `docs/ACTIVE_STATE.md`'s Active Features table instead.
+1. Check the injected Active Features context (or read `docs/ACTIVE_STATE.md` directly if it wasn't injected).
+2. If a row names an artifact (plan/report), open it for concrete next steps.
 
 ## Related vendored skills
 
-The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`, `security-review`. Each hero-* skill names the vendored skill(s) it invokes.
+The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `security-review`. Each hero-* skill names the vendored skill(s) it invokes.
 
 ## Output Style
 

@@ -40,11 +40,13 @@ If an input is missing, continue with what is available and note the gap in the 
    - Post-implementation: write tests that pin down the behavior the implementation already exhibits, including edge cases the implementation should handle.
 3. **Run the test suite.** Capture pass/fail results and note how the changed behavior is covered.
 4. **Verify before claiming.** Use the vendored `verification-before-completion` skill: actually run the test command and read its output — never assume or infer that tests pass.
-5. **Document gaps.** Record any known gaps or deliberately-skipped cases and why they're acceptable.
+5. **Document gaps.** State any known gaps or deliberately-skipped cases and why they're acceptable, in the chat summary. Don't write a report file by default — see Report Convention below.
 
-## Output Artifact
+## Report Convention (on request)
 
-`docs/test-reports/YYYY-MM-DD-<slug>.md` containing:
+hero-unit-test does not write a report file automatically. If the user asks for a written report, invoke the `hero-report` skill — it writes to `docs/test-reports/YYYY-MM-DD-<slug>.md` using the contract below.
+
+Report should cover:
 - Mode: TDD-first or post-implementation.
 - Commands run and their actual output (pass/fail counts).
 - Coverage of the changed behavior, in plain terms.
@@ -60,16 +62,12 @@ Test report style:
 
 - Tests are green, or failures are explicitly documented with a reason they're acceptable.
 - The changed behavior has meaningful test coverage.
-- The test report records the exact commands run and their results — not a claim without evidence.
+- The exact commands run and their results were stated, at minimum in the chat summary — not a claim without evidence.
+- If a report was requested, it was written via `hero-report` at the path above.
 
 ## ACTIVE_STATE.md Update
 
-- Update the relevant row in `docs/ACTIVE_STATE.md`'s Active Features table with current status.
-- Write `.hero-mmt-kit/session.json`:
-  - `currentSkill: "hero-unit-test"`
-  - `resumePath`: path to the test report
-  - `nextAction`: what to do next (e.g., proceed to `hero-reviewing`, or fix a documented failure)
-  - `updatedAt`: ISO timestamp
+- Update the relevant row in `docs/ACTIVE_STATE.md`'s Active Features table with current status. Link the test report only if `hero-report` wrote one.
 
 ## Related Skills
 
@@ -77,3 +75,4 @@ Test report style:
 - Reads output from `hero-planning` (for TDD-first) and/or `hero-coding` (for post-implementation).
 - Complements `hero-reviewing`, which is a parallel/independent fresh-eyes check rather than a test pass.
 - `hero-strict` may require re-running this skill's checks under a stricter bar before a "done" claim.
+- Use `hero-report` on request to write the test report.

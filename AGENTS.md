@@ -7,7 +7,7 @@ This repository/branch is the hero-mmt-kit framework itself — a hard fork of h
 - CLI entry: `bin/hero-mmt-kit.js`; logic in `src/`; installable content in `templates/`.
 - Run `npm test` before proposing changes. Keep framework templates English-only. Zero runtime deps.
 
-> Note: the `<!-- hero-mmt-kit:start/end -->` managed-block convention and the `git-guard`/`session-bridge`/`stop-reminder`
+> Note: the `<!-- hero-mmt-kit:start/end -->` managed-block convention and the `git-guard`/`active-state-bridge`/`stop-reminder`
 > hooks are what this framework installs into *consumer* projects (see `templates/`).
 
 <!-- gitnexus:start -->

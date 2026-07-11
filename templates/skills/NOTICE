@@ -17,8 +17,11 @@ Vendored skills from obra/superpowers:
   brainstorming, writing-plans, executing-plans, test-driven-development,
   systematic-debugging, verification-before-completion, requesting-code-review,
   receiving-code-review, dispatching-parallel-agents,
-  subagent-driven-development, using-git-worktrees,
-  finishing-a-development-branch, using-superpowers
+  subagent-driven-development, using-git-worktrees, using-superpowers
+
+Note: finishing-a-development-branch was vendored previously but has been
+dropped — hero-mmt-kit intentionally does not automate merge/PR/branch-cleanup
+decisions; those stay with the human.
 
 Note on subagent-driven-development: this skill received a selective backport of
 newer upstream additions (durable progress ledger, task-brief/review-package
@@ -29,7 +32,7 @@ Review Budget tiering is a hero-mmt-kit original design choice.
 
 Framework-authored skills shipped by hero-mmt-kit:
   security-review, using-hero, hero-planning, hero-coding, hero-reviewing,
-  hero-unit-test, hero-security, hero-strict
+  hero-unit-test, hero-security, hero-strict, hero-report
 
 Design / visual-direction skills are NOT vendored — they are referenced in
 skills.manifest.json and installed from their original sources on demand.

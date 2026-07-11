@@ -14,54 +14,38 @@ function initDir(dir) {
   return cli(['init', '--dir', dir, '--yes', '--skip-integrations']);
 }
 
-test('doctor passes on fresh init (no session data)', () => {
+test('doctor passes on fresh init', () => {
   const dir = mkdir();
   const init = initDir(dir);
   assert.strictEqual(init.status, 0, init.stderr);
 
   const doc = cli(['doctor', '--dir', dir]);
   assert.strictEqual(doc.status, 0, 'doctor should pass: ' + doc.stdout + doc.stderr);
-  assert.match(doc.stdout, /session\.json: valid/);
+  assert.match(doc.stdout, /ACTIVE_STATE\.md: \d+ lines/);
+  assert.match(doc.stdout, /active-state-bridge self-test: ok/);
 });
 
-test('doctor --strict passes on fresh init (empty session is valid)', () => {
+test('doctor --strict passes on fresh init', () => {
   const dir = mkdir();
   initDir(dir);
   const doc = cli(['doctor', '--dir', dir, '--strict']);
   assert.strictEqual(doc.status, 0, '--strict should pass on fresh init: ' + doc.stdout + doc.stderr);
 });
 
-test('doctor warns on missing session.json', () => {
+test('doctor warns on missing docs/ACTIVE_STATE.md', () => {
   const dir = mkdir();
   initDir(dir);
-  fs.unlinkSync(path.join(dir, '.hero-mmt-kit', 'session.json'));
+  fs.unlinkSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'));
   const doc = cli(['doctor', '--dir', dir]);
-  // warn-only by default — doctor still exits 0 unless there are fails
-  assert.match(doc.stdout + doc.stderr, /session\.json missing/i);
+  assert.match(doc.stdout + doc.stderr, /ACTIVE_STATE\.md missing/i);
 });
 
-test('doctor --strict fails on missing session.json', () => {
+test('doctor --strict fails on missing docs/ACTIVE_STATE.md', () => {
   const dir = mkdir();
   initDir(dir);
-  fs.unlinkSync(path.join(dir, '.hero-mmt-kit', 'session.json'));
+  fs.unlinkSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'));
   const doc = cli(['doctor', '--dir', dir, '--strict']);
-  assert.notStrictEqual(doc.status, 0, '--strict should fail on missing session');
-});
-
-test('doctor passes with a populated session', () => {
-  const dir = mkdir();
-  initDir(dir);
-
-  const sessionPath = path.join(dir, '.hero-mmt-kit', 'session.json');
-  const session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
-  session.currentSkill = 'hero-coding';
-  session.resumePath = 'docs/coding-reports/2026-07-10-test-item.md';
-  session.nextAction = 'run tests';
-  fs.writeFileSync(sessionPath, JSON.stringify(session, null, 2));
-
-  const doc = cli(['doctor', '--dir', dir]);
-  assert.strictEqual(doc.status, 0, 'doctor should pass: ' + doc.stdout + doc.stderr);
-  assert.match(doc.stdout, /session\.json: valid/);
+  assert.notStrictEqual(doc.status, 0, '--strict should fail on missing ACTIVE_STATE.md');
 });
 
 test('doctor warns on ACTIVE_STATE.md bloat', () => {

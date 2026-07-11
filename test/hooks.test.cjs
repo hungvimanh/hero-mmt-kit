@@ -8,7 +8,7 @@ const path = require('node:path');
 
 const GUARD = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'git-guard.cjs');
 const STOP = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'stop-reminder.cjs');
-const SB = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'session-bridge.cjs');
+const ASB = path.join(__dirname, '..', 'templates', 'common', '.claude', 'hooks', 'active-state-bridge.cjs');
 
 function run(script, payload) {
   const r = spawnSync('node', [script], { input: JSON.stringify(payload), encoding: 'utf8' });
@@ -31,54 +31,47 @@ test('safe on invalid json', () => { const r = spawnSync('node', [GUARD], { inpu
 
 test('stop-reminder claude loop guard exits 0', () => { assert.strictEqual(run(STOP, { hook_event_name: 'Stop', stop_hook_active: true, cwd: process.cwd() }).code, 0); });
 
-function sbDir() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-sb-'));
-  fs.mkdirSync(path.join(dir, '.hero-mmt-kit'), { recursive: true });
+function runStdout(script, payload) {
+  const r = spawnSync('node', [script], { input: JSON.stringify(payload), encoding: 'utf8' });
+  return { code: r.status, out: (r.stdout || '').trim() };
+}
+
+function asbDir() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-asb-'));
+  fs.mkdirSync(path.join(dir, 'docs'), { recursive: true });
   return dir;
 }
 
-const postToolPayload = (cwd) => ({ tool_name: 'Bash', tool_input: { command: 'ls' }, cwd });
+const sessionStartPayload = (cwd) => ({ hook_event_name: 'SessionStart', cwd });
 
-test('session-bridge: no session.json exits 0 silently', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-sb-'));
-  fs.mkdirSync(path.join(dir, '.hero-mmt-kit'), { recursive: true });
-  const r = run(SB, postToolPayload(dir));
+test('active-state-bridge: no ACTIVE_STATE.md exits 0 silently', () => {
+  const dir = asbDir();
+  const r = runStdout(ASB, sessionStartPayload(dir));
   assert.strictEqual(r.code, 0);
-  assert.strictEqual(r.err, '');
+  assert.strictEqual(r.out, '');
 });
-test('session-bridge: injects context to stderr on first call', () => {
-  const dir = sbDir();
-  const session = { schemaVersion: 1, currentSkill: 'hero-coding', resumePath: 'docs/coding-reports/2026-07-10-x.md', nextAction: 'implement foo' };
-  fs.writeFileSync(path.join(dir, '.hero-mmt-kit', 'session.json'), JSON.stringify(session));
-  const r = run(SB, postToolPayload(dir));
+test('active-state-bridge: injects Active Features context on session start', () => {
+  const dir = asbDir();
+  const md = [
+    '# Project Active State',
+    '',
+    '## Active Features in Pipeline',
+    '',
+    '| Feature | Path | Phase | Branch | Status | PRD | TDD |',
+    '| --- | --- | --- | --- | --- | --- | --- |',
+    '| Foo | src/foo | Coding | feat/foo | In progress | - | - |',
+    '',
+    '## Blockers / Pending Actions',
+    '- none',
+    '',
+  ].join('\n');
+  fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), md);
+  const r = runStdout(ASB, sessionStartPayload(dir));
   assert.strictEqual(r.code, 0);
-  assert.match(r.err, /hero-mmt-kit/);
-  assert.match(r.err, /hero-coding/);
-  assert.match(r.err, /implement foo/);
-});
-test('session-bridge: creates flag file after injection', () => {
-  const dir = sbDir();
-  const session = { schemaVersion: 1, currentSkill: 'hero-coding', nextAction: 'implement foo' };
-  fs.writeFileSync(path.join(dir, '.hero-mmt-kit', 'session.json'), JSON.stringify(session));
-  run(SB, postToolPayload(dir));
-  assert.ok(fs.existsSync(path.join(dir, '.hero-mmt-kit', 'session-injected.flag')));
-});
-test('session-bridge: silent on second call when flag exists', () => {
-  const dir = sbDir();
-  const session = { schemaVersion: 1, currentSkill: 'hero-coding', nextAction: 'implement foo' };
-  fs.writeFileSync(path.join(dir, '.hero-mmt-kit', 'session.json'), JSON.stringify(session));
-  // Create flag manually — simulates second call
-  fs.writeFileSync(path.join(dir, '.hero-mmt-kit', 'session-injected.flag'), '');
-  const r = run(SB, postToolPayload(dir));
-  assert.strictEqual(r.code, 0);
-  assert.strictEqual(r.err, '');
-});
-
-test('stop-reminder: removes session-injected.flag if it exists', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hvk-sr-'));
-  fs.mkdirSync(path.join(dir, '.hero-mmt-kit'), { recursive: true });
-  const flagPath = path.join(dir, '.hero-mmt-kit', 'session-injected.flag');
-  fs.writeFileSync(flagPath, '');
-  run(STOP, { hook_event_name: 'Stop', stop_hook_active: false, cwd: dir });
-  assert.ok(!fs.existsSync(flagPath));
+  const parsed = JSON.parse(r.out);
+  const ctx = parsed.hookSpecificOutput.additionalContext;
+  assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'SessionStart');
+  assert.match(ctx, /Active Features in Pipeline/);
+  assert.match(ctx, /feat\/foo/);
+  assert.match(ctx, /Blockers \/ Pending Actions/);
 });

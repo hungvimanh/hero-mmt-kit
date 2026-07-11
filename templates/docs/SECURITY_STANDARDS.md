@@ -27,7 +27,7 @@
 - Don't bypass hooks/CI "to go faster".
 
 ## 4. Automated tools (optional — degrade if absent)
-> None of the hooks bundled by hero-mmt-kit (§3: `git-guard`, `session-bridge`, `stop-reminder`) run secret scanning, dependency audit, or SAST. These are placeholders for the consuming project to wire up (e.g. a `gitleaks` pre-commit hook, an `<AUDIT_CMD>` step in CI). Do not assume any of §4 is enforced until the project has actually wired it — check for the tool/hook before claiming this baseline is met.
+> None of the hooks bundled by hero-mmt-kit (§3: `git-guard`, `active-state-bridge`, `stop-reminder`) run secret scanning, dependency audit, or SAST. These are placeholders for the consuming project to wire up (e.g. a `gitleaks` pre-commit hook, an `<AUDIT_CMD>` step in CI). Do not assume any of §4 is enforced until the project has actually wired it — check for the tool/hook before claiming this baseline is met.
 - **Secret scanning**: e.g. `gitleaks` (can run as a pre-commit hook to **block**). `<TBD: on/off>`
 - **`<AUDIT_CMD>`** in CI / the `doctor` command.
 - **SAST** (stack-dependent): `<TBD>`.

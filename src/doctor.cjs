@@ -4,7 +4,6 @@ const fs = require('fs');
 const { spawnSync } = require('child_process');
 const { log, exists, readJSON } = require('./util.cjs');
 const { checkLinks } = require('./links.cjs');
-const { readSession, validateSession } = require('./workflow-state.cjs');
 
 const ACTIVE_STATE_BLOAT_LINES = 150;
 
@@ -70,38 +69,34 @@ async function doctor(opts) {
     r.code === 0 ? ok('Claude stop-reminder self-test: ok') : er('Claude stop-reminder self-test failed');
   } else er('.claude/hooks/stop-reminder.cjs missing');
 
+  const asb = path.join(target, '.claude', 'hooks', 'active-state-bridge.cjs');
+  if (exists(asb)) {
+    const r = hookCheck(asb, { hook_event_name: 'SessionStart', cwd: target });
+    r.code === 0 ? ok('Claude active-state-bridge self-test: ok') : er('Claude active-state-bridge self-test failed');
+  } else er('.claude/hooks/active-state-bridge.cjs missing');
+
   // --- Workflow compliance ---
   log.title('Workflow compliance');
 
-  const session = readSession(target);
-  if (!session) {
-    sw('session.json missing (.hero-mmt-kit/session.json) — run `hero-mmt-kit update`');
-  } else {
-    const { ok: sessionOk, errors: sessionErrors } = validateSession(session);
-    if (sessionOk) {
-      ok('session.json: valid (schemaVersion 1)');
+  // ACTIVE_STATE.md bloat check
+  const activePath = path.join(target, 'docs', 'ACTIVE_STATE.md');
+  if (exists(activePath)) {
+    const lines = fs.readFileSync(activePath, 'utf8').split('\n').length;
+    if (lines > ACTIVE_STATE_BLOAT_LINES) {
+      sw(`ACTIVE_STATE.md has ${lines} lines (>${ACTIVE_STATE_BLOAT_LINES}) — archive completed items to docs/reports/ to keep it a short index`);
     } else {
-      er('session.json invalid: ' + sessionErrors.join('; '));
+      ok(`ACTIVE_STATE.md: ${lines} lines (under ${ACTIVE_STATE_BLOAT_LINES} threshold)`);
     }
+  } else {
+    sw('docs/ACTIVE_STATE.md missing — run `hero-mmt-kit update`');
+  }
 
-    // ACTIVE_STATE.md bloat check
-    const activePath = path.join(target, 'docs', 'ACTIVE_STATE.md');
-    if (exists(activePath)) {
-      const lines = fs.readFileSync(activePath, 'utf8').split('\n').length;
-      if (lines > ACTIVE_STATE_BLOAT_LINES) {
-        sw(`ACTIVE_STATE.md has ${lines} lines (>${ACTIVE_STATE_BLOAT_LINES}) — archive completed items to docs/reports/ to keep it a short index`);
-      } else {
-        ok(`ACTIVE_STATE.md: ${lines} lines (under ${ACTIVE_STATE_BLOAT_LINES} threshold)`);
-      }
-    }
-
-    // Dirty git + ACTIVE_STATE not touched
-    const dirtyFiles = getGitDirtyFiles(target);
-    if (dirtyFiles !== null && dirtyFiles.length > 0) {
-      const activeStateChanged = dirtyFiles.some((f) => f === 'docs/ACTIVE_STATE.md' || f === path.join('docs', 'ACTIVE_STATE.md'));
-      if (!activeStateChanged && !dirtyFiles.some((f) => f === '.hero-mmt-kit/session.json')) {
-        wn('git working tree is dirty but neither ACTIVE_STATE.md nor session.json is in the changes — consider updating workflow state');
-      }
+  // Dirty git + ACTIVE_STATE not touched
+  const dirtyFiles = getGitDirtyFiles(target);
+  if (dirtyFiles !== null && dirtyFiles.length > 0) {
+    const activeStateChanged = dirtyFiles.some((f) => f === 'docs/ACTIVE_STATE.md' || f === path.join('docs', 'ACTIVE_STATE.md'));
+    if (!activeStateChanged) {
+      wn('git working tree is dirty but docs/ACTIVE_STATE.md is not in the changes — consider updating workflow state');
     }
   }
 

@@ -9,9 +9,9 @@ const VENDORED = [
   'brainstorming', 'writing-plans', 'executing-plans', 'test-driven-development',
   'systematic-debugging', 'verification-before-completion', 'requesting-code-review',
   'receiving-code-review', 'dispatching-parallel-agents', 'subagent-driven-development',
-  'using-git-worktrees', 'finishing-a-development-branch', 'using-superpowers',
+  'using-git-worktrees', 'using-superpowers',
   'security-review', 'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
-  'hero-unit-test', 'hero-security', 'hero-strict',
+  'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report',
 ];
 
 test('every curated core skill is vendored with a SKILL.md + frontmatter', () => {
@@ -41,6 +41,8 @@ test('skill-authoring meta + dev-only cruft are trimmed', () => {
   }
   // non–Claude-Code tool references removed from using-superpowers
   assert.ok(!fs.existsSync(path.join(SKILLS_DIR, 'using-superpowers', 'references')), 'using-superpowers/references should be trimmed');
+  // hero-mmt-kit intentionally does not automate merge/PR/branch-cleanup decisions
+  assert.ok(!fs.existsSync(path.join(SKILLS_DIR, 'finishing-a-development-branch')), 'finishing-a-development-branch should not be vendored');
 });
 
 test('vendored set matches the manifest process group', () => {
@@ -59,7 +61,7 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.match(securityReview, /auth\/authz/i);
   assert.doesNotMatch(securityReview, /TBD|TODO|implement later|fill in details/i);
 
-  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-strict'];
+  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {
     const body = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf8');
     assert.match(body, new RegExp(`^name: ${name}$`, 'm'), `${name}: frontmatter name mismatch`);

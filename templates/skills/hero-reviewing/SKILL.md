@@ -36,11 +36,13 @@ If the plan artifact doesn't exist (small change that skipped planning), review 
 3. Check whether the implementation actually matches the plan: every planned step done, no silent scope cuts, no undocumented deviations. Flag anything the plan promised that the code doesn't deliver, and anything the code does that the plan didn't mention.
 4. If delegating the review to a sub-agent, use the vendored `requesting-code-review` skill's prompt structure so the sub-agent has the right context and scope. If you are the one receiving findings back, follow `receiving-code-review` discipline: fix Critical/Important findings before proceeding, re-review only the fix or the disputed finding (don't re-review the whole diff) unless scope expanded, and push back on findings you believe are incorrect with evidence rather than accepting them by default.
 5. Do not write or run unit tests in this phase — that's `hero-unit-test`'s job, not this skill's.
-6. Record findings and a clear verdict: pass, pass with follow-ups, or blocked.
+6. State findings and a clear verdict in chat: pass, pass with follow-ups, or blocked. Don't write a report file by default — see Report Convention below.
 
-## Output Artifact
+## Report Convention (on request)
 
-`docs/reviews/YYYY-MM-DD-<slug>.md` — findings plus a verdict.
+hero-reviewing does not write a report file automatically. If the user asks for a written report, invoke the `hero-report` skill — it writes to `docs/reviews/YYYY-MM-DD-<slug>.md` using the contract below.
+
+Report should cover: findings plus a verdict.
 
 Review style:
 - Keep it concise: what was reviewed, what was found, what remains open.
@@ -50,13 +52,13 @@ Review style:
 
 ## Definition of Done
 
-- Findings are recorded with a clear verdict (pass / pass with follow-ups / blocked).
+- Findings are stated with a clear verdict (pass / pass with follow-ups / blocked), at minimum in chat.
 - Blocking issues are either resolved, or explicitly deferred with an owner and a stated reason — never silently dropped.
+- If a report was requested, it was written via `hero-report` at the path above.
 
 ## ACTIVE_STATE.md Update
 
-- Update the Active Features row's status in `docs/ACTIVE_STATE.md` to reflect the review verdict.
-- Write `.hero-mmt-kit/session.json` with `currentSkill: "hero-reviewing"`, `resumePath` pointing at the review report, `nextAction` set to `"fix findings"` or `"proceed to delivery"`, and `updatedAt` as an ISO timestamp.
+- Update the Active Features row's status in `docs/ACTIVE_STATE.md` to reflect the review verdict. Link the review report only if `hero-report` wrote one.
 
 ## Related Skills
 
@@ -64,3 +66,4 @@ Review style:
 - Reads output from `hero-planning` (the plan) and `hero-coding` (the report and diff).
 - May trigger `hero-security` if the review surfaces a sensitive-surface concern (auth, data, secrets, external input, AI/LLM behavior).
 - Complements `hero-unit-test`: the two are a parallel, independent stage — neither is a prerequisite for the other.
+- Use `hero-report` on request to write the review report.

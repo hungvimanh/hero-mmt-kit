@@ -31,11 +31,11 @@ If there's no plan artifact, proceed on the strength of the request itself and n
 3. For independent or parallel work streams, use the vendored `subagent-driven-development` and `dispatching-parallel-agents` skills to delegate. Keep dependent work sequential; only fan out work that has no shared state or ordering constraint.
 4. If unexpected bugs surface mid-implementation, switch to the vendored `systematic-debugging` skill instead of guessing at fixes.
 5. Run relevant verification — build, lint, targeted tests — as you go, not only at the end. Catching a break right after the edit that caused it is cheaper than catching it after ten more edits.
-6. Write an execution report describing what changed, the evidence collected, and any remaining risks or deviations from the plan.
+6. Give a concise chat summary: what changed, the evidence collected, and any remaining risks or deviations from the plan. Don't write a report file by default — see Report Convention below.
 
-## Output Artifact
+## Report Convention (on request)
 
-`docs/coding-reports/YYYY-MM-DD-<slug>.md` — use the same slug as the originating plan when one exists, so the two artifacts pair up.
+hero-coding does not write a report file automatically. If the user asks for a written report, invoke the `hero-report` skill — it writes to `docs/coding-reports/YYYY-MM-DD-<slug>.md` (same slug as the originating plan when one exists) using the contract below. This is the one place that contract is defined; `hero-report` reads it from here rather than duplicating it.
 
 Report should cover:
 - What changed (files, symbols, behavior) and why.
@@ -52,13 +52,12 @@ Report style:
 ## Definition of Done
 
 - Implementation matches the plan, or deviations are documented and explained.
-- Evidence of correctness is recorded — not just "tests pass" but which commands were run and what they showed.
-- The coding report is saved at the artifact path above.
+- Evidence of correctness is recorded — not just "tests pass" but which commands were run and what they showed, at minimum in the chat summary.
+- If a report was requested, it was written via `hero-report` at the path above.
 
 ## ACTIVE_STATE.md Update
 
-- Update the Active Features row's status/phase in `docs/ACTIVE_STATE.md` to reflect coding is complete.
-- Write `.hero-mmt-kit/session.json` with `currentSkill: "hero-coding"`, `resumePath` pointing at the coding report, `nextAction` (typically `"review"` or `"test"`), and `lastCheckpoint`/`updatedAt` set to the current ISO timestamp.
+- Update the Active Features row's status/phase in `docs/ACTIVE_STATE.md` to reflect coding is complete. Link the coding report only if `hero-report` wrote one.
 
 ## Related Skills
 
@@ -67,3 +66,4 @@ This skill wraps the vendored `executing-plans`, `subagent-driven-development`, 
 - Reads its input from `hero-planning`.
 - Hands off to `hero-reviewing` and/or `hero-unit-test` next.
 - Escalate to `hero-security` if the change touched a sensitive surface (auth, data, secrets, external input, AI/LLM behavior).
+- Use `hero-report` on request to write the coding report.

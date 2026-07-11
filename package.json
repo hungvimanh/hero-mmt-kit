@@ -1,7 +1,7 @@
 {
   "name": "hero-mmt-kit",
   "version": "0.1.0",
-  "description": "A focused Claude Code framework for human-led development — seven direct-use skills (planning, coding, reviewing, unit testing, security, strict mode) with simple state tracking. Works for new and existing (brownfield) projects.",
+  "description": "A focused Claude Code framework for human-led development — six direct-use skills (planning, coding, reviewing, unit testing, security, strict mode) plus an on-demand report writer, with simple state tracking. Works for new and existing (brownfield) projects.",
   "keywords": [
     "claude-code",
     "ai-workflow",
@@ -19,7 +19,6 @@
     "bin",
     "src",
     "templates",
-    "presets",
     "skills.manifest.json",
     "README.md",
     "LICENSE",
