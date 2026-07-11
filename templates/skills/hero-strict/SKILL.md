@@ -37,7 +37,7 @@ Missing artifacts are not a blocker — they're a gap to flag in step 4 of the p
    - `gitnexus_detect_changes` and `gitnexus_impact` on changed symbols, for code changes.
    - `doctor --strict` for hero-mmt-kit's own install health, when the change touches the kit itself.
 3. **Use `verification-before-completion`'s discipline throughout**: don't claim a check passed unless you actually ran it and read the output. No inferring success from "it should work."
-4. **Flag stages that should have run but didn't** — e.g. a risky change with no review. Either run the corresponding hero-* skill (`hero-reviewing`, `hero-unit-test`, `hero-security`) or note the gap explicitly; don't silently skip it.
+4. **Flag stages that should have run but didn't** — e.g. a risky change with no review. Recommend the corresponding independent hero-* skill (`hero-reviewing`, `hero-unit-test`, `hero-security`) or note the gap explicitly; don't silently skip it.
 5. **Summarize the strict pass** in chat — what was checked, what passed, what didn't. If a written report exists (or the user wants one), append a "Strict verification" section to it via `hero-report`; don't create a new report file for this.
 
 ## Output
@@ -74,4 +74,4 @@ If the strict pass surfaces new blockers, add them to the Blockers/Pending Actio
 
 ## Related Skills
 
-Wraps `verification-before-completion` for its evidence discipline. Can trigger a re-run of `hero-unit-test`, `hero-reviewing`, or `hero-security` if a gap is found. Typically invoked after `hero-coding`, `hero-reviewing`, or `hero-unit-test` have already run once — see `using-hero` for the full skill map. Use `hero-report` to append its section to an existing (or newly written) report.
+Wraps `verification-before-completion` for its evidence discipline. Can recommend a re-run of `hero-unit-test`, `hero-reviewing`, or a `hero-security` pass if a gap is found. Typically invoked after `hero-coding`, `hero-reviewing`, or `hero-unit-test` have already run once — see `using-hero` for the full skill map. Use `hero-report` to append its section to an existing (or newly written) report.

@@ -43,7 +43,8 @@ test('process skill selection metadata installs the full bundled suite', () => {
   assert.deepStrictEqual(selection.deriveFrom, []);
   assert.match(selection.installPolicy, /full bundled process suite/);
   assert.match(selection.updatePolicy, /preserve user-added/);
-  assert.ok(proc.skills.map((s) => s.name).includes('security-review'));
+  assert.ok(proc.skills.map((s) => s.name).includes('hero-security'));
+  assert.ok(!proc.skills.map((s) => s.name).includes('security-review'));
 });
 
 test('optional design groups remain external and unbundled', () => {

@@ -1,6 +1,6 @@
 # Contributing to hero-mmt-kit
 
-Thanks for helping improve hero-mmt-kit! This repo hosts two related but independently-versioned products on different branches: `hero-vibe-kit` (AI-led agency workflow) and `hero-mmt-kit` (human-led Claude Code coding assistant — this branch). Contributions to this branch should stay scoped to hero-mmt-kit; it does not share a migration path or cherry-picks with hero-vibe-kit.
+Thanks for helping improve hero-mmt-kit! This repository is the human-led Claude Code coding assistant kit. Contributions should stay scoped to hero-mmt-kit and preserve its standalone workflow, templates, CLI, and tests.
 
 ## Repo layout
 ```
@@ -14,7 +14,7 @@ templates/  what gets installed into a consumer project
   common/.claude/ hooks (git-guard, active-state-bridge, stop-reminder) + settings.json (Claude Code only)
   skills/         VENDORED core process skills (MIT, from obra/superpowers) + hero-mmt-kit-authored
                   skills (`using-hero`, `hero-planning`, `hero-coding`, `hero-reviewing`,
-                  `hero-unit-test`, `hero-security`, `hero-strict`, `hero-report`, `security-review`) + NOTICE
+                  `hero-unit-test`, `hero-security`, `hero-strict`, `hero-report`) + NOTICE
   CLAUDE.md.tmpl AGENTS.md.tmpl
 test/       node:test suites (hooks, doctor-workflow, links, init-smoke, manifest,
             skills-vendor, skills-selection, profile-config, integrations, discover)
@@ -26,7 +26,7 @@ skills.manifest.json  vendored core (process) skills + referenced design/taste s
 - **English-only templates.** Framework docs, rules, templates, and vendored skills are authored in English. User-facing chat language is adaptive: answer in the user's language unless they ask otherwise.
 - **Placeholders**: use `{{DATE}}` for values rendered at init. Use `<TBD>` for values the *user* fills later (e.g. stack commands).
 - **Managed regions**: never instruct users to hand-edit inside `<!-- hero-mmt-kit:start/end -->`.
-- **Skills.** Only the curated MIT-licensed core process skills (plus the hero-mmt-kit-authored `hero-*`/`using-hero`/`security-review` skills) are vendored under `templates/skills/` (with `NOTICE` attribution); they install into a consumer's `.claude/skills/`. Reference everything else (design/taste, GitNexus, Serena) in `skills.manifest.json` and install via their CLI — don't redistribute non-permissive or unattributed skills/tools.
+- **Skills.** Only the curated MIT-licensed core process skills (plus the hero-mmt-kit-authored `hero-*`/`using-hero` skills) are vendored under `templates/skills/` (with `NOTICE` attribution); they install into a consumer's `.claude/skills/`. Reference everything else (design/taste, GitNexus, Serena) in `skills.manifest.json` and install via their CLI — don't redistribute non-permissive or unattributed skills/tools.
 - **Hooks must stay portable** (Node, cross-platform) and fail-safe (never block on parse errors). There are only three: `git-guard.cjs`, `active-state-bridge.cjs`, `stop-reminder.cjs` — all soft/non-blocking, no hard gates.
 - **No deep git automation.** The kit doesn't script commit/branch/push/merge/PR decisions on the user's behalf beyond `git-guard`'s narrow block list — those stay with the human.
 

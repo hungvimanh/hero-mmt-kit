@@ -21,7 +21,7 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 | `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 | `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Invoke `hero-security` separately when you want a dedicated security pass. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
 
 `hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are done per-phase, not gated into an automatic full pipeline — finishing one doesn't trigger the next; the developer decides what to invoke next.
 
@@ -39,7 +39,7 @@ Resuming work in a fresh session:
 
 ## Related vendored skills
 
-The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, `security-review`. Each hero-* skill names the vendored skill(s) it invokes.
+The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` is the standalone security review skill rather than a wrapper. Each hero-* skill names the vendored skill(s) it invokes.
 
 ## Output Style
 

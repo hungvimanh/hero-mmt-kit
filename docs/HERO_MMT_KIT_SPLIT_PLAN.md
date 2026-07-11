@@ -231,7 +231,7 @@ New skills:
 | `hero-coding` | Execute an approved plan or focused implementation task | `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, branch/commit conventions | `docs/coding-reports/YYYY-MM-DD-slug.md` + optional git actions |
 | `hero-reviewing` | Request, receive, or synthesize code review | `requesting-code-review`, `receiving-code-review`, review DoD | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Add focused unit tests or run TDD-first implementation | `test-driven-development`, post-hoc testing guidance, test DoD | `docs/test-reports/YYYY-MM-DD-slug.md` |
-| `hero-security` | Perform scoped security review | `security-review`, `SECURITY_STANDARDS.md`, OWASP Top 10 | Findings in invoking report |
+| `hero-security` | Perform standalone scoped security review | `SECURITY_STANDARDS.md`, OWASP Top 10, AI/LLM checklist | `docs/security-reports/YYYY-MM-DD-slug.md` |
 | `hero-strict` | Narrow-scope discipline mode: minimal scanning, ask if unclear, avoid opportunistic changes | New behavior contract | n/a |
 
 Each new skill should use a consistent structure:
@@ -827,7 +827,7 @@ hero-unit-test:
 docs/test-reports/YYYY-MM-DD-slug.md
 
 hero-security:
-findings in the invoking report
+docs/security-reports/YYYY-MM-DD-slug.md
 
 hero-strict:
 n/a
@@ -863,12 +863,7 @@ templates/PRD_AI_FEATURE.md
 templates/DESIGN_BRIEF.md
 ```
 
-`hero-security` may either:
-
-- point at `SECURITY_STANDARDS.md`, or
-- fold a condensed OWASP checklist into the skill.
-
-Decide based on length while writing. The skill itself must remain usable without a router doc.
+`hero-security` folds the OWASP + AI/LLM checklist into the skill and writes a standalone security report. It points at `SECURITY_STANDARDS.md` for project policy, but does not wrap another security skill or append findings to another stage's report.
 
 ### Rewrite generated instruction files
 

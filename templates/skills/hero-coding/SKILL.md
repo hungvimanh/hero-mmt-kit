@@ -65,5 +65,5 @@ This skill wraps the vendored `executing-plans`, `subagent-driven-development`, 
 
 - Reads its input from `hero-planning`.
 - Hands off to `hero-reviewing` and/or `hero-unit-test` next.
-- Escalate to `hero-security` if the change touched a sensitive surface (auth, data, secrets, external input, AI/LLM behavior).
+- Recommend a separate `hero-security` pass if the change touched a sensitive surface (auth, data, secrets, external input, AI/LLM behavior); do not embed the security review in this coding stage.
 - Use `hero-report` on request to write the coding report.

@@ -31,7 +31,7 @@ have. The backported additions remain obra/superpowers-origin content under MIT;
 Review Budget tiering is a hero-mmt-kit original design choice.
 
 Framework-authored skills shipped by hero-mmt-kit:
-  security-review, using-hero, hero-planning, hero-coding, hero-reviewing,
+  using-hero, hero-planning, hero-coding, hero-reviewing,
   hero-unit-test, hero-security, hero-strict, hero-report
 
 Design / visual-direction skills are NOT vendored — they are referenced in

@@ -10,7 +10,7 @@ const VENDORED = [
   'systematic-debugging', 'verification-before-completion', 'requesting-code-review',
   'receiving-code-review', 'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'using-superpowers',
-  'security-review', 'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
+  'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
   'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report',
 ];
 
@@ -55,11 +55,14 @@ test('vendored set matches the manifest process group', () => {
 });
 
 test('hero-mmt-kit-authored skills avoid placeholders', () => {
-  const securityReview = fs.readFileSync(path.join(SKILLS_DIR, 'security-review', 'SKILL.md'), 'utf8');
-  assert.match(securityReview, /^name: security-review$/m);
-  assert.match(securityReview, /OWASP/i);
-  assert.match(securityReview, /auth\/authz/i);
-  assert.doesNotMatch(securityReview, /TBD|TODO|implement later|fill in details/i);
+  assert.ok(!fs.existsSync(path.join(SKILLS_DIR, 'security-review')), 'security-review should be merged into hero-security');
+
+  const heroSecurity = fs.readFileSync(path.join(SKILLS_DIR, 'hero-security', 'SKILL.md'), 'utf8');
+  assert.match(heroSecurity, /^name: hero-security$/m);
+  assert.match(heroSecurity, /OWASP/i);
+  assert.match(heroSecurity, /auth\/authz/i);
+  assert.match(heroSecurity, /standalone security review/i);
+  assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
   const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {

@@ -2,11 +2,11 @@
 
 > A focused, human-led coding workflow for **Claude Code** — six direct-use skills (planning, coding, reviewing, unit testing, security, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
 
-hero-vibe-kit is the AI-led agency workflow kit. hero-mmt-kit is the human-led Claude Code coding assistant kit. This repository hosts both as a hard fork: hero-mmt-kit has its own package, its own version history (starting at 0.1.0), and no shared migration path or cherry-picking between them.
+`hero-mmt-kit` installs a lightweight Claude Code workflow into new or existing repositories. It is designed for developers who stay in control: you choose the task, invoke the relevant skill, and keep the final judgment on plans, code, tests, reviews, and security checks.
 
 ## What it is
 
-`hero-mmt-kit` installs a small, disciplined workflow into your repository. Unlike an AI-led framework, it does not route tasks, gate commits, or enforce phases — the developer decides what to work on and invokes skills directly:
+`hero-mmt-kit` is **documentation + direct-use skills + soft hooks + a zero-dependency CLI**. It does not route work automatically, enforce phases, or block normal development flow.
 
 - **Six operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them. Each phase is done on its own — finishing one never auto-triggers the next.
 - **Report writing is on-demand** — `hero-coding`/`hero-reviewing`/`hero-unit-test` end with a concise chat summary; a written report is only produced when asked, via the separate `hero-report` skill.
@@ -16,7 +16,7 @@ hero-vibe-kit is the AI-led agency workflow kit. hero-mmt-kit is the human-led C
 - **Full skill suite, every install** — the bundled process skills install unconditionally; there's no profile/surface logic deciding what you get.
 - **Standards docs** for security, performance, design, and interaction patterns, plus PRD/design-brief templates.
 
-It is **documentation + soft hooks + a zero-dependency CLI**. Optional third-party tools (the taste/design skill) are installed from their original sources, not redistributed.
+Optional third-party tools such as taste/design skills, GitNexus, and Serena are referenced or installed from their own sources when available; they are not required for the core workflow.
 
 ## Quick start
 
@@ -27,15 +27,16 @@ npx hero-mmt-kit init
 # For existing codebases, create the first discovery map:
 npx hero-mmt-kit discover
 
-# Then restart Claude Code (or run /hooks) to activate hooks, and:
+# Restart Claude Code (or run /hooks) to activate hooks, then validate:
 npx hero-mmt-kit doctor
 ```
 
-Non-interactive / CI example:
+Non-interactive / CI examples:
 
 ```bash
 npx hero-mmt-kit init --dir <tmp> --yes --skip-integrations
-# or, opting into the taste/design skill non-interactively:
+
+# Opt into the optional taste/design skill non-interactively:
 npx hero-mmt-kit init --dir <tmp> --yes --taste
 ```
 
@@ -43,7 +44,7 @@ npx hero-mmt-kit init --dir <tmp> --yes --taste
 
 ```text
 your-project/
-  CLAUDE.md          # hero-mmt-kit managed block; your other content is preserved
+  CLAUDE.md          # hero-mmt-kit managed block; existing content preserved
   AGENTS.md          # cross-agent entry pointer
   docs/              # ACTIVE_STATE, BROWNFIELD_DISCOVERY, SECURITY_STANDARDS,
                      # PERFORMANCE_STANDARDS, DESIGN_STANDARDS, INTERACTION_PATTERNS,
@@ -58,9 +59,8 @@ your-project/
 
 - **New project:** scaffolds the workflow from scratch.
 - **Brownfield project:** preserves existing `CLAUDE.md`, `AGENTS.md`, and `.claude/settings.json`; inserts managed blocks (`<!-- hero-mmt-kit:start/end -->`) and deep-merges hooks. `docs/ACTIVE_STATE.md` is never overwritten.
-- **English-only framework docs:** installed docs and templates are English-only for consistency and token efficiency. Claude still replies in the user's chat language unless asked otherwise.
-- **Idempotent updates:** re-running `init`/`update` refreshes framework-managed regions and backs up touched files to `*.bak` when needed.
-- **One interactive question:** `init` asks "Install the taste/design skill?" (default No). `--yes` accepts the default; `--taste` opts in without prompting.
+- **Idempotent updates:** re-running `init` or `update` refreshes framework-managed regions and backs up touched files to `*.bak` when needed.
+- **One interactive question:** `init` asks whether to install the optional taste/design skill (default No). `--yes` accepts the default; `--taste` opts in without prompting.
 
 ## Workflow skills
 
@@ -79,7 +79,7 @@ A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or 
 
 `hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A seventh, on-demand skill, `hero-report`, writes the report file when the user actually wants one, at the path convention the source skill defines.
 
-These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`, plus a hero-mmt-kit-authored `security-review` skill. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
+These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` is a standalone security review skill rather than a wrapper. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
 
 ## Session state
 
@@ -109,11 +109,11 @@ Flags:
 
 ## Optional integrations
 
-Integrations are auto-detected — no prompts beyond the single taste/design question in `init`.
+Integrations are auto-detected. Core workflow installation works without them.
 
 | Tool | What it is | What `init` does |
 |---|---|---|
-| Taste/design skills | UI/design skills from `Leonxlnx/taste-skill` | Installed from source via the `skills` CLI only if you opted in (`--taste` or the interactive Yes) |
+| Taste/design skills | UI/design skills from `Leonxlnx/taste-skill` | Installed from source via the `skills` CLI only if you opt in (`--taste` or interactive Yes) |
 | GitNexus | Code-intelligence CLI/MCP | Auto-runs `npx gitnexus analyze` only if the repo already has a `.gitnexus/` index; otherwise skipped |
 | Serena | Semantic code-intelligence MCP | Auto-seeds pointer notes only if `.serena/` already exists; otherwise skipped |
 
@@ -124,22 +124,20 @@ Required: Node.js 18+ and Claude Code. Everything else is optional.
 - Edit anything outside `<!-- hero-mmt-kit:start/end -->` markers freely; `update` will not touch it.
 - Fill `<TBD>` placeholders in Security, Performance, and Design docs once the stack is known.
 - Run `npx hero-mmt-kit update` to refresh framework-managed docs/hooks to the latest version.
-- Never hand-edit inside managed regions; change the source template or use `update`.
+- Never hand-edit inside managed regions; change the source template or run `update` from a newer package version.
 
 ## Uninstall
 
-Remove:
+Review files before deleting them, especially skill directories that may contain user-added content. To remove the framework, delete or clean up:
 
 - framework docs under `docs/`,
 - `.claude/hooks/*` and the hook block in `.claude/settings.json`,
-- the managed blocks in `CLAUDE.md` and `AGENTS.md`,
+- managed blocks in `CLAUDE.md` and `AGENTS.md`,
 - `.hero-mmt-kit/`,
 - bundled skills under `.claude/skills/` that you no longer want.
 
-Review before deleting skill directories because some may be user-added or intentionally retained.
-
 ## License and attribution
 
-MIT (see `LICENSE`). hero-mmt-kit vendors a curated, lightly trimmed copy of core process skills from [`obra/superpowers`](https://github.com/obra/superpowers) under `templates/skills/` with attribution in `templates/skills/NOTICE`.
+MIT (see `LICENSE`). `hero-mmt-kit` vendors a curated, lightly trimmed copy of core process skills from [`obra/superpowers`](https://github.com/obra/superpowers) under `templates/skills/` with attribution in `templates/skills/NOTICE`.
 
 Design/UI skills from [`Leonxlnx/taste-skill`](https://github.com/Leonxlnx/taste-skill) are **not** redistributed; they are installed from source via the `skills` CLI under their own license only when the user opts into the taste/design skill.

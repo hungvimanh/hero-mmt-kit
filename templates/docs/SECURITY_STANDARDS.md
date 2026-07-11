@@ -1,6 +1,6 @@
 # Security Standards
 
-> A **measurable** security baseline for this project. It is the bar `security-review` (invoked via `hero-security`) grades against. Shift-left: most of it is considered during threat modeling in `hero-planning`.
+> A **measurable** security baseline for this project. It is the bar `hero-security` grades against. Shift-left: most of it is considered during threat modeling in `hero-planning`.
 >
 > Fill the `<TBD>`s per your stack/compliance when locked in the first PRD/TDD.
 
@@ -35,4 +35,4 @@
 ## 5. Checklist by path (feeds the DoD)
 - **Fast path**: no new secret committed; `<AUDIT_CMD>` reports no new critical issues.
 - **Standard path**: + input validation for touched code; + permission checks if touching authz.
-- **Full path**: + the threat model (Phase 2) is addressed; + `security-review` passes; + (AI feature) all of §2 verified, including abuse cases.
+- **Full path**: + the threat model (Phase 2) is addressed; + `hero-security` passes; + (AI feature) all of §2 verified, including abuse cases.

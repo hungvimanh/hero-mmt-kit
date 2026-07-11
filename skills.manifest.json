@@ -1,5 +1,5 @@
 {
-  "$comment": "Skills the hero-mmt-kit workflow references. The `process` core skills are bundled under templates/skills/ and installed by init/update into .claude/skills/. Concise reporting principles are integrated directly into the hero-* workflow skills rather than shipped as a standalone optional skill. Most vendored technique skills are a curated, lightly trimmed MIT-licensed copy from obra/superpowers; the hero-* skills plus security-review are authored by hero-mmt-kit (attribution: templates/skills/NOTICE). Design/taste skills are NOT bundled — they are referenced here and installed via the `skills` CLI from their ORIGINAL sources when the user opts into the taste/design skill.",
+  "$comment": "Skills the hero-mmt-kit workflow references. The `process` core skills are bundled under templates/skills/ and installed by init/update into .claude/skills/. Concise reporting principles are integrated directly into the hero-* workflow skills rather than shipped as a standalone optional skill. Most vendored technique skills are a curated, lightly trimmed MIT-licensed copy from obra/superpowers; the hero-* skills plus using-hero are authored by hero-mmt-kit (attribution: templates/skills/NOTICE). Design/taste skills are NOT bundled — they are referenced here and installed via the `skills` CLI from their ORIGINAL sources when the user opts into the taste/design skill.",
   "schema": 1,
   "installer": "skills",
   "groups": {
@@ -7,8 +7,8 @@
       "tier": "vendored",
       "bundled": true,
       "source": "mixed",
-      "license": "MIT for obra/superpowers skills; hero-mmt-kit authored for the hero-* skills and security-review",
-      "description": "Core process skills the workflow invokes by name. Bundled under templates/skills/ and installed into .claude/skills/ by init/update. The hero-* skills are the primary developer-facing interface; they wrap the vendored obra/superpowers technique skills rather than duplicating them (attribution in templates/skills/NOTICE).",
+      "license": "MIT for obra/superpowers skills; hero-mmt-kit authored for the hero-* skills and using-hero",
+      "description": "Core process skills the workflow invokes by name. Bundled under templates/skills/ and installed into .claude/skills/ by init/update. The hero-* skills are the primary developer-facing interface; they wrap the vendored obra/superpowers technique skills rather than duplicating them, except hero-security which is a standalone security review skill (attribution in templates/skills/NOTICE).",
       "selection": {
         "mode": "all",
         "deriveFrom": [],
@@ -29,12 +29,11 @@
         { "name": "dispatching-parallel-agents", "source": "obra/superpowers" },
         { "name": "subagent-driven-development", "source": "obra/superpowers" },
         { "name": "using-git-worktrees", "source": "obra/superpowers" },
-        { "name": "security-review", "source": "hero-mmt-kit", "description": "OWASP-focused security review for vulnerable surfaces, sensitive data, auth/authz, and AI/LLM risks before completion." },
         { "name": "hero-planning", "source": "hero-mmt-kit", "description": "Turn a request into an agreed, written plan before code changes." },
         { "name": "hero-coding", "source": "hero-mmt-kit", "description": "Implement an approved plan, or a small change that doesn't need one." },
         { "name": "hero-reviewing", "source": "hero-mmt-kit", "description": "Fresh-eyes check of an implementation against its plan, before merge." },
         { "name": "hero-unit-test", "source": "hero-mmt-kit", "description": "Verify implementation correctness — TDD-first or post-implementation." },
-        { "name": "hero-security", "source": "hero-mmt-kit", "description": "Dispatch a focused security-review pass when a sensitive surface is touched." },
+        { "name": "hero-security", "source": "hero-mmt-kit", "description": "Run an independent OWASP + AI/LLM security review; findings are stated in chat and appended to an existing report on request." },
         { "name": "hero-strict", "source": "hero-mmt-kit", "description": "Opt-in full verification pass before a \"done\" claim." },
         { "name": "hero-report", "source": "hero-mmt-kit", "description": "On-demand report writer — writes the coding/review/test report at the source skill's conventional path, only when requested." }
       ]

@@ -27,7 +27,7 @@ const SERENA_MEMOS = {
   'hero_workflow.md':
     'Human-led Claude Code workflow (hero-mmt-kit). Use the **using-hero** skill for the overview.\n\n' +
     'Core skills: hero-planning (plan before code), hero-coding (implement), hero-reviewing (fresh-eyes check), ' +
-    'hero-unit-test (TDD-first or post-implementation tests), hero-security (sensitive-surface review), ' +
+    'hero-unit-test (TDD-first or post-implementation tests), hero-security (standalone security review), ' +
     'hero-strict (opt-in full verification pass before a "done" claim).\n\n' +
     'Session state: docs/ACTIVE_STATE.md\'s Active Features table (the single source of durable workflow state).\n\n' +
     'Details (always read the source files, do not duplicate here): docs/ACTIVE_STATE.md, docs/SECURITY_STANDARDS.md, ' +

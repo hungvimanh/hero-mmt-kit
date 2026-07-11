@@ -17,7 +17,6 @@ const CORE_SKILL_ORDER = [
   'dispatching-parallel-agents',
   'subagent-driven-development',
   'using-git-worktrees',
-  'security-review',
   'hero-planning',
   'hero-coding',
   'hero-reviewing',
