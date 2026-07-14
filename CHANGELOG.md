@@ -4,6 +4,13 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.1] - 2026-07-14
+
+### Fixed
+
+- `hero-planning` no longer stalls in Plan Mode asking "should I implement now?" — after the plan is written and self-reviewed, it exits plan mode, reports the saved path, and stops without offering to implement or auto-invoking `hero-coding`.
+- Unified the plan artifact path to `docs/plans/YYYY-MM-DD-<slug>.md` everywhere. The vendored `writing-plans` skill previously defaulted to `docs/superpowers/plans/...`, which didn't match `hero-planning`'s own convention; `writing-plans` and the `requesting-code-review` example now use the same path.
+
 ## [1.1.0] - 2026-07-11
 
 ### Added
