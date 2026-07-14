@@ -4,6 +4,13 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.2] - 2026-07-14
+
+### Changed
+
+- Extracted `hero-security`'s embedded reference knowledge (the 14-domain security control baseline, OWASP/AI-LLM review checklist, release-gate criteria, report template, and severity guide) out of `SKILL.md` into standalone docs — `docs/SECURITY_CONTROL_BASELINE.md`, `docs/SECURITY_REVIEW_CHECKLIST.md`, and `docs/SECURITY_REPORT_FORMAT.md` — referenced from the skill via `@docs/...`. `hero-security/SKILL.md` shrank from 427 to ~150 lines and now covers only process/behavioral guidance.
+- Consolidated all `hero-security` documentation into the project's single `docs/` folder alongside the existing `docs/SECURITY_STANDARDS.md`, instead of splitting it between the project's `docs/` and a skill-local `docs/` subfolder under `.claude/skills/hero-security/`. `SECURITY_STANDARDS.md` now cross-links the three new files.
+
 ## [1.1.1] - 2026-07-14
 
 ### Fixed

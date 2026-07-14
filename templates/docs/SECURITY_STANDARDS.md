@@ -3,6 +3,8 @@
 > A **measurable** security baseline for this project. It is the bar `hero-security` grades against. Shift-left: most of it is considered during threat modeling in `hero-planning`.
 >
 > Fill the `<TBD>`s per your stack/compliance when locked in the first PRD/TDD.
+>
+> `hero-security`'s fixed review methodology lives alongside this file: [SECURITY_CONTROL_BASELINE.md](./SECURITY_CONTROL_BASELINE.md) (14-domain control checklist), [SECURITY_REVIEW_CHECKLIST.md](./SECURITY_REVIEW_CHECKLIST.md) (OWASP/AI-LLM checklist + release gate), [SECURITY_REPORT_FORMAT.md](./SECURITY_REPORT_FORMAT.md) (report template + severity guide).
 
 ## 1. General baseline (every project)
 - **Secrets**: NEVER hardcode secrets/keys/API tokens in code or logs. Use env vars / a secret manager. `.env` must be in `.gitignore`. Enable secret-scanning (§4).
