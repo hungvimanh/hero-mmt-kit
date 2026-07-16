@@ -107,6 +107,8 @@ You MUST complete each phase before proceeding to the next.
 
    **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
 
+   **For a single reproducible API/logic bug from known input** (payload known, no debugger attached, no need to run the app): see `instrumented-debugging.md` in this directory — trigger via a temporary unit test built from that input, with checkpoint logs replacing manual breakpoints.
+
 5. **Trace Data Flow**
 
    **WHEN error is deep in call stack:**
@@ -282,6 +284,7 @@ These techniques are part of systematic debugging and available in this director
 - **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
 - **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`instrumented-debugging.md`** - Place structured log checkpoints at breakpoint-equivalent locations, triggered by a temporary unit test built from known input, instead of attaching a debugger
 
 **Related skills:**
 - **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)

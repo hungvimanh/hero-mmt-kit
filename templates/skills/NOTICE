@@ -30,6 +30,15 @@ on top of hero-mmt-kit's own Review Budget tiering system, which upstream does n
 have. The backported additions remain obra/superpowers-origin content under MIT;
 Review Budget tiering is a hero-mmt-kit original design choice.
 
+Note on systematic-debugging: this skill received a hero-mmt-kit-original
+supporting technique, `instrumented-debugging.md` (structured console/log
+checkpoint placement for a reproducible API/logic bug, used in place of
+attaching a debugger), added alongside the vendored `root-cause-tracing.md`,
+`defense-in-depth.md`, and `condition-based-waiting.md` technique files. This
+addition is a hero-mmt-kit design choice; the vendored Phase 1-4 process and
+the other supporting files remain unchanged obra/superpowers-origin content
+under MIT.
+
 Framework-authored skills shipped by hero-mmt-kit:
   using-hero, hero-planning, hero-coding, hero-reviewing,
   hero-unit-test, hero-security, hero-strict, hero-report

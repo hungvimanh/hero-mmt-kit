@@ -29,7 +29,7 @@ If there's no plan artifact, proceed on the strength of the request itself and n
 1. Read the plan artifact fully before starting (if one exists). Don't begin editing from a partial read.
 2. Implement using the vendored `executing-plans` skill's discipline: work through tasks in bite-sized steps, run the verification each task specifies, and mark tasks complete as you go rather than at the end.
 3. For independent or parallel work streams, use the vendored `subagent-driven-development` and `dispatching-parallel-agents` skills to delegate. Keep dependent work sequential; only fan out work that has no shared state or ordering constraint.
-4. If unexpected bugs surface mid-implementation, switch to the vendored `systematic-debugging` skill instead of guessing at fixes.
+4. If unexpected bugs surface mid-implementation, switch to the vendored `systematic-debugging` skill instead of guessing at fixes. For a bug reproducible from known input (a specific API payload), its `instrumented-debugging` technique triggers via a temporary unit test built from that input, with checkpoint logs in place of manual breakpoints.
 5. Run relevant verification — build, lint, targeted tests — as you go, not only at the end. Catching a break right after the edit that caused it is cheaper than catching it after ten more edits.
 6. Give a concise chat summary: what changed, the evidence collected, and any remaining risks or deviations from the plan. Don't write a report file by default — see Report Convention below.
 

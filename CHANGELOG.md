@@ -4,6 +4,14 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.3] - 2026-07-16
+
+### Added
+
+- `instrumented-debugging.md`, a hero-mmt-kit-original supporting technique added to the vendored `systematic-debugging` skill (alongside `root-cause-tracing.md`, `defense-in-depth.md`, and `condition-based-waiting.md`): for a logic/data bug reproducible from known input, trigger it via a temporary unit test built directly from that input, place tagged `console.log`/`print` checkpoints at breakpoint-equivalent locations, and read the collected trace instead of attaching a debugger. Mandatory cleanup removes the temporary test and all checkpoint lines before the session ends.
+- `systematic-debugging/SKILL.md` Phase 1 and its Supporting Techniques list now point to `instrumented-debugging.md`; `hero-coding/SKILL.md` step 4 surfaces it as an option when a mid-implementation bug is reproducible from a known API payload.
+- `templates/skills/NOTICE` documents this as a hero-mmt-kit design choice layered on top of the vendored skill, following the same precedent set for `subagent-driven-development`'s backported additions.
+
 ## [1.1.2] - 2026-07-14
 
 ### Changed
