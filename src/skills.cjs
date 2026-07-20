@@ -22,6 +22,7 @@ const CORE_SKILL_ORDER = [
   'hero-reviewing',
   'hero-unit-test',
   'hero-security',
+  'hero-mr-review',
   'hero-strict',
   'hero-report',
 ];

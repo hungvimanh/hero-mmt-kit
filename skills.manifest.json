@@ -34,6 +34,7 @@
         { "name": "hero-reviewing", "source": "hero-mmt-kit", "description": "Fresh-eyes check of an implementation against its plan, before merge." },
         { "name": "hero-unit-test", "source": "hero-mmt-kit", "description": "Verify implementation correctness — TDD-first or post-implementation." },
         { "name": "hero-security", "source": "hero-mmt-kit", "description": "Run an independent OWASP + AI/LLM security review and write a standalone security report." },
+        { "name": "hero-mr-review", "source": "hero-mmt-kit", "description": "Review a teammate's merge request by commit/tag/branch and write a standalone MR review report." },
         { "name": "hero-strict", "source": "hero-mmt-kit", "description": "Opt-in full verification pass before a \"done\" claim." },
         { "name": "hero-report", "source": "hero-mmt-kit", "description": "On-demand report writer — writes the coding/review/test report at the source skill's conventional path, only when requested." }
       ]

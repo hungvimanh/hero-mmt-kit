@@ -1,6 +1,6 @@
 # hero-mmt-kit
 
-> A focused, human-led coding workflow for **Claude Code** — six direct-use skills (planning, coding, reviewing, unit testing, security, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
+> A focused, human-led coding workflow for **Claude Code** — seven direct-use skills (planning, coding, reviewing, unit testing, security, MR review, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
 
 `hero-mmt-kit` installs a lightweight Claude Code workflow into new or existing repositories. It is designed for developers who stay in control: you choose the task, invoke the relevant skill, and keep the final judgment on plans, code, tests, reviews, and security checks.
 
@@ -8,7 +8,7 @@
 
 `hero-mmt-kit` is **documentation + direct-use skills + soft hooks + a zero-dependency CLI**. It does not route work automatically, enforce phases, or block normal development flow.
 
-- **Six operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them. Each phase is done on its own — finishing one never auto-triggers the next.
+- **Seven operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them. Each phase is done on its own — finishing one never auto-triggers the next.
 - **Report writing is on-demand** — `hero-coding`/`hero-reviewing`/`hero-unit-test` end with a concise chat summary; a written report is only produced when asked, via the separate `hero-report` skill.
 - **No router, no gates** — there is no task-classification doc and no hard PreToolUse enforcement. `using-hero` is a map, not a controller.
 - **Soft hooks only** — `git-guard` blocks a small set of genuinely dangerous git commands and reminds (never blocks) on ordinary commits; `stop-reminder` nudges you to update state when you stop with uncommitted changes; `active-state-bridge` injects `docs/ACTIVE_STATE.md` into context once per session start.
@@ -64,7 +64,7 @@ your-project/
 
 ## Workflow skills
 
-Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The six operative skills:
+Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The seven operative skills:
 
 | Skill | Use when | Artifact / report |
 |---|---|---|
@@ -73,13 +73,14 @@ Invoke `using-hero` first for an overview — it explains which skill applies ne
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
+| `hero-mr-review` | Reviewing a teammate's merge request or commit before it merges. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
 | `hero-strict` | Extra rigor wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact. Each phase is "done" on its own terms — there's no automatic full-pipeline run; the developer chooses what to invoke next.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact. Each phase is "done" on its own terms — there's no automatic full-pipeline run; the developer chooses what to invoke next. `hero-mr-review` sits outside this flow entirely: it reviews a teammate's MR, not the invoking developer's own work, so it's invoked directly whenever needed rather than as a pipeline stage.
 
-`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A seventh, on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. `hero-security` is the exception: it is an independent security flow and always writes its own `docs/security-reports/...` artifact.
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. An eighth, on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. `hero-security` and `hero-mr-review` are the exceptions: both are independent flows that always write their own standalone report (`docs/security-reports/...` and `docs/mr-reviews/...` respectively).
 
-These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` is a standalone security review skill rather than a wrapper. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
+These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` and `hero-mr-review` are standalone review skills rather than wrappers. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
 
 ## Session state
 

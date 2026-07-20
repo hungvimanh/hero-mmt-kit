@@ -11,7 +11,7 @@ const VENDORED = [
   'receiving-code-review', 'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'using-superpowers',
   'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
-  'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report',
+  'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-strict', 'hero-report',
 ];
 
 test('every curated core skill is vendored with a SKILL.md + frontmatter', () => {
@@ -66,7 +66,7 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.doesNotMatch(heroSecurity, /has no artifact convention|never creates a standalone security report|appended to the invoking report/i);
   assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
-  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-strict', 'hero-report'];
+  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {
     const body = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf8');
     assert.match(body, new RegExp(`^name: ${name}$`, 'm'), `${name}: frontmatter name mismatch`);
@@ -82,6 +82,7 @@ test('hero workflow skills embed concise reporting guidance', () => {
     'hero-reviewing': /Review style/i,
     'hero-unit-test': /Test report style/i,
     'hero-security': /Security finding style/i,
+    'hero-mr-review': /Report style/i,
     'hero-strict': /Strict verification style/i,
   };
 

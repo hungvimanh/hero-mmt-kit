@@ -18,10 +18,13 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 | `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
 | `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
+| `hero-mr-review` | Reviewing a teammate's merge request or commit before it merges — given a commit/tag/branch. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
 | `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
 | `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
 A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Invoke `hero-security` separately when you want a dedicated security pass. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
+
+`hero-mr-review` is not part of this flow at all — it reviews a *teammate's* merge request, not the invoking developer's own work-in-progress. It has no plan or coding report to read; it reads the diff itself. Invoke it directly whenever a colleague's MR needs review, independent of whatever phase your own work is in.
 
 `hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are done per-phase, not gated into an automatic full pipeline — finishing one doesn't trigger the next; the developer decides what to invoke next.
 

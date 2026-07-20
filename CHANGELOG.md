@@ -4,6 +4,13 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.4] - 2026-07-20
+
+### Added
+
+- `hero-mr-review`, a new standalone core skill for reviewing a teammate's merge request or commit before it merges. Given a git ref (commit SHA, tag, or branch) diffed against a base branch, it checks coding convention, purpose-fit against the commit messages/description, impact on related code (via GitNexus when connected), and potential bugs — then always writes a standalone report to `docs/mr-reviews/YYYY-MM-DD-<slug>.md` with a verdict (`Approve` / `Approve with suggestions` / `Request changes`). Like `hero-security`, it is independent of the `hero-planning`/`hero-coding`/`hero-reviewing`/`hero-unit-test` pipeline and is invoked directly, on demand — it reviews someone else's code, not the invoking developer's own work-in-progress.
+- Added to `skills.manifest.json`, `CORE_SKILL_ORDER`, `using-hero`'s skill map, and the vendored skill test suite alongside the other `hero-*` skills.
+
 ## [1.1.3] - 2026-07-16
 
 ### Added
