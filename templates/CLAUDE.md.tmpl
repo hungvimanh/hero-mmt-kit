@@ -16,8 +16,55 @@ Core Hero skills:
 
 ### Non-negotiables
 - **Gates:** for risky or hard-to-reverse changes, use Plan Mode (`EnterPlanMode` → `ExitPlanMode`) for real sign-off — not a prose promise.
+- **Plan Mode:** do not enter Plan Mode unless the user explicitly requests planning. When they do, invoke `hero-planning`.
+- **Git:** do not check out a branch, commit, or merge unless the user explicitly requests it.
 - **Enforcement:** hooks installed under `.claude/` — `git-guard` (PreToolUse on Bash), `session-bridge` (PostToolUse), `stop-reminder` (Stop). Don't bypass them.
 - **GitNexus (if installed):** skip on empty repos; use impact/context analysis for non-trivial code changes and stale-index checks.
 - **Skills (if installed):** invoke relevant process skills via the `Skill` tool; do not load unrelated skill/docs context.
 - **Language:** framework instructions, skills, rules, and templates are English-only. Respond to the user in the same language they use in chat unless they request another language.
 - **Sub-agent delegation is optional, not automatic.** Sub-agents are best for research and review; use one when it helps, and skip it when direct work is clearer. Don't hardcode model IDs — let the harness resolve the active model.
+
+## Response Style
+
+### Core Rule
+
+- Min words, max information density.
+- Remove filler words.
+- Keep only important keywords/details.
+- Short sentences.
+- Prefer symbols over long explanations.
+
+### Writing Style
+
+- Use:
+  - `=` for meaning/result
+  - `->` for flow/result
+  - `:` for explanation
+  - `-` for bullet points
+  - `|` for compact comparisons
+
+- Avoid:
+  - long introductions
+  - repeated context
+  - polite filler
+  - motivational text
+  - unnecessary transitions
+
+### Grammar
+
+- Basic grammar only.
+- Fragments acceptable if clear.
+- Skip articles/pronouns when unnecessary.
+
+### Answer Format
+
+- Start directly with answer.
+- Most important info first.
+- 1-3 lines preferred.
+- Expand only if user asks.
+
+### Default Behavior
+
+- Assume user technical.
+- No over-explaining.
+- No tutorial unless requested.

@@ -871,7 +871,6 @@ Update:
 
 ```txt
 templates/CLAUDE.md.tmpl
-templates/AGENTS.md.tmpl
 ```
 
 Remove template variables:

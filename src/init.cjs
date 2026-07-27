@@ -51,9 +51,7 @@ async function init(opts) {
 
   // ---- 2. CLAUDE.md / AGENTS.md managed block ----
   const claudeInner = renderString(fs.readFileSync(path.join(templates, 'CLAUDE.md.tmpl'), 'utf8'), vars);
-  const agentsInner = renderString(fs.readFileSync(path.join(templates, 'AGENTS.md.tmpl'), 'utf8'), vars);
   log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, 'Project')}`);
-  log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
   // ---- 3. Claude Code hooks + settings ----
   ensureDir(path.join(target, '.claude', 'hooks'));

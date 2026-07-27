@@ -1,6 +1,6 @@
 {
   "name": "hero-mmt-kit",
-  "version": "1.1.4",
+  "version": "1.1.6",
   "description": "A focused Claude Code framework for human-led development — seven direct-use skills (planning, coding, reviewing, unit testing, security, MR review, strict mode) plus an on-demand report writer, with simple state tracking. Works for new and existing (brownfield) projects.",
   "keywords": [
     "claude-code",

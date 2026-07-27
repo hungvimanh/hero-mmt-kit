@@ -4,6 +4,13 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.1.6] - 2026-07-27
+
+### Changed
+
+- Merge `AGENT.md` and `CLAUDE.md`.
+- Added to `CLAUDE.md` git and plan mode guards.
+
 ## [1.1.4] - 2026-07-20
 
 ### Added

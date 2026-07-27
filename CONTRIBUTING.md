@@ -15,7 +15,7 @@ templates/  what gets installed into a consumer project
   skills/         VENDORED core process skills (MIT, from obra/superpowers) + hero-mmt-kit-authored
                   skills (`using-hero`, `hero-planning`, `hero-coding`, `hero-reviewing`,
                   `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-strict`, `hero-report`) + NOTICE
-  CLAUDE.md.tmpl AGENTS.md.tmpl
+  CLAUDE.md.tmpl
 test/       node:test suites (hooks, doctor-workflow, links, init-smoke, manifest,
             skills-vendor, skills-selection, profile-config, integrations, discover)
 skills.manifest.json  vendored core (process) skills + referenced design/taste skills

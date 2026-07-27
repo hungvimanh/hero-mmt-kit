@@ -40,9 +40,7 @@ async function update(opts) {
 
   // Managed blocks (content outside markers preserved)
   const claudeInner = renderString(fs.readFileSync(path.join(templates, 'CLAUDE.md.tmpl'), 'utf8'), vars);
-  const agentsInner = renderString(fs.readFileSync(path.join(templates, 'AGENTS.md.tmpl'), 'utf8'), vars);
   log.ok(`CLAUDE.md: ${mergeManagedBlock(path.join(target, 'CLAUDE.md'), claudeInner, 'Project')}`);
-  log.ok(`AGENTS.md: ${mergeManagedBlock(path.join(target, 'AGENTS.md'), agentsInner, null)}`);
 
   ensureDir(path.join(target, '.claude', 'hooks'));
   for (const h of ['git-guard.cjs', 'stop-reminder.cjs', 'active-state-bridge.cjs']) {
