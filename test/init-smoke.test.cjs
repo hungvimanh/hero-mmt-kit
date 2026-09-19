@@ -32,7 +32,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   const r = cli(['init', '--dir', dir, '--yes', '--skip-integrations']);
   assert.strictEqual(r.status, 0, r.stderr);
 
-  for (const f of ['CLAUDE.md', 'AGENTS.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
+  for (const f of ['CLAUDE.md', '.claude/settings.json', '.claude/hooks/git-guard.cjs',
     '.claude/hooks/active-state-bridge.cjs',
     '.hero-mmt-kit/config.json',
     'docs/SECURITY_STANDARDS.md', 'docs/PERFORMANCE_STANDARDS.md', 'docs/ACTIVE_STATE.md',
@@ -50,6 +50,9 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.ok(!fs.existsSync(path.join(dir, '.hero-mmt-kit', 'session.json')), 'session.json should no longer be seeded');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'session-bridge.cjs')), 'session-bridge hook should no longer be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'finishing-a-development-branch')), 'finishing-a-development-branch should not be installed');
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'writing-plans')), 'writing-plans should not be installed');
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'requesting-code-review')), 'requesting-code-review should not be installed');
+  assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', 'receiving-code-review')), 'receiving-code-review should not be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.cursor')), 'no .cursor artifacts should be created');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'edit-gate.cjs')), 'edit-gate hook should not be installed');
   assert.ok(!fs.existsSync(path.join(dir, '.claude', 'hooks', 'workflow-check.cjs')), 'workflow-check hook should not be installed');
@@ -73,6 +76,16 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(claude, /hero-planning/);
   assert.match(claude, /Context loading/);
   assert.match(claude, /Sub-agent delegation is optional, not automatic/);
+  assert.match(claude, /User-facing replies and artifacts must use the user's language/i);
+  assert.match(claude, /Avoid unnecessary English code-switching in non-English prose/i);
+  assert.match(claude, /Keep code identifiers, commands, file paths, API names, configuration keys, and exact error messages verbatim/i);
+  assert.match(claude, /briefly explain it in the user's language on first use/i);
+  assert.match(claude, /lead with the conclusion or current status.*key facts or evidence.*next action/i);
+  assert.match(claude, /Clarity, completeness, safety, and honesty outrank terseness/i);
+  assert.doesNotMatch(
+    claude,
+    /Min words, max information density|Basic grammar only|Skip articles\/pronouns|1-3 lines preferred|Expand only if user asks|Assume user technical/i,
+  );
   assert.doesNotMatch(claude, /## 1\. Task classification → workflow \(ROUTER\)/);
   assert.doesNotMatch(claude, /\| # \| Task type \| Trigger \/ example \| Path \| Gate \|/);
   assert.doesNotMatch(claude, /### Phase 1 — Discovery & Scoping/);
@@ -80,7 +93,6 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
 
   for (const file of [
     path.join(dir, 'CLAUDE.md'),
-    path.join(dir, 'AGENTS.md'),
     ...allFiles(path.join(dir, 'docs')).filter((p) => p.endsWith('.md')),
   ]) {
     assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /\{\{[^}]+\}\}/, `unresolved template placeholder in ${file}`);
@@ -94,6 +106,33 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(usingHero, /hero-security/);
   assert.match(usingHero, /hero-mr-review/);
   assert.match(usingHero, /hero-strict/);
+  assert.doesNotMatch(usingHero, /TDD-first/i);
+
+  const heroCoding = fs.readFileSync(path.join(dir, '.claude', 'skills', 'hero-coding', 'SKILL.md'), 'utf8');
+  assert.match(heroCoding, /implementation-only stage/i);
+  assert.match(heroCoding, /### Requirement state/);
+  assert.doesNotMatch(heroCoding, /run relevant verification|build, lint, targeted tests/i);
+
+  const heroReviewing = fs.readFileSync(path.join(dir, '.claude', 'skills', 'hero-reviewing', 'SKILL.md'), 'utf8');
+  assert.match(heroReviewing, /TARGET=local/);
+  assert.match(heroReviewing, /TARGET=commit:<revision>/);
+  assert.match(heroReviewing, /BASE_REF=<base-revision>/);
+  assert.match(heroReviewing, /untracked file/i);
+  assert.match(heroReviewing, /MODE=review/);
+  assert.match(heroReviewing, /MODE=assess-feedback/);
+  assert.match(heroReviewing, /MODE=both/);
+  for (const classification of ['confirmed', 'rejected', 'unclear', 'out-of-scope']) {
+    assert.match(heroReviewing, new RegExp(classification, 'i'));
+  }
+
+  const heroUnitTest = fs.readFileSync(path.join(dir, '.claude', 'skills', 'hero-unit-test', 'SKILL.md'), 'utf8');
+  assert.match(heroUnitTest, /post-implementation unit-testing stage/i);
+  assert.match(heroUnitTest, /no production code was changed/i);
+  assert.doesNotMatch(heroUnitTest, /TDD-first|test-driven-development/i);
+
+  assert.match(claude, /implement and track every approved requirement\/task/i);
+  assert.match(claude, /post-implementation unit tests/i);
+  assert.doesNotMatch(claude, /TDD-first/i);
 
   const settings = JSON.parse(fs.readFileSync(path.join(dir, '.claude', 'settings.json'), 'utf8'));
   assert.ok(JSON.stringify(settings.hooks).includes('git-guard.cjs'));
@@ -137,10 +176,6 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
     path.join(dir, 'CLAUDE.md'),
     replaceManagedBlock(fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8') + '\nUSER CLAUDE FOOTER\n', 'STALE CLAUDE MANAGED GUIDANCE')
   );
-  fs.writeFileSync(
-    path.join(dir, 'AGENTS.md'),
-    replaceManagedBlock(fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8') + '\nUSER AGENTS FOOTER\n', 'STALE AGENTS MANAGED GUIDANCE')
-  );
   fs.writeFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'CUSTOM STATE AFTER INIT\n');
   // corrupt a framework-managed vendored skill; update must refresh it
   const skillFile = path.join(dir, '.claude', 'skills', 'brainstorming', 'SKILL.md');
@@ -149,26 +184,29 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   const unselectedSkill = path.join(dir, '.claude', 'skills', 'custom-user-skill', 'SKILL.md');
   fs.mkdirSync(path.dirname(unselectedSkill), { recursive: true });
   fs.writeFileSync(unselectedSkill, 'CUSTOM USER SKILL\n');
+  const retiredReviewSkills = ['requesting-code-review', 'receiving-code-review'];
+  for (const name of retiredReviewSkills) {
+    const stale = path.join(dir, '.claude', 'skills', name, 'SKILL.md');
+    fs.mkdirSync(path.dirname(stale), { recursive: true });
+    fs.writeFileSync(stale, 'LEGACY REVIEW SKILL\n');
+  }
 
   const upd = cli(['update', '--dir', dir]);
   assert.strictEqual(upd.status, 0, upd.stderr);
   assert.doesNotMatch(fs.readFileSync(skillFile, 'utf8'), /^CORRUPTED/, 'update should refresh selected vendored skill');
   assert.strictEqual(fs.readFileSync(unselectedSkill, 'utf8'), 'CUSTOM USER SKILL\n', 'update should preserve user-added skills');
+  for (const name of retiredReviewSkills) {
+    assert.ok(!fs.existsSync(path.join(dir, '.claude', 'skills', name)), `update should remove retired ${name}`);
+  }
 
   claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /PRESERVE ME/);
   assert.match(claude, /USER CLAUDE FOOTER/);
   assert.match(claude, /using-hero/);
   assert.match(claude, /Context loading/);
+  assert.match(claude, /Avoid unnecessary English code-switching in non-English prose/i);
   assert.doesNotMatch(claude, /STALE CLAUDE MANAGED GUIDANCE/);
   assert.strictEqual((claude.match(/hero-mmt-kit:start/g) || []).length, 1);
-
-  const agents = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
-  assert.match(agents, /USER AGENTS FOOTER/);
-  assert.match(agents, /using-hero/);
-  assert.match(agents, /Sub-agent delegation is optional, not automatic/);
-  assert.doesNotMatch(agents, /STALE AGENTS MANAGED GUIDANCE/);
-  assert.strictEqual((agents.match(/hero-mmt-kit:start/g) || []).length, 1);
 
   assert.strictEqual(fs.readFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'utf8'), 'CUSTOM STATE AFTER INIT\n');
 });

@@ -22,13 +22,16 @@ Skip it for Tiny/Fast work where a chat summary is enough and nobody asked for a
 
 - Which stage just completed: `hero-coding`, `hero-reviewing`, or `hero-unit-test` (default to the most recently completed one unless the user names another).
 - That stage's own "Report Convention" section in its SKILL.md — path pattern, required content, and style rules. This skill does not redefine them; it reads them from the source skill.
-- What actually happened in this session: the real evidence (commands run, output, diffs, findings, decisions) — not a reconstruction or a guess.
+- The stage's captured output, without reconstruction:
+  - Coding: implementation task/requirement ledger, changed areas, deviations, and blockers. No testing or verification evidence is expected from this stage.
+  - Reviewing: reviewed-target identity, findings, coverage gaps, and verdict.
+  - Unit testing: test-only changes, exact commands and observed results, requirement coverage, failure classifications, and gaps.
 
 ## Process
 
 1. Identify the stage (or stages) to report on.
 2. Read that stage's SKILL.md "Report Convention" section for the path pattern, required content, and style.
-3. Compose the report strictly from what happened in this session. Don't re-run work just to fill a template field, and don't fabricate evidence that wasn't actually collected.
+3. Compose the report strictly from the stage output already captured. Do not rerun tests, reconstruct a review target, perform a new review, or fabricate evidence merely to fill a field.
 4. Write the file at the conventional path (create parent directories as needed).
 5. If `docs/ACTIVE_STATE.md` has a row for this work item, add a one-line link to the new report.
 6. If asked to report on multiple stages, write one file per stage — never merge coding/review/test reports into a single file.

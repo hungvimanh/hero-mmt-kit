@@ -7,7 +7,7 @@ description: Use when extra rigor is wanted before a "done" claim — runs a ful
 
 ## Overview
 
-hero-strict is an opt-in escalation, not a config setting. An earlier version of this workflow had a configured "verification level" (minimal/pragmatic/strict); hero-mmt-kit replaces that with an explicit skill invocation instead — the developer, or the agent when risk warrants it, decides per task whether to run the fuller checklist. hero-strict does not replace the other hero-* skills; it raises the bar on whichever ones already ran, re-checking their work with more evidence rather than doing new work from scratch.
+hero-strict is an opt-in, independent verification session, not a config setting. An earlier version of this workflow had a configured "verification level" (minimal/pragmatic/strict); hero-mmt-kit replaces that with an explicit skill invocation instead. hero-strict does not extend checks performed by `hero-coding` — coding is implementation-only. It separately establishes broader evidence after implementation, unit testing, and/or review when the developer wants a higher-confidence "done" decision.
 
 ## When to Use
 
@@ -30,8 +30,8 @@ Missing artifacts are not a blocker — they're a gap to flag in step 4 of the p
 
 ## Process
 
-1. **Confirm what already ran.** Check which hero-* stages (planning, coding, review, test) touched this work and which artifacts exist. Don't assume — read them.
-2. **Re-run or extend each stage's checks with a fuller bar:**
+1. **Confirm what already ran.** Check which hero-* stages (planning, coding, review, test) touched this work and which artifacts or chat results exist. Don't assume — read them.
+2. **Run a standalone full verification bar:**
    - Full test suite, not just targeted/changed tests.
    - Lint, build, and typecheck, if the project has them.
    - `gitnexus_detect_changes` and `gitnexus_impact` on changed symbols, for code changes.
@@ -74,4 +74,4 @@ If the strict pass surfaces new blockers, add them to the Blockers/Pending Actio
 
 ## Related Skills
 
-Wraps `verification-before-completion` for its evidence discipline. Can recommend a re-run of `hero-unit-test`, `hero-reviewing`, or a `hero-security` pass if a gap is found. Typically invoked after `hero-coding`, `hero-reviewing`, or `hero-unit-test` have already run once — see `using-hero` for the full skill map. Use `hero-report` to append its section to an existing (or newly written) report.
+Uses `verification-before-completion` for its evidence discipline. It is never invoked automatically by `hero-coding`, `hero-reviewing`, or `hero-unit-test`. It can recommend a separate re-run of `hero-unit-test`, `hero-reviewing`, or `hero-security` when a gap is found. Treat implementation summaries, review findings, and unit-test results as distinct inputs; use `hero-report` only to append the strict result to an existing or requested report.

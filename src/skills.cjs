@@ -7,13 +7,10 @@ const CORE_SKILL_ORDER = [
   'using-superpowers',
   'using-hero',
   'brainstorming',
-  'writing-plans',
   'executing-plans',
   'test-driven-development',
   'systematic-debugging',
   'verification-before-completion',
-  'requesting-code-review',
-  'receiving-code-review',
   'dispatching-parallel-agents',
   'subagent-driven-development',
   'using-git-worktrees',
@@ -25,6 +22,14 @@ const CORE_SKILL_ORDER = [
   'hero-mr-review',
   'hero-strict',
   'hero-report',
+];
+
+// Framework-managed skill directories retired by a newer bundled workflow.
+// Remove these during init/update so old installs cannot keep invoking stale behavior.
+const RETIRED_CORE_SKILLS = [
+  'writing-plans',
+  'requesting-code-review',
+  'receiving-code-review',
 ];
 
 function uniqueCoreSkills(names) {
@@ -62,9 +67,9 @@ function sourceEntries(src, selectedSkills) {
 }
 
 // Install vendored core skills (templates/skills/<name>/) into the consumer's
-// .claude/skills/ dir. Framework-managed:
-// overwrites requested framework skill dirs and the NOTICE file, but never deletes
-// user-added skill dirs outside the framework-managed process suite.
+// .claude/skills/ dir. Framework-managed: overwrites requested framework skill
+// dirs and the NOTICE file, removes explicitly retired framework skills, but never
+// deletes user-added skill dirs outside the framework-managed process suite.
 function installSkills(pkgRoot, target, opts) {
   opts = opts || {};
   const src = path.join(pkgRoot, 'templates', 'skills');
@@ -83,6 +88,10 @@ function installSkills(pkgRoot, target, opts) {
 
   for (const rel of destinations) {
     const dstRoot = path.join(target, rel);
+    for (const name of RETIRED_CORE_SKILLS) {
+      const retiredDir = path.join(dstRoot, name);
+      if (exists(retiredDir)) fs.rmSync(retiredDir, { recursive: true, force: true });
+    }
     for (const entry of sourceEntries(src, selectedSkills)) {
       if (entry.isDirectory()) {
         const dstDir = path.join(dstRoot, entry.name);

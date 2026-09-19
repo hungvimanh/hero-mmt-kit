@@ -8,7 +8,7 @@
 
 `hero-mmt-kit` is **documentation + direct-use skills + soft hooks + a zero-dependency CLI**. It does not route work automatically, enforce phases, or block normal development flow.
 
-- **Seven operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-strict`) covering the lifecycle of a change, each wrapping proven vendored technique skills instead of duplicating them. Each phase is done on its own — finishing one never auto-triggers the next.
+- **Seven operative skills** (`hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-strict`) covering the lifecycle of a change. They define Hero-native stage contracts and, where useful, incorporate attributed methodology from proven vendored techniques. Each phase is done on its own — finishing one never auto-triggers the next.
 - **Report writing is on-demand** — `hero-coding`/`hero-reviewing`/`hero-unit-test` end with a concise chat summary; a written report is only produced when asked, via the separate `hero-report` skill.
 - **No router, no gates** — there is no task-classification doc and no hard PreToolUse enforcement. `using-hero` is a map, not a controller.
 - **Soft hooks only** — `git-guard` blocks a small set of genuinely dangerous git commands and reminds (never blocks) on ordinary commits; `stop-reminder` nudges you to update state when you stop with uncommitted changes; `active-state-bridge` injects `docs/ACTIVE_STATE.md` into context once per session start.
@@ -68,23 +68,25 @@ Invoke `using-hero` first for an overview — it explains which skill applies ne
 
 | Skill | Use when | Artifact / report |
 |---|---|---|
-| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written; it's the deliverable, not a report |
-| `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
-| `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
-| `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
+| `hero-planning` | Clarifying non-trivial work through analysis and brainstorming, then writing an implementation-only plan. | `docs/plans/YYYY-MM-DD-slug.md` — always written; it's the deliverable, not a report |
+| `hero-coding` | Implementing every task and requirement in an approved plan, or a small bounded request. No testing or self-review. | `docs/coding-reports/YYYY-MM-DD-slug.md` — on request |
+| `hero-reviewing` | Single read-only entry point for a fresh implementation review, technical assessment of supplied feedback, or an explicit combination of both. | `docs/reviews/YYYY-MM-DD-slug.md` — on request |
+| `hero-unit-test` | Writing and running post-implementation unit tests from the approved requirements; no production-code fixes. | `docs/test-reports/YYYY-MM-DD-slug.md` — on request |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
-| `hero-mr-review` | Reviewing a teammate's merge request or commit before it merges. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
-| `hero-strict` | Extra rigor wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
+| `hero-mr-review` | Reviewing a teammate's committed MR/ref against MR intent and repository conventions. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
+| `hero-strict` | Extra rigor wanted in a separate full verification session before a "done" claim. | Appends to the current report, if one exists/was requested. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` if a sensitive surface was touched) → done. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact. Each phase is "done" on its own terms — there's no automatic full-pipeline run; the developer chooses what to invoke next. `hero-mr-review` sits outside this flow entirely: it reviews a teammate's MR, not the invoking developer's own work, so it's invoked directly whenever needed rather than as a pipeline stage.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → (`hero-security` or `hero-strict` when wanted) → done. Start each stage explicitly, preferably in a fresh session: planning defines implementation work; coding implements and tracks it only; unit testing writes/runs tests only; reviewing conducts a fresh review and/or assesses supplied feedback without fixing code or running tests. Confirmed findings require explicit user approval before a later `hero-coding` correction session. Skip stages that do not fit the change. There is no automatic full-pipeline run.
+
+Choose review by source of truth. `hero-reviewing` is the one entry point for comparing a local or committed implementation with its Hero plan or explicit acceptance criteria and for validating supplied review feedback; optional fresh-review delegation happens internally. `hero-mr-review` sits outside that flow and reviews a teammate's committed MR range against MR intent, repository conventions, impact, and potential bugs.
 
 `hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. An eighth, on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. `hero-security` and `hero-mr-review` are the exceptions: both are independent flows that always write their own standalone report (`docs/security-reports/...` and `docs/mr-reviews/...` respectively).
 
-These skills wrap general-purpose vendored technique skills rather than duplicating them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` and `hero-mr-review` are standalone review skills rather than wrappers. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/` — every install gets the full suite, with attribution in `templates/skills/NOTICE`.
+The kit also ships general-purpose vendored technique skills: `brainstorming`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. They remain available for direct use, but their broader lifecycles must not override a Hero stage's hard boundary. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/`, with attribution in `templates/skills/NOTICE`.
 
 ## Session state
 
-`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. Each hero-* skill's Definition of Done includes updating it. The `active-state-bridge` hook injects it into context automatically at the start of a session, so resuming usually needs no extra reading — otherwise, read `docs/ACTIVE_STATE.md` directly.
+`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. Skills update it only when their contract needs durable workflow metadata; read-only review and test-only work do not create unrelated implementation changes merely to record progress. The `active-state-bridge` hook injects it into context automatically at the start of a session, so resuming usually needs no extra reading — otherwise, read `docs/ACTIVE_STATE.md` directly.
 
 ## Commands
 

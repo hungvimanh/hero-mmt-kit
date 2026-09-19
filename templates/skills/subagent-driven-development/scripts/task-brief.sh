@@ -3,7 +3,7 @@
 # Usage: task-brief.sh PLAN_FILE N [OUTFILE]
 #
 # Finds the heading matching "Task N" at whatever heading level it uses
-# (writing-plans emits "### Task N: [Component Name]") and copies everything
+# (hero-planning emits "### Task N: [Component Name]") and copies everything
 # up to (not including) the next heading at the same or shallower level,
 # respecting fenced code blocks (``` or ~~~) so a heading-looking line
 # inside a fenced step (e.g. a comment in example code) doesn't end the

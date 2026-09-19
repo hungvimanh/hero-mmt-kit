@@ -58,6 +58,17 @@ Pick the budget from actual risk and uncertainty, not by default. For each tier,
 
 **Final review is conditional.** Run a final integration review only when there were multiple independent task streams, high-risk/core changes, or prior reviews were narrow. If one combined review already covered the entire change, do not review the same scope again.
 
+## Hero Stage Boundary
+
+An active Hero stage contract overrides this generic same-session lifecycle.
+
+- Inside `hero-coding`, use this skill only for bounded implementation delegation. Do not self-review, run verification, dispatch reviewers, or fix review findings in that session, regardless of the review budget table or process diagram below.
+- Finish the implementation-only session, then let the user start `hero-reviewing` separately.
+- `hero-reviewing` performs the read-only review or feedback assessment. Exact confirmed correction IDs return only through a later `hero-coding` session after explicit user approval.
+- Inside any other Hero stage, every delegated agent inherits that stage's allowed actions and exclusions.
+
+The review/fix lifecycle below remains available only when no narrower Hero stage is active.
+
 ## Pre-Flight Plan Review
 
 Before dispatching Task 1, scan the whole plan once for internal contradictions or
@@ -193,7 +204,7 @@ treat ⚠️ as an automatic pass, and don't gate only on ❌ while leaving ⚠�
   `bash scripts/task-brief.sh <plan-file> <N>` first — don't paste the full task text
   or make the implementer read the whole plan.
 - `./spec-reviewer-prompt.md` - Use only for `full-multi-stage-review` or explicit acceptance/spec risk.
-- `./code-quality-reviewer-prompt.md` - Use for combined quality review, targeted quality review, or full review budgets.
+- `./code-quality-reviewer-prompt.md` - Thin adapter to the canonical `hero-reviewing` contract for combined quality review, targeted quality review, or full review budgets.
 - `./scripts/sdd-workspace.sh` - Resolves/creates `.hero-mmt-kit/sdd/`, the
   self-ignoring scratch dir for task briefs, review packages, and the progress ledger.
 - `./scripts/task-brief.sh PLAN_FILE N [OUTFILE]` - Extracts Task N's exact text into a
@@ -257,8 +268,8 @@ Task: Add auth-sensitive fullstack feature with API contract changes.
 ## Integration
 
 Useful companion skills:
-- **superpowers:writing-plans** - Creates the plan this skill may execute.
-- **superpowers:requesting-code-review** - Provides a reviewer prompt when review budget calls for it.
+- **hero-planning** - Creates the implementation-only plan this skill may execute.
+- **hero-reviewing** - Canonical read-only review and feedback-assessment contract; `code-quality-reviewer-prompt.md` is only an adapter.
 - **superpowers:verification-before-completion** - Ensures final claims match evidence.
 - **superpowers:using-git-worktrees** - Use when parallel agents may conflict or the user requests isolation.
 

@@ -7,7 +7,7 @@ description: Use when reviewing a teammate's merge request or commit before it m
 
 ## Overview
 
-hero-mr-review is a standalone review skill for code someone else wrote. It is not part of the `hero-planning → hero-coding → hero-reviewing/hero-unit-test` pipeline, and it does not wrap `hero-reviewing` — that skill checks the *invoking developer's own* work against *their own* plan; this skill checks a *colleague's* merge request against the codebase's conventions, the change's own stated intent, and its blast radius. Invoke it directly, on demand, whenever a teammate's MR needs a second pair of eyes before merge.
+hero-mr-review is a standalone review skill for a teammate's committed merge request/ref. It is not part of the `hero-planning → hero-coding → hero-reviewing/hero-unit-test` flow and does not wrap `hero-reviewing`. Choose between them by source of truth: `hero-reviewing` assesses an implementation against a Hero plan or explicit acceptance criteria and may target local or committed code; hero-mr-review assesses a committed MR range against its stated MR intent, repository conventions, impact, and potential bugs. Invoke it directly when a teammate's MR needs review before merge.
 
 **Core principle:** review the diff, not the description. Every finding needs file:line evidence from the actual change — not a restatement of the commit message or an assumption about what the code "probably" does.
 
@@ -17,7 +17,7 @@ Use this skill when:
 - A teammate has pushed commits and opened (or is about to open) a merge/pull request, and you need to review it before it merges.
 - The user gives a commit SHA, tag, or branch name and asks for a review of "that MR" or "that commit."
 
-Not for reviewing your own in-progress work — use `hero-reviewing` for that (it reads your plan and coding report as the source of truth; this skill has neither).
+Not for a plan-backed implementation assessment, even when that implementation is already committed — use `hero-reviewing` when the Hero plan or explicit acceptance criteria are the source of truth. This skill is committed-range-only and does not review local working-tree state.
 
 ## Inputs
 
@@ -92,6 +92,6 @@ Only if the MR corresponds to a row already tracked in `docs/ACTIVE_STATE.md`'s 
 
 ## Related Skills
 
-- Independent of the `hero-planning`/`hero-coding`/`hero-reviewing`/`hero-unit-test` pipeline — never invoked as part of it, and doesn't read their artifacts.
+- Independent of the `hero-planning`/`hero-coding`/`hero-reviewing`/`hero-unit-test` flow. Use `hero-reviewing` instead whenever a Hero plan or explicit acceptance criteria define correctness, regardless of whether the target is local code or a commit/ref.
 - Recommend a separate `hero-security` pass if the MR touches a sensitive surface (auth, secrets, external input, payments, AI/LLM behavior) instead of trying to cover security depth here.
 - Recommend `hero-strict` if the MR is high-risk (architecture, shared/core modules, data model) and needs a fuller verification pass beyond this review.

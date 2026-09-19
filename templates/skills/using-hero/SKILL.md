@@ -13,20 +13,22 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 
 | Skill | Use when | Artifact / report |
 |---|---|---|
-| `hero-planning` | Starting new work — a feature, bugfix, or refactor that needs a plan before code changes. | `docs/plans/YYYY-MM-DD-slug.md` — always written (it's the deliverable, not a report) |
-| `hero-coding` | Implementing an approved plan (or a small change that doesn't need one). | `docs/coding-reports/YYYY-MM-DD-slug.md` |
-| `hero-reviewing` | Fresh-eyes check of an implementation against its plan, before merge. | `docs/reviews/YYYY-MM-DD-slug.md` |
-| `hero-unit-test` | Verifying implementation correctness — TDD-first or post-implementation. | `docs/test-reports/YYYY-MM-DD-slug.md` |
+| `hero-planning` | Clarifying non-trivial work through analysis and brainstorming, then writing an implementation-only plan. | `docs/plans/YYYY-MM-DD-slug.md` — always written (it's the deliverable, not a report) |
+| `hero-coding` | Implementing every task and requirement in an approved plan, or a small bounded request. No testing or self-review. | `docs/coding-reports/YYYY-MM-DD-slug.md` — on request |
+| `hero-reviewing` | Single read-only entry point for a fresh implementation review, assessment of supplied review feedback, or an explicit combination of both. | `docs/reviews/YYYY-MM-DD-slug.md` — on request |
+| `hero-unit-test` | Writing and running post-implementation unit tests from the approved requirements; no production-code fixes. | `docs/test-reports/YYYY-MM-DD-slug.md` — on request |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
-| `hero-mr-review` | Reviewing a teammate's merge request or commit before it merges — given a commit/tag/branch. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
-| `hero-strict` | Extra rigor is wanted before a "done" claim — a full verification pass. | Appends to the current report, if one exists/was requested. |
+| `hero-mr-review` | Reviewing a teammate's committed merge request/ref against MR intent and repository conventions. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
+| `hero-strict` | Extra rigor is wanted in a separate full verification session before a "done" claim. | Appends to the current report, if one exists/was requested. |
 | `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Invoke `hero-security` separately when you want a dedicated security pass. Skip stages that don't fit the size of the change — a one-line typo fix doesn't need a plan artifact.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Start each stage explicitly, preferably in a fresh session. The plan contains implementation work only; coding implements it only; unit testing writes/runs tests only; reviewing conducts a fresh review and/or assesses supplied feedback without fixing code or running tests. Confirmed review items require explicit user approval before a later `hero-coding` correction session. Invoke `hero-security` or `hero-strict` separately when their assurance depth is wanted. Skip stages that do not fit the size of the change.
 
-`hero-mr-review` is not part of this flow at all — it reviews a *teammate's* merge request, not the invoking developer's own work-in-progress. It has no plan or coding report to read; it reads the diff itself. Invoke it directly whenever a colleague's MR needs review, independent of whatever phase your own work is in.
+Choose review by source of truth, not merely by whether a git ref exists:
+- Use `hero-reviewing` when an implementation should be assessed against a Hero plan or explicit acceptance criteria, or when supplied review feedback needs technical validation. It can inspect local, exact-commit, or explicit-base ref targets and may use one internal fresh reviewer without requiring another user-facing skill.
+- Use `hero-mr-review` for a teammate's committed MR/ref assessed against MR intent, repository conventions, impact, and potential bugs. It always writes its standalone report.
 
-`hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are done per-phase, not gated into an automatic full pipeline — finishing one doesn't trigger the next; the developer decides what to invoke next.
+`hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are independent stages, not an automatic pipeline. Finishing one never triggers the next. Generic vendored skills and delegated agents must inherit the active Hero stage's exclusions; they must not broaden its responsibility.
 
 ## Report writing
 
@@ -34,7 +36,7 @@ A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or 
 
 ## Session state
 
-`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. It's injected into context automatically at the start of a session. Each hero-* skill's Definition of Done includes updating it.
+`docs/ACTIVE_STATE.md`'s Active Features table is the single source of durable workflow state — there is no separate session pointer file. It's injected into context automatically at the start of a session. Update it only when a skill's contract calls for durable workflow metadata; read-only reviewing and test-only work must not create unrelated implementation changes merely to record progress.
 
 Resuming work in a fresh session:
 1. Check the injected Active Features context (or read `docs/ACTIVE_STATE.md` directly if it wasn't injected).
@@ -42,22 +44,23 @@ Resuming work in a fresh session:
 
 ## Related vendored skills
 
-The hero-* skills wrap general-purpose technique skills rather than duplicate them: `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. `hero-security` is the standalone security review skill rather than a wrapper. Each hero-* skill names the vendored skill(s) it invokes.
+The kit also ships general-purpose technique skills: `brainstorming`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `dispatching-parallel-agents`, `subagent-driven-development`, and `using-git-worktrees`. They remain available for direct use, but a Hero stage must not invoke a generic lifecycle whose mandatory actions cross that stage's hard boundary. `hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, and `hero-security` define their own stage contracts.
 
 ## Output Style
 
-Hero workflow artifacts should be concise by default: compress prose scaffolding, keep every technical fact.
+Hero workflow outputs inherit the project-wide `Response Style` in `CLAUDE.md`. Apply it to chat summaries, progress updates, plans, and reports.
 
-Use this rule for chat summaries and generated artifacts:
-- Drop filler, pleasantries, and self-reference.
-- Prefer tight bullets over long explanation.
-- Keep code, commands, API names, error strings, file paths, and numbers verbatim.
-- Preserve the user's language.
-- Do not compress safety-critical content: security warnings, irreversible/destructive actions, production changes, or ambiguous multi-step instructions need full clarity.
+Workflow-specific emphasis:
+- Lead with the result or current status, then the evidence, then the next action or decision.
+- Use plain wording in the user's language for prose and avoid unnecessary English code-switching.
+- Keep code identifiers, commands, file paths, API names, configuration keys, exact errors, numbers, and necessary established technical terms verbatim. Do not translate technical tokens or invent awkward equivalents.
+- Briefly explain a necessary specialized term in the user's language on first use.
+- Make plans and reports actionable for their audience: use concrete labels and actions, identify targets or conditions where relevant, and explain unfamiliar acronyms.
+- Be concise when the work is simple, but expand risks, blockers, uncertainty, destructive actions, production changes, and ambiguous multi-step instructions until the user can act safely.
 
 ## Rules
 
 - Don't run heavy ceremony for small tasks — a Tiny fix (typo, trivial config) can go straight to `hero-coding` with no plan artifact.
 - Don't claim work is done without the relevant skill's Definition of Done being met.
 - Keep `docs/ACTIVE_STATE.md` as the durable index — link to artifacts, don't duplicate their content there.
-- Write artifact updates in concise-output style: short prose, full evidence, no lost technical detail.
+- Write artifact updates using the Output Style above: concise where safe, complete where clarity requires it, with all evidence and technical facts preserved.

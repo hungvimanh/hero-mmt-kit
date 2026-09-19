@@ -85,23 +85,11 @@
       "skillPath": "skills/minimalist-skill/SKILL.md",
       "computedHash": "7e88897e0371184e97a82b8d9ef080323c13f21eb067b58ef71eb05173a08ac2"
     },
-    "receiving-code-review": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/receiving-code-review/SKILL.md",
-      "computedHash": "2760c85d4f4117b0006e7ba755f4bbd61f8f4c185f347999763c97f507274e30"
-    },
     "redesign-existing-projects": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
       "skillPath": "skills/redesign-skill/SKILL.md",
       "computedHash": "47eced3e960a2c961d3cbee11fa1216264f589344b586a5cbd03967cd6b9c54b"
-    },
-    "requesting-code-review": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/requesting-code-review/SKILL.md",
-      "computedHash": "874f3786b05007a8b4a60452a4cd89b9917c645d34b6b1e40ea05037d12f0e67"
     },
     "stitch-design-taste": {
       "source": "Leonxlnx/taste-skill",
@@ -144,12 +132,6 @@
       "sourceType": "github",
       "skillPath": "skills/verification-before-completion/SKILL.md",
       "computedHash": "9b446f0c7fe1cfb560b1d34439523b1a76d5f177290007b2c053a1c749a4a8ba"
-    },
-    "writing-plans": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/writing-plans/SKILL.md",
-      "computedHash": "2b986445454a025ca2c3839f8a2024747e8cce0517948437232cd113d2719060"
     },
     "writing-skills": {
       "source": "obra/superpowers",

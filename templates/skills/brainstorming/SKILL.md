@@ -29,7 +29,7 @@ You MUST create a task for each of these items and complete them in order:
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+9. **Stop after the approved design** — the human may start `hero-planning` in a later session; do not invoke it automatically.
 
 ## Process Flow
 
@@ -43,7 +43,7 @@ digraph brainstorming {
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
-    "Invoke writing-plans skill" [shape=doublecircle];
+    "Stop after approved spec" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
@@ -54,11 +54,11 @@ digraph brainstorming {
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Invoke writing-plans skill" [label="approved"];
+    "User reviews spec?" -> "Stop after approved spec" [label="approved"];
 }
 ```
 
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
+**The terminal state is a saved, user-approved design and a stop.** Do not invoke `hero-planning`, frontend-design, mcp-builder, or any implementation skill automatically. The human decides when to start the next stage, preferably in a later session.
 
 ## The Process
 
@@ -127,10 +127,10 @@ After the spec review loop passes, ask the user to review the written spec befor
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
-**Implementation:**
+**Planning handoff:**
 
-- Invoke the writing-plans skill to create a detailed implementation plan
-- Do NOT invoke any other skill. writing-plans is the next step.
+- When the human later requests an implementation plan, invoke `hero-planning` with the approved design as an input.
+- Do not start planning or implementation automatically from this skill.
 
 ## Key Principles
 

@@ -1,78 +1,128 @@
 ---
 name: hero-unit-test
-description: Use to verify implementation correctness — either TDD-first before coding, or as a post-implementation test pass
+description: Use after implementation to write focused unit tests from the approved requirements, run them, and report the actual results
 ---
 
 # Hero Unit Test
 
 ## Overview
 
-hero-unit-test is the dedicated testing stage of the hero-mmt-kit workflow. It supports two distinct modes:
+hero-unit-test is the post-implementation unit-testing stage. It derives expected behavior from the approved plan or explicit acceptance criteria, writes focused unit tests around the implemented code, runs them, and reports the observed results. It does not implement or repair production code.
 
-- **TDD-first** — tests are written before any implementation exists; the implementation is then written to satisfy them.
-- **Post-implementation** — tests are written against a completed implementation to pin down and verify its behavior.
-
-The mode is chosen explicitly and stated up front — never implied or left ambiguous.
+<HARD-BOUNDARY>
+This stage may change tests and test-only support files only. It must not edit or refactor production code, perform code review, deploy or release, or perform git delivery actions.
+</HARD-BOUNDARY>
 
 ## When to Use
 
-Use this skill for any change to behavior that needs automated verification:
-- Bugfixes: a failing (red) reproduction test should exist before the fix, per the vendored `test-driven-development` skill's discipline.
-- New features: choose TDD-first if the design is well understood up front, or post-implementation if the shape of the solution is still emerging during `hero-coding`.
-- Refactors: post-implementation tests (or pre-existing tests) confirm behavior didn't change.
+Use this skill after implementation for behavior that needs executable unit-level coverage:
+- Bug fixes that need a durable regression case.
+- New business rules, edge cases, error paths, or interfaces.
+- Refactors whose approved behavior must remain stable.
 
-Skip this skill only for changes with no runtime behavior to verify (docs, comments, pure config).
+Skip it only when there is no runtime behavior to exercise, such as prose-only documentation or comments.
 
 ## Inputs
 
-Read artifact-first:
-1. The planning artifact (`docs/plans/YYYY-MM-DD-slug.md`) — required reading **before** any implementation exists, for TDD-first work.
-2. The coding report (`docs/coding-reports/YYYY-MM-DD-slug.md`) and the changed code — for post-implementation work.
-3. Existing test suite and conventions for the affected area.
+Normal inputs:
 
-If an input is missing, continue with what is available and note the gap in the test report.
+```text
+PLAN_PATH=<approved-plan-path>
+TARGET=local
+SCOPE=<requirements, tasks, modules, or files>
+```
+
+- `PLAN_PATH` supplies requirements, business rules, edge cases, interfaces, and requirement-to-task coverage.
+- A deliberately planless small change must have explicit acceptance criteria. If neither a plan nor clear criteria defines expected behavior, stop; do not infer the test oracle from the current implementation.
+- `TARGET` defaults to the current local implementation. A commit/ref may be named for identity, but the runnable workspace must already contain that target.
+- `SCOPE` narrows the requested unit-test work when only part of the implementation should be covered.
+- Read existing unit-test conventions, helpers, fixtures, and commands for the affected area.
+
+For a commit/ref target, resolve and record the intended SHA, then confirm the current workspace represents it. Do not check out, reset, or switch automatically. For a local target, record the initial production-code status before creating tests so test-stage changes can be distinguished from pre-existing implementation changes.
+
+## Expected-Behavior Oracle
+
+Derive expected results in this order:
+
+1. Approved plan requirements and business rules.
+2. Explicit acceptance criteria or external contracts.
+3. Approved compatibility behavior.
+4. Existing implementation only for API shape, dependencies, and available test seams — never as the expected result merely because the code currently behaves that way.
+
+A failing test is valid when it accurately demonstrates that the implementation violates an approved requirement.
+
+## Allowed Changes
+
+This stage may:
+- Create or edit unit-test files.
+- Create or edit test-only fixtures, mocks, factories, snapshots, and helpers.
+- Correct defective test setup or assertions and rerun the affected tests.
+- Run relevant unit-test and coverage commands.
+
+This stage must not:
+- Edit or refactor production code to create a test seam or make a failure pass.
+- Implement missing business behavior.
+- Perform code review, deployment, or release work.
+- Commit, push, merge, or open a pull/merge request.
+- Invoke a generic workflow that implements production code as part of testing.
+
+If production changes are required, preserve the accurate failing test where appropriate and hand the remediation back to `hero-coding`.
 
 ## Process
 
-1. **Decide the mode** — TDD-first or post-implementation — and state the choice explicitly at the top of the test report.
-2. **Apply the vendored `test-driven-development` skill's discipline:**
-   - TDD-first: red (write a failing test) → green (minimal implementation to pass) → refactor.
-   - Post-implementation: write tests that pin down the behavior the implementation already exhibits, including edge cases the implementation should handle.
-3. **Run the test suite.** Capture pass/fail results and note how the changed behavior is covered.
-4. **Verify before claiming.** Use the vendored `verification-before-completion` skill: actually run the test command and read its output — never assume or infer that tests pass.
-5. **Document gaps.** State any known gaps or deliberately-skipped cases and why they're acceptable, in the chat summary. Don't write a report file by default — see Report Convention below.
+1. Read the complete plan/criteria and resolve the implementation target and requested scope.
+2. Build a requirement-to-test matrix covering normal behavior, boundaries, error paths, and named edge cases.
+3. Identify existing test conventions and the narrowest relevant unit-test command.
+4. Write focused tests and test-only support code. Do not change production files.
+5. Run the relevant unit tests and read the actual output.
+6. Fix only test defects, then rerun the affected command.
+7. Classify every remaining failure and report the exact result.
+8. Finish with coverage, gaps, and production-remediation items; do not make the production fix.
+
+## Failure Classification
+
+Classify failures as:
+
+- **Expected production mismatch:** the test represents an approved requirement and the implementation does not satisfy it. Preserve/report it and hand remediation to `hero-coding`.
+- **Test defect:** setup, fixture, mock, timing, or assertion is wrong. Fix only the test and rerun it.
+- **Environment/tooling failure:** the command cannot execute reliably. Report the command, error, and affected coverage.
+- **Pre-existing unrelated failure:** evidence shows the failure is outside the requested implementation. List it separately; do not fix it here.
+
+Green tests are not required for an honest test-stage result. The required outcome is accurate tests, executed commands, observed results, and a clear handoff for production mismatches.
 
 ## Report Convention (on request)
 
-hero-unit-test does not write a report file automatically. If the user asks for a written report, invoke the `hero-report` skill — it writes to `docs/test-reports/YYYY-MM-DD-<slug>.md` using the contract below.
+hero-unit-test ends with a concise chat report and does not write a file automatically. If the user asks for a durable report, invoke `hero-report`; it writes `docs/test-reports/YYYY-MM-DD-<slug>.md` from the results already collected.
 
 Report should cover:
-- Mode: TDD-first or post-implementation.
-- Commands run and their actual output (pass/fail counts).
-- Coverage of the changed behavior, in plain terms.
-- Known gaps or skipped cases, with reasons.
+- Plan/criteria, resolved implementation target, and requested scope.
+- Requirement-to-test mapping.
+- Test files and test-only support files changed.
+- Exact commands run and actual pass/fail/skip counts and failure output.
+- Behavioral coverage by requirement and edge case.
+- Numeric coverage only when a coverage command was actually run.
+- Known gaps, untestable requirements, and failure classifications.
+- Production remediation items handed to `hero-coding`.
+- Confirmation that no production code was changed.
 
 Test report style:
-- Use concise bullets; avoid test-run storytelling.
-- Keep exact commands and observed results verbatim.
-- Include only meaningful coverage notes and known gaps.
-- Do not compress failure messages, test names, file paths, numbers, or command output summaries.
+- Use concise, evidence-first bullets; avoid test-run storytelling.
+- Preserve exact commands, test names, file paths, API names, errors, counts, and output summaries.
+- Separate production mismatches from test defects and environment failures.
+- Never claim coverage or success that the executed output did not establish.
 
 ## Definition of Done
 
-- Tests are green, or failures are explicitly documented with a reason they're acceptable.
-- The changed behavior has meaningful test coverage.
-- The exact commands run and their results were stated, at minimum in the chat summary — not a claim without evidence.
-- If a report was requested, it was written via `hero-report` at the path above.
-
-## ACTIVE_STATE.md Update
-
-- Update the relevant row in `docs/ACTIVE_STATE.md`'s Active Features table with current status. Link the test report only if `hero-report` wrote one.
+- Planned unit tests for the requested scope were written or a concrete blocker explains why they could not be.
+- Relevant commands were executed and their actual output was reported.
+- Requirements and edge cases map to tests or explicit gaps.
+- Every failure is classified and production remediation is handed to `hero-coding` without changing production code.
+- Only test and test-only support files were modified by this stage.
+- If a report was requested, it was written separately via `hero-report`.
 
 ## Related Skills
 
-- Wraps the vendored `test-driven-development` and `verification-before-completion` skills — this skill does not duplicate their content.
-- Reads output from `hero-planning` (for TDD-first) and/or `hero-coding` (for post-implementation).
-- Complements `hero-reviewing`, which is a parallel/independent fresh-eyes check rather than a test pass.
-- `hero-strict` may require re-running this skill's checks under a stricter bar before a "done" claim.
-- Use `hero-report` on request to write the test report.
+- Reads expected behavior from `hero-planning` and the implementation from `hero-coding`.
+- Complements the independent, read-only findings pass in `hero-reviewing`.
+- `hero-strict` may later run broader suites and non-unit verification in its own session.
+- Uses `hero-report` only when the user asks for a durable test report.

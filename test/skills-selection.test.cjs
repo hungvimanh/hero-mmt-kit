@@ -64,6 +64,37 @@ test('installSkills preserves unselected existing skill directories', () => {
   assert.ok(hasSkill(dir, 'brainstorming'));
 });
 
+test('installSkills removes retired framework-managed skill directories from every destination', () => {
+  const dir = mkdir();
+  const destinations = ['.claude/skills', 'vendor/skills-mirror'];
+  const retiredNames = ['writing-plans', 'requesting-code-review', 'receiving-code-review'];
+
+  for (const rel of destinations) {
+    for (const name of retiredNames) {
+      const skill = path.join(dir, rel, name, 'SKILL.md');
+      fs.mkdirSync(path.dirname(skill), { recursive: true });
+      fs.writeFileSync(skill, 'LEGACY FRAMEWORK SKILL\n');
+    }
+    const custom = path.join(dir, rel, 'custom-user-skill', 'SKILL.md');
+    fs.mkdirSync(path.dirname(custom), { recursive: true });
+    fs.writeFileSync(custom, 'CUSTOM USER SKILL\n');
+  }
+
+  installSkills(PKG_ROOT, dir, { selectedSkills: ['brainstorming'], destinations });
+
+  for (const rel of destinations) {
+    for (const name of retiredNames) {
+      assert.ok(!fs.existsSync(path.join(dir, rel, name)), `retired ${name} should be removed from ${rel}`);
+    }
+    assert.strictEqual(
+      fs.readFileSync(path.join(dir, rel, 'custom-user-skill', 'SKILL.md'), 'utf8'),
+      'CUSTOM USER SKILL\n',
+      `custom skill should remain in ${rel}`,
+    );
+    assert.ok(hasSkill(dir, 'brainstorming', rel));
+  }
+});
+
 test('installSkills refreshes selected corrupted skill directories', () => {
   const dir = mkdir();
   installSkills(PKG_ROOT, dir, { selectedSkills: ['brainstorming'] });

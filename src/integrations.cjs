@@ -26,8 +26,8 @@ function runCmd(cmd, args, cwd) {
 const SERENA_MEMOS = {
   'hero_workflow.md':
     'Human-led Claude Code workflow (hero-mmt-kit). Use the **using-hero** skill for the overview.\n\n' +
-    'Core skills: hero-planning (plan before code), hero-coding (implement), hero-reviewing (fresh-eyes check), ' +
-    'hero-unit-test (TDD-first or post-implementation tests), hero-security (standalone security review), ' +
+    'Core skills: hero-planning (implementation-only plan), hero-coding (implementation and requirement tracking only), ' +
+    'hero-reviewing (read-only review and supplied-feedback assessment), hero-unit-test (post-implementation unit tests only), ' +
     'hero-mr-review (standalone review of a teammate\'s MR by commit/tag/branch), ' +
     'hero-strict (opt-in full verification pass before a "done" claim).\n\n' +
     'Session state: docs/ACTIVE_STATE.md\'s Active Features table (the single source of durable workflow state).\n\n' +
@@ -35,11 +35,11 @@ const SERENA_MEMOS = {
     'docs/PERFORMANCE_STANDARDS.md.\n',
   'delegation_rules.md':
     'Sub-agent delegation is optional, not automatic.\n\n' +
-    'Summary: sub-agents are best as context-collectors (research/exploration) and reviewers (hero-reviewing). ' +
-    'Delegating implementation (hero-coding) is OPTIONAL: work directly with full context by default, and delegate ' +
-    'only when it genuinely helps (independent parallel tracks, or to isolate context). Not every task needs a sub-agent. ' +
-    'Sub-agents do NOT inherit the conversation/skills/context → any delegated prompt must be SELF-CONTAINED ' +
-    '(plan/report links, skills to invoke, Definition of Done, relevant files). Use isolation: "worktree" for overlapping edits.\n',
+    'Summary: sub-agents are best as context-collectors for research/exploration and as independent read-only reviewers. ' +
+    'Delegating implementation is OPTIONAL and must keep one writing agent active per shared worktree. ' +
+    'Every delegated prompt must be SELF-CONTAINED and inherit the active Hero stage boundary: coding cannot add tests/review, ' +
+    'reviewing cannot write/fix/run verification, and unit testing cannot modify production code. Include the plan/target, ' +
+    'allowed files/actions, exclusions, and Definition of Done; use isolation: "worktree" for overlapping edits.\n',
 };
 
 async function run(ctx) {

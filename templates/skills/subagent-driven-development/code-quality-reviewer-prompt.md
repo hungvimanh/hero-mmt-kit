@@ -1,34 +1,34 @@
 # Code Quality Reviewer Prompt Template
 
-Use this template when dispatching a code quality reviewer subagent.
+Use this thin adapter when a review budget calls for one implementation-quality reviewer. The canonical review contract and finding schema live in `hero-reviewing`; do not duplicate or broaden them here.
 
-**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
+**Only dispatch after the implementation target is stable enough to identify an explicit base and head.**
 
-**Only dispatch after spec compliance review passes.**
-
-```
+```text
 Task tool (general-purpose):
-  Use template at requesting-code-review/code-reviewer.md
   model: [MODEL - explicit, do not omit. See SKILL.md Model Selection.]
+  prompt: |
+    Invoke `hero-reviewing` with:
 
-  DESCRIPTION: [task summary, from implementer's report]
-  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [commit before task]
-  HEAD_SHA: [current commit]
-  DIFF_FILE: [PATH from `bash scripts/review-package.sh BASE_SHA HEAD_SHA` - read
-    this instead of re-deriving the diff]
+      MODE=review
+      REVIEWER=direct
+      PLAN_PATH=[plan file, or use the exact task/acceptance criteria below]
+      TARGET=ref:[HEAD_SHA]
+      BASE_REF=[BASE_SHA]
+
+    Exact task / acceptance criteria:
+      [TASK N FROM PLAN OR BOUNDED REQUIREMENTS]
+
+    Supplemental review package:
+      [DIFF_FILE from `bash scripts/review-package.sh BASE_SHA HEAD_SHA`]
+
+    Follow `hero-reviewing`'s read-only, findings-only boundary. Do not edit files,
+    run build/lint/typecheck/tests/coverage, change git state, apply fixes, or
+    dispatch another reviewer. Read the actual target code and relevant unchanged
+    callers/contracts; the review package and implementer's report are context,
+    not substitutes for the repository.
 ```
 
-**Do Not Trust the Report:** The implementer's self-report and any rationale they give
-for a decision are unverified claims, not facts. Verify against `DIFF_FILE` and the
-actual code — don't accept "I did it this way because..." at face value.
+**Do Not Trust the Report:** The implementer's self-report and rationale are unverified claims. Verify every returned finding against the diff, resulting code, requirements, and relevant surrounding contracts.
 
-**In addition to standard code quality concerns, the reviewer should check:**
-- Does each file have one clear responsibility with a well-defined interface?
-- Are units decomposed so they can be understood and tested independently?
-- Is the implementation following the file structure from the plan?
-- Did this implementation create new files that are already large, or significantly grow existing files? (Don't flag pre-existing file sizes — focus on what this change contributed.)
-
-**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), ⚠️ Cannot
-verify from diff (requirement + why — the controller resolves these, not the
-reviewer), Assessment
+**Reviewer returns:** reviewed target, evidence-backed findings, coverage gaps, verdict, and correction candidates awaiting user approval, using the `hero-reviewing` schema.

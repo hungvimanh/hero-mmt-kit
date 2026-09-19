@@ -4,6 +4,30 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+## [1.2.0] - 2026-09-19
+
+### Changed
+
+- User-facing replies and artifacts now follow a clearer multilingual communication policy: use the user's language consistently, avoid unnecessary English code-switching, preserve exact technical tokens, explain necessary specialized terms on first use, and prioritize clarity, completeness, safety, and honesty over forced brevity.
+- Hero chat summaries, progress updates, plans, and reports now lead with the result or current status, provide supporting evidence, and end with the next action or decision. Regression tests enforce the policy in both source skills and generated consumer guidance.
+- `hero-planning` now owns requirements discovery, brainstorming, implementation design, requirement-to-task coverage, and plan writing in one self-contained skill.
+- Planning artifacts now contain implementation tasks only. Testing, verification, review, security review, deployment, release, and commit activities are left to independent later sessions.
+- `brainstorming`, execution skills, workflow docs, and installer metadata now hand off to `hero-planning` without chaining a separate plan-writing skill.
+- `init` and `update` remove the retired framework-managed `writing-plans` directory from existing consumer installations so stale execution-handoff behavior cannot remain active.
+- `hero-coding` is now implementation-only: it tracks plan tasks and requirement coverage but does not write/run tests, verify, self-review, deploy, or perform git delivery actions.
+- `hero-reviewing` is now the single read-only code-review entry point: it conducts a plan-backed fresh review, technically assesses supplied review feedback, or explicitly does both, with optional internal fresh-review delegation and evidence-checked findings.
+- Confirmed review findings remain unapproved until the user approves exact IDs; `hero-coding` may implement only those approved correction IDs in a later implementation-only session and cannot evaluate or select feedback itself.
+- `init` and `update` remove the retired framework-managed `requesting-code-review` and `receiving-code-review` directories so existing installations no longer expose three competing review entry points.
+- `hero-unit-test` is now post-implementation-only: it derives expected behavior from the plan, changes test-only files, runs unit tests, reports actual results, and hands production mismatches back to `hero-coding`.
+- Hero stage routing, report contracts, manifest metadata, generated Serena guidance, and regression tests now enforce the separation between implementation, review, unit testing, and strict verification.
+
+### Removed
+
+- The standalone vendored `writing-plans` skill and its plan-reviewer prompt. Applicable MIT-licensed plan-structuring guidance is now adapted inside `hero-planning` with attribution in `templates/skills/NOTICE`.
+- The standalone vendored `requesting-code-review` and `receiving-code-review` skills plus the duplicate reviewer prompt. Applicable MIT-licensed review-request and feedback-assessment methodology is now adapted inside `hero-reviewing` with attribution in `templates/skills/NOTICE`.
+
 ## [1.1.6] - 2026-07-27
 
 ### Changed
