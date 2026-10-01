@@ -59,7 +59,7 @@ under MIT.
 
 Framework-authored skills shipped by hero-mmt-kit:
   using-hero, hero-planning, hero-coding, hero-reviewing,
-  hero-unit-test, hero-security, hero-mr-review, hero-strict, hero-report
+  hero-unit-test, hero-security, hero-mr-review, hero-gitflow, hero-strict, hero-report
 
 Design / visual-direction skills are NOT vendored — they are referenced in
 skills.manifest.json and installed from their original sources on demand.

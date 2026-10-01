@@ -14,7 +14,8 @@ templates/  what gets installed into a consumer project
   common/.claude/ hooks (git-guard, active-state-bridge, stop-reminder) + settings.json (Claude Code only)
   skills/         VENDORED core process skills (MIT, from obra/superpowers) + hero-mmt-kit-authored
                   skills (`using-hero`, `hero-planning`, `hero-coding`, `hero-reviewing`,
-                  `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-strict`, `hero-report`) + NOTICE
+                  `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-gitflow`,
+                  `hero-strict`, `hero-report`) + NOTICE
   CLAUDE.md.tmpl
 test/       node:test suites (hooks, doctor-workflow, links, init-smoke, manifest,
             skills-vendor, skills-selection, profile-config, integrations, discover)
@@ -28,7 +29,7 @@ skills.manifest.json  vendored core (process) skills + referenced design/taste s
 - **Managed regions**: never instruct users to hand-edit inside `<!-- hero-mmt-kit:start/end -->`.
 - **Skills.** Only the curated MIT-licensed core process skills (plus the hero-mmt-kit-authored `hero-*`/`using-hero` skills) are vendored under `templates/skills/` (with `NOTICE` attribution); they install into a consumer's `.claude/skills/`. Reference everything else (design/taste, GitNexus, Serena) in `skills.manifest.json` and install via their CLI — don't redistribute non-permissive or unattributed skills/tools.
 - **Hooks must stay portable** (Node, cross-platform) and fail-safe (never block on parse errors). There are only three: `git-guard.cjs`, `active-state-bridge.cjs`, `stop-reminder.cjs` — all soft/non-blocking, no hard gates.
-- **No deep git automation.** The kit doesn't script commit/branch/push/merge/PR decisions on the user's behalf beyond `git-guard`'s narrow block list — those stay with the human.
+- **No deep git automation.** The kit doesn't script commit/branch/push/merge/PR decisions on the user's behalf beyond `git-guard`'s narrow block list — those stay with the human. The installed `hero-gitflow` skill guides only Git actions explicitly requested by the user; it does not make or chain delivery decisions automatically.
 
 ## Before opening a PR
 ```bash
@@ -39,7 +40,7 @@ node bin/hero-mmt-kit.js init --dir /tmp/x --yes --skip-integrations && node bin
 node bin/hero-mmt-kit.js doctor --dir /tmp/x --strict
 ```
 - Add a `CHANGELOG.md` entry under *Unreleased* (or the current top version block if one is already open — check the top of `CHANGELOG.md` before adding a new heading).
-- Keep PRs scoped; use Conventional Commits.
+- Keep PRs scoped; if a commit is explicitly requested, use an English descriptive title prefixed by the supplied ticket code (if any), followed by detailed bullets, as defined by `hero-gitflow`.
 
 ## Releasing
 Bump `package.json` version (SemVer), move the CHANGELOG *Unreleased* section under the new version, tag, publish.

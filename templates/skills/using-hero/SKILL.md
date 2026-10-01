@@ -19,14 +19,16 @@ hero-mmt-kit is a human-led workflow: the developer decides what to work on and 
 | `hero-unit-test` | Writing and running post-implementation unit tests from the approved requirements; no production-code fixes. | `docs/test-reports/YYYY-MM-DD-slug.md` — on request |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
 | `hero-mr-review` | Reviewing a teammate's committed merge request/ref against MR intent and repository conventions. | `docs/mr-reviews/YYYY-MM-DD-slug.md` — always written. |
+| `hero-gitflow` | Performing a Git action explicitly requested by the user, with protected-branch and `.gitignore` safeguards. | Chat result; no automatic next Git action. |
 | `hero-strict` | Extra rigor is wanted in a separate full verification session before a "done" claim. | Appends to the current report, if one exists/was requested. |
 | `hero-report` | A written report is actually wanted for a finished `hero-coding`/`hero-reviewing`/`hero-unit-test` phase. | Writes the report at the path the source skill defines. |
 
-A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Start each stage explicitly, preferably in a fresh session. The plan contains implementation work only; coding implements it only; unit testing writes/runs tests only; reviewing conducts a fresh review and/or assesses supplied feedback without fixing code or running tests. Confirmed review items require explicit user approval before a later `hero-coding` correction session. Invoke `hero-security` or `hero-strict` separately when their assurance depth is wanted. Skip stages that do not fit the size of the change.
+A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or `hero-reviewing` → done. Start each stage explicitly, preferably in a fresh session. The plan contains implementation work only; coding implements it only; unit testing writes/runs tests only; reviewing conducts a fresh review and/or assesses supplied feedback without fixing code or running tests. Confirmed review items require explicit user approval before a later `hero-coding` correction session. Invoke `hero-security` or `hero-strict` separately when their assurance depth is wanted. Invoke `hero-gitflow` only for a specifically requested Git action; neither completing a stage nor using the skill authorizes the next Git action. Skip stages that do not fit the size of the change.
 
 Choose review by source of truth, not merely by whether a git ref exists:
 - Use `hero-reviewing` when an implementation should be assessed against a Hero plan or explicit acceptance criteria, or when supplied review feedback needs technical validation. It can inspect local, exact-commit, or explicit-base ref targets and may use one internal fresh reviewer without requiring another user-facing skill.
 - Use `hero-mr-review` for a teammate's committed MR/ref assessed against MR intent, repository conventions, impact, and potential bugs. It always writes its standalone report.
+- Use `hero-gitflow` for an explicitly requested branch creation or Git delivery action. It never acts as an automatic handoff from coding, testing, or review.
 
 `hero-planning`, `hero-coding`, `hero-reviewing`, and `hero-unit-test` are independent stages, not an automatic pipeline. Finishing one never triggers the next. Generic vendored skills and delegated agents must inherit the active Hero stage's exclusions; they must not broaden its responsibility.
 
@@ -44,7 +46,7 @@ Resuming work in a fresh session:
 
 ## Related vendored skills
 
-The kit also ships general-purpose technique skills: `brainstorming`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `dispatching-parallel-agents`, `subagent-driven-development`, and `using-git-worktrees`. They remain available for direct use, but a Hero stage must not invoke a generic lifecycle whose mandatory actions cross that stage's hard boundary. `hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, and `hero-security` define their own stage contracts.
+The kit also ships general-purpose technique skills: `brainstorming`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `dispatching-parallel-agents`, `subagent-driven-development`, and `using-git-worktrees`. They remain available for direct use, but a Hero stage must not invoke a generic lifecycle whose mandatory actions cross that stage's hard boundary. Generic instructions to commit or edit `.gitignore` do not override `hero-gitflow` or the project Git rules. `hero-planning`, `hero-coding`, `hero-reviewing`, `hero-unit-test`, and `hero-security` define their own stage contracts.
 
 ## Output Style
 

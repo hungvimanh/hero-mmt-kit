@@ -136,18 +136,20 @@ controller that lost its place has been observed re-dispatching entire completed
 sequences — the single most expensive failure mode in this skill. Guard against it with
 a durable ledger, not just the ephemeral todo list:
 
-- At skill start, run `bash scripts/sdd-workspace.sh` to resolve `.hero-mmt-kit/sdd/`,
-  then check `.hero-mmt-kit/sdd/progress.md` if it exists. Tasks it lists as complete
+- At skill start, run `bash scripts/sdd-workspace.sh` to resolve the scratch workspace.
+  It uses `.hero-mmt-kit/sdd/` only when already ignored, otherwise a repo-specific
+  cache path outside the repository; never create or edit `.gitignore`. Check
+  `progress.md` at the returned path if it exists. Tasks it lists as complete
   are **not** re-dispatched — verify quickly if anything looks stale, but trust the
   ledger over a fuzzy recollection of prior context.
 - When a task's review comes back clean, append one line before moving to the next
   task:
   ```
-  Task N: complete (commits <base7>..<head7>, review clean)
+  Task N: complete (base <base7>, head <head7> or uncommitted diff, review clean)
   ```
-- The ledger lives in the self-ignoring `.hero-mmt-kit/sdd/` scratch dir (see Prompt
-  Templates below) — it never needs the user's own `.gitignore` touched and is not
-  meant to be committed.
+- The ledger lives in the scratch path returned by `sdd-workspace.sh` (see Prompt
+  Templates below) — never change `.gitignore` to make room for it and do not
+  commit scratch files.
 
 ## Model Selection
 

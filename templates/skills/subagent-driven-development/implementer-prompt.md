@@ -38,9 +38,8 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies
     2. Write tests (following TDD if task says to)
     3. Verify implementation works
-    4. Commit your work
-    5. Self-review (see below)
-    6. Report back
+    4. Self-review (see below)
+    5. Report back (do not commit unless the user specifically requested it; follow `hero-gitflow` if they did)
 
     Work from: [directory]
 
@@ -110,8 +109,8 @@ Task tool (general-purpose):
     - What you implemented (or what you attempted, if blocked)
     - What you tested and test results
     - Files changed
-    - Base commit before you started and HEAD commit after your final commit (the
-      controller needs both for the review package and the progress ledger)
+    - Base and HEAD refs for the review package and progress ledger; if no commit was
+      requested, say so and include the working-tree diff instead
     - Self-review findings (if any)
     - Any issues or concerns
 

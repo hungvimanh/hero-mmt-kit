@@ -44,7 +44,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     '.claude/skills/hero-planning/SKILL.md', '.claude/skills/hero-coding/SKILL.md',
     '.claude/skills/hero-reviewing/SKILL.md', '.claude/skills/hero-unit-test/SKILL.md',
     '.claude/skills/hero-security/SKILL.md', '.claude/skills/hero-mr-review/SKILL.md',
-    '.claude/skills/hero-strict/SKILL.md', '.claude/skills/hero-report/SKILL.md']) {
+    '.claude/skills/hero-gitflow/SKILL.md', '.claude/skills/hero-strict/SKILL.md', '.claude/skills/hero-report/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(dir, f)), 'missing: ' + f);
   }
   assert.ok(!fs.existsSync(path.join(dir, '.hero-mmt-kit', 'session.json')), 'session.json should no longer be seeded');
@@ -74,6 +74,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(claude, /hero-mmt-kit:start/);
   assert.match(claude, /using-hero/);
   assert.match(claude, /hero-planning/);
+  assert.match(claude, /hero-gitflow/);
   assert.match(claude, /Context loading/);
   assert.match(claude, /Sub-agent delegation is optional, not automatic/);
   assert.match(claude, /User-facing replies and artifacts must use the user's language/i);
@@ -105,6 +106,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(usingHero, /hero-unit-test/);
   assert.match(usingHero, /hero-security/);
   assert.match(usingHero, /hero-mr-review/);
+  assert.match(usingHero, /hero-gitflow/);
   assert.match(usingHero, /hero-strict/);
   assert.doesNotMatch(usingHero, /TDD-first/i);
 

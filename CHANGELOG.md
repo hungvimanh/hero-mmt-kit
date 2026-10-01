@@ -6,6 +6,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follo
 
 ## [Unreleased]
 
+### Added
+
+- `hero-gitflow`, an independently invoked skill for explicitly requested Git actions. It preserves `.gitignore` and local changes, prohibits Git delivery into protected branches, applies source-branch and ticket naming rules, formats English commit messages without agent/actor signatures, and pauses on unresolved logical conflicts. Registered it in the bundled process suite and `using-hero` guidance, with installation and policy regression tests.
+
+### Changed
+
+- Bundled worktree, brainstorming, and subagent guidance no longer instructs agents to edit `.gitignore` or commit automatically; the subagent scratch workspace uses an external cache when its in-repo path is not already ignored. Git delivery remains a separate, human-requested action.
+
 ## [1.2.0] - 2026-09-19
 
 ### Changed

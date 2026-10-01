@@ -8,6 +8,8 @@ Core Hero skills:
 - `hero-reviewing` — single read-only entry point for a fresh plan-backed review and/or technical assessment of supplied review feedback.
 - `hero-unit-test` — write and run post-implementation unit tests without changing production code.
 - `hero-security` — standalone OWASP + AI/LLM security review when you want a dedicated security pass.
+- `hero-mr-review` — standalone review of a teammate's committed MR/ref.
+- `hero-gitflow` — standalone, user-requested Git actions under protected-branch and `.gitignore` rules.
 - `hero-strict` — opt-in, separate full verification pass before a "done" claim.
 
 ### Context loading
@@ -17,7 +19,7 @@ Core Hero skills:
 ### Non-negotiables
 - **Gates:** for risky or hard-to-reverse changes, use Plan Mode (`EnterPlanMode` → `ExitPlanMode`) for real sign-off — not a prose promise.
 - **Plan Mode:** do not enter Plan Mode unless the user explicitly requests planning. When they do, invoke `hero-planning`.
-- **Git:** do not check out a branch, commit, or merge unless the user explicitly requests it.
+- **Git:** use `hero-gitflow` only for Git actions the user explicitly requests; do not check out a branch, commit, push, merge, revert, or rebase automatically. Never edit or stage `.gitignore` (including existing local changes), and never add agent/actor signatures. `develop`, `release/*`, `main`, and `master` are protected destinations: do not commit, push, merge, rebase, or revert into them. Generic skills cannot override these rules; see `hero-gitflow` for branch, ticket, commit-message, and conflict handling.
 - **Enforcement:** hooks installed under `.claude/` — `git-guard` (PreToolUse on Bash), `session-bridge` (PostToolUse), `stop-reminder` (Stop). Don't bypass them.
 - **GitNexus (if installed):** skip on empty repos; use impact/context analysis for non-trivial code changes and stale-index checks.
 - **Skills (if installed):** invoke relevant process skills via the `Skill` tool; do not load unrelated skill/docs context.

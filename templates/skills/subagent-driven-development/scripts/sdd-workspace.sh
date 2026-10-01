@@ -2,11 +2,9 @@
 # Resolve (and create) this repo's subagent-driven-development scratch workspace.
 # Usage: sdd-workspace.sh
 #
-# Prints the absolute path to <repo-root>/.hero-mmt-kit/sdd/ on stdout.
-# Creates the directory and a self-ignoring .gitignore inside it if missing,
-# so task briefs, review packages, and the progress ledger never need the
-# user's own .gitignore touched. Only this subtree is ignored — the rest of
-# .hero-mmt-kit/ (config.json, session.json) stays tracked as before.
+# Prints the scratch workspace path on stdout. Uses the repo-local directory
+# only when it is already ignored; otherwise uses a repo-specific cache path
+# outside the repository. Never creates or changes any .gitignore.
 
 set -euo pipefail
 
@@ -15,11 +13,12 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
   exit 1
 }
 
-SDD_DIR="${REPO_ROOT}/.hero-mmt-kit/sdd"
-mkdir -p "$SDD_DIR"
-
-if [[ ! -f "${SDD_DIR}/.gitignore" ]]; then
-  printf '*\n' > "${SDD_DIR}/.gitignore"
+if git -C "$REPO_ROOT" check-ignore -q -- .hero-mmt-kit/sdd/progress.md; then
+  SDD_DIR="${REPO_ROOT}/.hero-mmt-kit/sdd"
+else
+  REPO_KEY="$(printf '%s' "$REPO_ROOT" | git hash-object --stdin)"
+  SDD_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hero-mmt-kit/sdd/$REPO_KEY"
 fi
+mkdir -p "$SDD_DIR"
 
 echo "$SDD_DIR"

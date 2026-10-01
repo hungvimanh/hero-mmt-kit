@@ -29,6 +29,7 @@ const SERENA_MEMOS = {
     'Core skills: hero-planning (implementation-only plan), hero-coding (implementation and requirement tracking only), ' +
     'hero-reviewing (read-only review and supplied-feedback assessment), hero-unit-test (post-implementation unit tests only), ' +
     'hero-mr-review (standalone review of a teammate\'s MR by commit/tag/branch), ' +
+    'hero-gitflow (user-requested Git actions only; protects branches and .gitignore), ' +
     'hero-strict (opt-in full verification pass before a "done" claim).\n\n' +
     'Session state: docs/ACTIVE_STATE.md\'s Active Features table (the single source of durable workflow state).\n\n' +
     'Details (always read the source files, do not duplicate here): docs/ACTIVE_STATE.md, docs/SECURITY_STANDARDS.md, ' +

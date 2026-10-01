@@ -20,6 +20,7 @@ const CORE_SKILL_ORDER = [
   'hero-unit-test',
   'hero-security',
   'hero-mr-review',
+  'hero-gitflow',
   'hero-strict',
   'hero-report',
 ];

@@ -52,7 +52,7 @@ Honor any existing declared preference without asking. If the user declines cons
 
 The user has asked for an isolated workspace (Step 0 consent). Do you already have a way to create a worktree? It might be a tool with a name like `EnterWorktree`, `WorktreeCreate`, a `/worktree` command, or a `--worktree` flag. If you do, use it and skip to Step 3.
 
-Native tools handle directory placement, branch creation, and cleanup automatically. Using `git worktree add` when you have a native tool creates phantom state your harness can't see or manage.
+Native tools handle directory placement, branch creation, and cleanup automatically. Before creating a branch, apply `hero-gitflow`'s explicit-request, branch-name, and base-branch rules, including with native tools. Using `git worktree add` when you have a native tool creates phantom state your harness can't see or manage.
 
 Only proceed to Step 1b if you have no native worktree tool available.
 
@@ -83,9 +83,9 @@ Follow this priority order. Explicit user preference always beats observed files
 git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
 ```
 
-**If NOT ignored:** Add to .gitignore, commit the change, then proceed.
+**If NOT ignored:** Do not edit, stage, restore, or commit `.gitignore`. Choose an existing ignored location or ask the user for an external directory outside the repository; if neither is available, stop worktree setup. Preserve any existing local `.gitignore` changes exactly as they are.
 
-**Why critical:** Prevents accidentally committing worktree contents to repository.
+**Why critical:** Prevents accidentally committing worktree contents without altering the user's ignore rules.
 
 #### Create the Worktree
 
@@ -95,7 +95,9 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 # Determine path based on chosen location
 # path="$LOCATION/$BRANCH_NAME"
 
-git worktree add "$path" -b "$BRANCH_NAME"
+# BASE_REF must be confirmed under hero-gitflow's branch rules
+# Create a branch only if the user specifically requested branch creation
+git worktree add "$path" -b "$BRANCH_NAME" "$BASE_REF"
 cd "$path"
 ```
 
@@ -153,7 +155,7 @@ Ready to implement <feature-name>
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
 | Neither exists | Check instruction file, then default `.worktrees/` |
-| Directory not ignored | Add to .gitignore + commit |
+| Directory not ignored | Use an existing ignored location or ask for an external path; never edit `.gitignore` |
 | Permission error on create | Sandbox fallback, work in place |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |

@@ -11,7 +11,7 @@ const VENDORED = [
   'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'using-superpowers',
   'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
-  'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-strict', 'hero-report',
+  'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report',
 ];
 
 function readSkill(name) {
@@ -97,12 +97,45 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.doesNotMatch(heroSecurity, /has no artifact convention|never creates a standalone security report|appended to the invoking report/i);
   assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
-  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-strict', 'hero-report'];
+  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {
     const body = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf8');
     assert.match(body, new RegExp(`^name: ${name}$`, 'm'), `${name}: frontmatter name mismatch`);
     assert.doesNotMatch(body, /TBD|TODO|implement later|fill in details/i, `${name}: contains a placeholder`);
   }
+});
+
+test('hero-gitflow keeps Git actions explicit and protects local state', () => {
+  const gitflow = readSkill('hero-gitflow');
+  assert.match(gitflow, /only for a Git action the user has specifically requested/i);
+  assert.match(gitflow, /Completing one action never authorizes another/i);
+  assert.match(gitflow, /develop`, `release\/\*`, `main`, and `master` are protected branches/);
+  assert.match(gitflow, /Never commit while on them, or push, merge, rebase, or revert \*into\* them/);
+  assert.match(gitflow, /`feature\/\*` and `fix\/\*` must start from `develop` or `release\/\*`/);
+  assert.match(gitflow, /`hotfix\/\*` must start from `main` or `master`/);
+  assert.match(gitflow, /feature\/BU-1740-short-description/);
+  assert.match(gitflow, /BU-1740: Add account search filters/);
+  assert.match(gitflow, /short descriptive title.*followed by detailed bullet points/i);
+  assert.match(gitflow, /Never touch `\.gitignore`.*do not edit, stage, unstage, restore, stash, clean, or include it in a commit/i);
+  assert.match(gitflow, /If it is already staged, stop and ask the user to handle it/i);
+  assert.match(gitflow, /git diff --cached --name-only/);
+  assert.match(gitflow, /do not add an agent\/actor signature/i);
+  assert.match(gitflow, /conflict involves incompatible logic.*stop.*ask the user/i);
+  assert.match(gitflow, /Do not force-push or use destructive reset\/cleanup/i);
+
+  const worktrees = readSkill('using-git-worktrees');
+  assert.doesNotMatch(worktrees, /Add to \.gitignore, commit the change/i);
+  assert.match(worktrees, /Do not edit, stage, restore, or commit `\.gitignore`/);
+  const brainstorming = readSkill('brainstorming');
+  assert.doesNotMatch(brainstorming, /^- Commit the design document to git$/m);
+  assert.match(brainstorming, /Do not commit the design document unless the user specifically asks/i);
+  const implementer = fs.readFileSync(path.join(SKILLS_DIR, 'subagent-driven-development', 'implementer-prompt.md'), 'utf8');
+  assert.doesNotMatch(implementer, /^    4\. Commit your work$/m);
+  assert.match(implementer, /do not commit unless the user specifically requested it/i);
+  const workspace = fs.readFileSync(path.join(SKILLS_DIR, 'subagent-driven-development', 'scripts', 'sdd-workspace.sh'), 'utf8');
+  assert.doesNotMatch(workspace, /[>]{1,2}\s*[^\n]*\.gitignore/);
+  assert.match(workspace, /git[^\n]*check-ignore -q/);
+  assert.match(workspace, /XDG_CACHE_HOME/);
 });
 
 test('hero implementation, review, and unit-test contracts stay separated', () => {
@@ -202,6 +235,7 @@ test('hero workflow centralizes clear multilingual output guidance', () => {
     'hero-unit-test': /Test report style/i,
     'hero-security': /Security finding style/i,
     'hero-mr-review': /Report style/i,
+    'hero-gitflow': /Output Style/i,
     'hero-strict': /Strict verification style/i,
   };
 
