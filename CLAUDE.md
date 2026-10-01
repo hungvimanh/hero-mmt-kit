@@ -3,7 +3,7 @@
 This repository/branch **is** the hero-mmt-kit framework — not a consumer project. (It dogfoods its own workflow.) hero-mmt-kit is the human-led, Claude-Code-only coding assistant kit.
 
 - **Contributor guide:** [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Workflow skill sources:** `templates/skills/using-hero/SKILL.md` (overview) and the 8 operative `hero-*` skills; consumer projects receive the same skills installed into `.claude/skills/`.
+- **Workflow skill sources:** `templates/skills/using-hero/SKILL.md` (overview) and the 9 operative `hero-*` skills (including `hero-node`, a specialization of the coding stage); consumer projects receive the same skills installed into `.claude/skills/`.
 - **CLI:** `bin/hero-mmt-kit.js` · logic in `src/` · what gets installed into a consumer lives in `templates/`
 - **Tests:** `npm test` (hook self-tests + doc-link integrity + init/brownfield smoke)
 

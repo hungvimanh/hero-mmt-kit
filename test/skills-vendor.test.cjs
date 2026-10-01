@@ -10,7 +10,7 @@ const VENDORED = [
   'systematic-debugging', 'verification-before-completion',
   'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'using-superpowers',
-  'using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing',
+  'using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-reviewing',
   'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report',
 ];
 
@@ -97,7 +97,7 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.doesNotMatch(heroSecurity, /has no artifact convention|never creates a standalone security report|appended to the invoking report/i);
   assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
-  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report'];
+  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {
     const body = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf8');
     assert.match(body, new RegExp(`^name: ${name}$`, 'm'), `${name}: frontmatter name mismatch`);
@@ -209,6 +209,83 @@ test('hero implementation, review, and unit-test contracts stay separated', () =
   assert.doesNotMatch(readSkill('using-hero'), /TDD-first/i);
 });
 
+test('hero-node inherits the coding stage without adding assurance or delivery', () => {
+  const node = readSkill('hero-node');
+  const parent = readSection(node, 'Scope and Mandatory Parent');
+  assert.match(parent, /same coding stage; it is not a new stage/i);
+  assert.match(parent, /Before any production edit, read the complete actual sibling/i);
+  assert.match(parent, /\.\.\/hero-coding\/SKILL\.md/);
+  assert.strictEqual(fs.existsSync(path.resolve(SKILLS_DIR, 'hero-node', '../hero-coding/SKILL.md')), true);
+  assert.match(parent, /missing or unreadable, stop/i);
+  assert.match(parent, /Inherit the entire parent contract by reference/i);
+  assert.match(parent, /No test authoring\/running, verification commands, self-review, review delegation/i);
+  assert.match(parent, /Git delivery actions/i);
+  assert.match(parent, /task\/requirement ledger.*dependencies.*plan immutable/i);
+  assert.match(parent, /exact correction IDs confirmed.*explicitly approved/i);
+  assert.match(parent, /frontend project does not qualify merely/i);
+
+  const handoff = readSection(node, 'Handoff and Report Convention');
+  assert.match(handoff, /Do not create a report file automatically/i);
+  assert.match(handoff, /hero-report` with source stage `hero-coding`/);
+  assert.match(handoff, /docs\/coding-reports\/YYYY-MM-DD-<slug>\.md/);
+  assert.match(handoff, /testing, verification, and independent review were not performed/i);
+  assert.match(handoff, /task\/requirement states.*blockers.*approved deviations/i);
+  assert.doesNotMatch(handoff, /docs\/node-reports\//);
+
+  assert.match(readSkill('using-hero'), /choose `hero-node` instead of generic `hero-coding`/i);
+  const notice = fs.readFileSync(path.join(SKILLS_DIR, 'NOTICE'), 'utf8');
+  assert.match(notice, /Framework-authored skills shipped by hero-mmt-kit:[\s\S]*?hero-node/);
+});
+
+test('hero-node enforces explicit Node conventions with bounded exceptions', () => {
+  const node = readSkill('hero-node');
+  const scope = readSection(node, 'MUST: Bounded Changes');
+  assert.match(scope, /Do not mechanically convert untouched code/i);
+  assert.match(scope, /refactors, configuration changes, formatting churn, dependencies, or migrations/i);
+  assert.match(scope, /stop and escalate/i);
+
+  const conditions = readSection(node, 'MUST: Explicit Conditions and Conversions');
+  assert.match(conditions, /`=== true` or `=== false`.*predicate results/i);
+  assert.match(conditions, /Do not use unary `!` or `!!`/);
+  assert.match(conditions, /isAuthorized === false/);
+  assert.match(conditions, /rather than truthiness/i);
+  assert.match(conditions, /Distinguish `undefined`, `null`.*zero.*`false`/i);
+  assert.match(conditions, /not coercive equality/i);
+  assert.match(conditions, /Conversion alone is not validation/i);
+  assert.match(conditions, /Never mechanically replace `!value`/);
+
+  const flow = readSection(node, 'MUST: Readable Data and Control Flow');
+  assert.match(flow, /short-circuit side effects/i);
+  assert.match(flow, /Map data field by field/i);
+  assert.match(flow, /Do not replace spread with `Object.assign`/);
+  assert.match(flow, /only one simple condition and two simple value branches/i);
+  assert.match(flow, /No nesting, compound conditions/i);
+  assert.match(flow, /Respect the existing formatter/i);
+
+  const models = readSection(node, 'MUST: Owned Models and Boundary Validation');
+  assert.match(models, /Do not use `any`.*anywhere in new or necessarily changed TypeScript code/i);
+  assert.match(models, /explicitly declared fields and complete constructor assignments/i);
+  assert.match(models, /do not use constructor parameter properties/i);
+  assert.match(models, /non-null assertions, definite-assignment assertions/i);
+  assert.match(models, /does not validate it/i);
+  assert.match(models, /function parseJob\(input: unknown\): JobDto/);
+  assert.match(models, /In JavaScript, use equivalent explicit class fields/i);
+
+  const cohesion = readSection(node, 'PREFER: Cohesion and Safe Early Returns');
+  assert.match(cohesion, /early returns.*preserve cleanup/i);
+  assert.match(cohesion, /one-function-per-file/i);
+  assert.match(cohesion, /giant service\/module/i);
+
+  const exceptions = readSection(node, 'Allowed Shapes and Narrow Exceptions');
+  assert.match(exceptions, /`unknown`.*validated and narrowed/i);
+  assert.match(exceptions, /library-provided option types/i);
+  assert.match(exceptions, /internal `type`\/`interface`/);
+  assert.match(exceptions, /Typed dictionaries.*genuine domain requirement/i);
+  assert.match(exceptions, /Spread is allowed only when genuinely unavoidable/i);
+  assert.match(exceptions, /record the exception in the implementation handoff/i);
+  assert.match(exceptions, /no blanket framework exception/i);
+});
+
 test('hero workflow centralizes clear multilingual output guidance', () => {
   const usingHero = readSkill('using-hero');
   const outputStyle = readSection(usingHero, 'Output Style');
@@ -231,6 +308,7 @@ test('hero workflow centralizes clear multilingual output guidance', () => {
   const stageSpecificGuidance = {
     'hero-planning': /concise.*complete/i,
     'hero-coding': /Report style/i,
+    'hero-node': /Handoff and Report Convention/i,
     'hero-reviewing': /Review style/i,
     'hero-unit-test': /Test report style/i,
     'hero-security': /Security finding style/i,

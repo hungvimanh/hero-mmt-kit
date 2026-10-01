@@ -141,6 +141,7 @@ Use `docs/ACTIVE_STATE.md` only as a durable index when a tracked work item need
 
 ## Related Skills
 
+- `hero-node` specializes this same implementation-only contract for Node.js JavaScript/TypeScript; it adds explicit coding conventions, not a new stage.
 - Reads the approved implementation contract from `hero-planning`, or exact user-approved correction IDs from a prior `hero-reviewing` handoff.
 - Never decides whether review feedback is valid; `hero-reviewing` owns that assessment.
 - Hands the resulting implementation to separately invoked `hero-unit-test`, `hero-reviewing`, and, when appropriate, `hero-security` or `hero-strict` sessions.

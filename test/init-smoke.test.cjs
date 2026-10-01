@@ -41,7 +41,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
     '.claude/skills/NOTICE', '.claude/skills/brainstorming/SKILL.md',
     '.claude/skills/dispatching-parallel-agents/SKILL.md', '.claude/skills/subagent-driven-development/SKILL.md',
     '.claude/skills/using-hero/SKILL.md',
-    '.claude/skills/hero-planning/SKILL.md', '.claude/skills/hero-coding/SKILL.md',
+    '.claude/skills/hero-planning/SKILL.md', '.claude/skills/hero-coding/SKILL.md', '.claude/skills/hero-node/SKILL.md',
     '.claude/skills/hero-reviewing/SKILL.md', '.claude/skills/hero-unit-test/SKILL.md',
     '.claude/skills/hero-security/SKILL.md', '.claude/skills/hero-mr-review/SKILL.md',
     '.claude/skills/hero-gitflow/SKILL.md', '.claude/skills/hero-strict/SKILL.md', '.claude/skills/hero-report/SKILL.md']) {
@@ -74,6 +74,7 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   assert.match(claude, /hero-mmt-kit:start/);
   assert.match(claude, /using-hero/);
   assert.match(claude, /hero-planning/);
+  assert.match(claude, /hero-node/);
   assert.match(claude, /hero-gitflow/);
   assert.match(claude, /Context loading/);
   assert.match(claude, /Sub-agent delegation is optional, not automatic/);
@@ -102,6 +103,14 @@ test('init new project: files + no leftover placeholders + doctor passes', () =>
   const usingHero = fs.readFileSync(path.join(dir, '.claude', 'skills', 'using-hero', 'SKILL.md'), 'utf8');
   assert.match(usingHero, /hero-planning/);
   assert.match(usingHero, /hero-coding/);
+  assert.match(usingHero, /choose `hero-node` instead of generic `hero-coding`/i);
+  const heroNodeDir = path.join(dir, '.claude', 'skills', 'hero-node');
+  const heroNode = fs.readFileSync(path.join(heroNodeDir, 'SKILL.md'), 'utf8');
+  assert.match(heroNode, /Before any production edit, read the complete actual sibling/i);
+  assert.strictEqual(fs.existsSync(path.resolve(heroNodeDir, '../hero-coding/SKILL.md')), true);
+  assert.match(heroNode, /Do not use unary `!` or `!!`/);
+  assert.match(heroNode, /isAuthorized === false/);
+  assert.match(heroNode, /hero-report` with source stage `hero-coding`/);
   assert.match(usingHero, /hero-reviewing/);
   assert.match(usingHero, /hero-unit-test/);
   assert.match(usingHero, /hero-security/);
@@ -211,6 +220,41 @@ test('brownfield: preserves existing CLAUDE.md and ACTIVE_STATE; idempotent', ()
   assert.strictEqual((claude.match(/hero-mmt-kit:start/g) || []).length, 1);
 
   assert.strictEqual(fs.readFileSync(path.join(dir, 'docs', 'ACTIVE_STATE.md'), 'utf8'), 'CUSTOM STATE AFTER INIT\n');
+});
+
+test('update adds hero-node to older installs and preserves custom skills', (t) => {
+  const dir = mkdir();
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const init = cli(['init', '--dir', dir, '--yes', '--skip-integrations']);
+  assert.strictEqual(init.status, 0, init.stdout + init.stderr);
+
+  const nodeDir = path.join(dir, '.claude', 'skills', 'hero-node');
+  const nodeFile = path.join(nodeDir, 'SKILL.md');
+  const expected = fs.readFileSync(path.join(__dirname, '..', 'templates', 'skills', 'hero-node', 'SKILL.md'), 'utf8');
+  assert.strictEqual(fs.readFileSync(nodeFile, 'utf8'), expected);
+  fs.rmSync(nodeDir, { recursive: true });
+  assert.strictEqual(hasSkill(dir, 'hero-node'), false);
+
+  const custom = path.join(dir, '.claude', 'skills', 'custom-node-skill', 'SKILL.md');
+  fs.mkdirSync(path.dirname(custom), { recursive: true });
+  fs.writeFileSync(custom, 'CUSTOM NODE SKILL\n');
+  const stateFile = path.join(dir, 'docs', 'ACTIVE_STATE.md');
+  const originalState = fs.readFileSync(stateFile, 'utf8');
+
+  for (let run = 0; run < 2; run += 1) {
+    const update = cli(['update', '--dir', dir, '--skip-integrations']);
+    assert.strictEqual(update.status, 0, update.stdout + update.stderr);
+    assert.strictEqual(fs.readFileSync(nodeFile, 'utf8'), expected);
+    assert.strictEqual(hasSkill(dir, 'hero-coding'), true);
+    assert.strictEqual(fs.readFileSync(custom, 'utf8'), 'CUSTOM NODE SKILL\n');
+    assert.strictEqual(fs.readFileSync(stateFile, 'utf8'), originalState);
+    const claude = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
+    assert.match(claude, /hero-node/);
+    assert.strictEqual(claude.match(/hero-mmt-kit:start/g).length, 1);
+  }
+
+  const doctor = cli(['doctor', '--dir', dir, '--strict']);
+  assert.strictEqual(doctor.status, 0, doctor.stdout + doctor.stderr);
 });
 
 test('init --yes writes default config and docs, taste skill off by default', () => {

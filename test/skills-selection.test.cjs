@@ -21,6 +21,14 @@ test('selectProcessSkills returns the full process suite regardless of config', 
   }
 });
 
+test('core skill registry matches the bundled manifest', () => {
+  const manifest = require('../skills.manifest.json');
+  const names = manifest.groups.process.skills.map((skill) => skill.name);
+  assert.strictEqual(new Set(CORE_SKILL_ORDER).size, CORE_SKILL_ORDER.length);
+  assert.deepStrictEqual(CORE_SKILL_ORDER.slice().sort(), names.sort());
+  assert.strictEqual(CORE_SKILL_ORDER.includes('hero-node'), true);
+});
+
 test('installSkills copies selected skill directories plus NOTICE', () => {
   const dir = mkdir();
   const result = installSkills(PKG_ROOT, dir, { selectedSkills: ['using-superpowers', 'brainstorming'] });

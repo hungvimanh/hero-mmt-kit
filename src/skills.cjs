@@ -16,6 +16,7 @@ const CORE_SKILL_ORDER = [
   'using-git-worktrees',
   'hero-planning',
   'hero-coding',
+  'hero-node',
   'hero-reviewing',
   'hero-unit-test',
   'hero-security',

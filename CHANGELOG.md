@@ -4,10 +4,11 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [1.3.0] - 2026-10-01
 
 ### Added
 
+- `hero-node`, a Node.js JavaScript/TypeScript specialization that reads and inherits the `hero-coding` implementation-only contract. It requires explicit boolean comparisons (including `=== false` instead of unary negation), business-accurate checks, strict comparisons, explicit field mapping, and class-based domain entities/DTOs, while preserving scope, formatter conventions, and independent testing/review. Registered it in the bundled installer, skill guidance, and attribution, with contract, fresh-install, and upgrade regression coverage. Coding reports retain the existing on-request convention.
 - `hero-gitflow`, an independently invoked skill for explicitly requested Git actions. It preserves `.gitignore` and local changes, prohibits Git delivery into protected branches, applies source-branch and ticket naming rules, formats English commit messages without agent/actor signatures, and pauses on unresolved logical conflicts. Registered it in the bundled process suite and `using-hero` guidance, with installation and policy regression tests.
 
 ### Changed
