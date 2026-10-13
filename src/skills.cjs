@@ -17,6 +17,7 @@ const CORE_SKILL_ORDER = [
   'hero-planning',
   'hero-coding',
   'hero-node',
+  'hero-golang',
   'hero-reviewing',
   'hero-unit-test',
   'hero-security',

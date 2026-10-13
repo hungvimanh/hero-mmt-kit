@@ -27,6 +27,7 @@ test('core skill registry matches the bundled manifest', () => {
   assert.strictEqual(new Set(CORE_SKILL_ORDER).size, CORE_SKILL_ORDER.length);
   assert.deepStrictEqual(CORE_SKILL_ORDER.slice().sort(), names.sort());
   assert.strictEqual(CORE_SKILL_ORDER.includes('hero-node'), true);
+  assert.strictEqual(CORE_SKILL_ORDER.includes('hero-golang'), true);
 });
 
 test('installSkills copies selected skill directories plus NOTICE', () => {

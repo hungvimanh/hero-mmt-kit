@@ -4,6 +4,12 @@ Notable changes to `hero-mmt-kit` are documented here from `1.0.0` onward.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [1.4.0] - 2026-10-13
+
+### Added
+
+- `hero-golang`, a compact Go specialization that reads and inherits the `hero-coding` implementation-only contract. It preserves project/module/toolchain constraints and adds error, cancellation, concurrency, ownership, resource-lifetime, and boundary-data safeguards. Formatting with `gofmt` or existing project-configured `goimports` is limited to edited Go files; testing, verification, design, review, and delivery remain separate. Registered it in the bundled installer, workflow guidance, and attribution, with contract, fresh-install, upgrade, and Serena memo regression coverage. Reports remain on request with source stage `hero-coding`.
+
 ## [1.3.0] - 2026-10-01
 
 ### Added

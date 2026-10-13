@@ -10,7 +10,7 @@ const VENDORED = [
   'systematic-debugging', 'verification-before-completion',
   'dispatching-parallel-agents', 'subagent-driven-development',
   'using-git-worktrees', 'using-superpowers',
-  'using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-reviewing',
+  'using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-golang', 'hero-reviewing',
   'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report',
 ];
 
@@ -97,7 +97,7 @@ test('hero-mmt-kit-authored skills avoid placeholders', () => {
   assert.doesNotMatch(heroSecurity, /has no artifact convention|never creates a standalone security report|appended to the invoking report/i);
   assert.doesNotMatch(heroSecurity, /TBD|TODO|implement later|fill in details/i);
 
-  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report'];
+  const HERO_SKILLS = ['using-hero', 'hero-planning', 'hero-coding', 'hero-node', 'hero-golang', 'hero-reviewing', 'hero-unit-test', 'hero-security', 'hero-mr-review', 'hero-gitflow', 'hero-strict', 'hero-report'];
   for (const name of HERO_SKILLS) {
     const body = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf8');
     assert.match(body, new RegExp(`^name: ${name}$`, 'm'), `${name}: frontmatter name mismatch`);
@@ -286,6 +286,98 @@ test('hero-node enforces explicit Node conventions with bounded exceptions', () 
   assert.match(exceptions, /no blanket framework exception/i);
 });
 
+test('hero-golang inherits coding without adding design, assurance, or delivery', () => {
+  const go = readSkill('hero-golang');
+  const parent = readSection(go, 'Scope and Mandatory Parent');
+  assert.match(go, /^description: Use for implementation-only Go /m);
+  assert.match(parent, /same coding stage; it is not a new stage/i);
+  assert.match(parent, /Before any production edit, read the complete actual sibling/i);
+  assert.match(parent, /\.\.\/hero-coding\/SKILL\.md/);
+  assert.strictEqual(fs.existsSync(path.resolve(SKILLS_DIR, 'hero-golang', '../hero-coding/SKILL.md')), true);
+  assert.match(parent, /missing or unreadable, stop/i);
+  assert.match(parent, /Inherit the entire parent contract by reference/i);
+  assert.match(parent, /No architecture design, test authoring\/running, verification commands, self-review, review delegation/i);
+  assert.match(parent, /Git delivery actions/i);
+  assert.match(parent, /task\/requirement ledger.*dependencies.*plan immutable/i);
+  assert.match(parent, /exact correction IDs confirmed.*explicitly approved/i);
+  assert.match(parent, /mixed-language request, apply these rules only to the Go portion/i);
+
+  const handoff = readSection(go, 'Handoff and Report Convention');
+  assert.match(handoff, /Do not create a report file automatically/i);
+  assert.match(handoff, /hero-report` with source stage `hero-coding`/);
+  assert.match(handoff, /docs\/coding-reports\/YYYY-MM-DD-<slug>\.md/);
+  assert.match(handoff, /testing, verification, and independent review were not performed/i);
+  assert.match(handoff, /task\/requirement states.*blockers.*approved deviations/i);
+  assert.match(handoff, /List any formatting command actually run/i);
+  assert.match(handoff, /Do not create a new report category, directory, or workflow stage/i);
+  assert.doesNotMatch(handoff, /docs\/(?:go|golang)-reports\//);
+
+  assert.match(readSkill('using-hero'), /choose `hero-golang` instead of generic `hero-coding`/i);
+  assert.match(readSkill('hero-coding'), /`hero-golang` specializes this same implementation-only contract for Go/i);
+  const notice = fs.readFileSync(path.join(SKILLS_DIR, 'NOTICE'), 'utf8');
+  assert.match(notice, /Framework-authored skills shipped by hero-mmt-kit:[\s\S]*?hero-golang/);
+});
+
+test('hero-golang bounds project changes and permits only edited-file formatting', () => {
+  const go = readSkill('hero-golang');
+  const scope = readSection(go, 'MUST: Bounded Changes and Project Baseline');
+  assert.match(scope, /Do not mechanically convert untouched code/i);
+  assert.match(scope, /supported Go version from `go\.mod`.*`toolchain`.*`go\.work`.*build constraints/i);
+  assert.match(scope, /locally installed toolchain does not raise the module's supported version/i);
+  assert.match(scope, /Preserve the existing module\/package layout, public API/i);
+  assert.match(scope, /Do not add or upgrade dependencies.*without approval for that exact change/i);
+  assert.match(scope, /Do not run `go mod tidy` or generators in this stage/i);
+  assert.match(scope, /stop and escalate/i);
+
+  const format = readSection(go, 'MUST: Formatting Only on Edited Files');
+  assert.match(format, /`gofmt -w` may run only on the Go files edited for the current task, named explicitly/i);
+  assert.match(format, /Never run it on.*a broad glob, or files you did not edit/i);
+  assert.match(format, /`goimports`.*project already uses it and it is already installed/i);
+  assert.match(format, /Do not download or install any tool/i);
+  assert.match(format, /Do not format generated or vendored files/i);
+  assert.match(format, /unrelated user changes.*do not run it/i);
+  assert.match(format, /not verification or correctness evidence/i);
+  assert.match(format, /does not permit `go build`, `go vet`, `go test`, linters, race detection, benchmarks, `go generate`/i);
+});
+
+test('hero-golang preserves Go error, concurrency, and ownership contracts', () => {
+  const go = readSkill('hero-golang');
+  const errors = readSection(go, 'MUST: Errors and Failure Paths');
+  assert.match(errors, /Preserve the existing sentinel errors, error types, and wrapping contract/i);
+  assert.match(errors, /`errors\.Is` and `errors\.As`/);
+  assert.match(errors, /nil pointer stored in an interface is not equal to `nil`/i);
+  assert.match(errors, /Do not call `log\.Fatal` or `os\.Exit` from library or helper code/i);
+
+  const concurrency = readSection(go, 'MUST: Context, Goroutines, and Channels');
+  assert.match(concurrency, /propagate it to blocking calls that support cancellation/i);
+  assert.match(concurrency, /`cancel` function.*on all paths/i);
+  assert.match(concurrency, /Every goroutine.*owner and a guaranteed exit/i);
+  assert.match(concurrency, /buffered channel is not a cancellation mechanism/i);
+  assert.match(concurrency, /channel-closing owner.*every sender has finished/i);
+  assert.match(concurrency, /Deliver results and errors together, or through a defined error path/i);
+  assert.match(concurrency, /unbuffered results channel needs a concurrent reader/i);
+  assert.match(concurrency, /Bound concurrency.*unbounded input/i);
+  assert.match(concurrency, /loop variables according to the owning module's Go language version/i);
+  assert.match(concurrency, /`errgroup` does not justify adding.*without explicit dependency approval/i);
+
+  const ownership = readSection(go, 'MUST: Shared State, Ownership, and Resources');
+  assert.match(ownership, /Do not copy values containing.*`sync` types after first use/i);
+  assert.match(ownership, /Never return a slice that aliases a pooled or reused buffer/i);
+  assert.match(ownership, /copy\(out, buf\.Bytes\(\)\)/);
+  assert.doesNotMatch(ownership, /return buf\.Bytes\(\)/);
+  assert.match(ownership, /Do not add `sync\.Pool`.*unless the approved scope asks/i);
+  assert.match(ownership, /close files and HTTP response bodies.*commit or rollback/i);
+  assert.match(ownership, /`Close`, `Flush`, `Sync`, or `Commit`.*written data/i);
+
+  const boundary = readSection(go, 'MUST: Boundary Data and Zero Values');
+  assert.match(boundary, /Decoding or type conversion is not validation/i);
+  assert.match(boundary, /absent, `null`, zero, and empty.*contract distinguishes them/i);
+  assert.match(boundary, /Preserve existing JSON\/DB tags and wire representations/i);
+  assert.match(boundary, /Check the status code and response contract/i);
+  assert.match(boundary, /Bound reads of untrusted input or responses/i);
+  assert.doesNotMatch(go, /func (?:WorkerPool|safeFetch)\b|## Go Tooling Integration|### Standard Project Layout|```yaml/);
+});
+
 test('hero workflow centralizes clear multilingual output guidance', () => {
   const usingHero = readSkill('using-hero');
   const outputStyle = readSection(usingHero, 'Output Style');
@@ -309,6 +401,7 @@ test('hero workflow centralizes clear multilingual output guidance', () => {
     'hero-planning': /concise.*complete/i,
     'hero-coding': /Report style/i,
     'hero-node': /Handoff and Report Convention/i,
+    'hero-golang': /Handoff and Report Convention/i,
     'hero-reviewing': /Review style/i,
     'hero-unit-test': /Test report style/i,
     'hero-security': /Security finding style/i,

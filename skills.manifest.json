@@ -29,6 +29,7 @@
         { "name": "hero-planning", "source": "hero-mmt-kit", "description": "Clarify requirements through analysis and brainstorming, then write an implementation-only plan with requirement-to-task coverage." },
         { "name": "hero-coding", "source": "hero-mmt-kit", "description": "Implement and track every requirement/task in an approved plan or small bounded request; no testing or self-review." },
         { "name": "hero-node", "source": "hero-mmt-kit", "description": "Specialize hero-coding for Node.js JavaScript/TypeScript with explicit conditions, field mapping, and typed models; same implementation-only stage." },
+        { "name": "hero-golang", "source": "hero-mmt-kit", "description": "Specialize hero-coding for Go with ownership, cancellation, resource safety, and edited-file formatting; same implementation-only stage." },
         { "name": "hero-reviewing", "source": "hero-mmt-kit", "description": "Conduct a plan-backed, read-only review, assess supplied review feedback, or explicitly do both without applying fixes." },
         { "name": "hero-unit-test", "source": "hero-mmt-kit", "description": "Write and run post-implementation unit tests from approved requirements without changing production code." },
         { "name": "hero-security", "source": "hero-mmt-kit", "description": "Run an independent OWASP + AI/LLM security review and write a standalone security report." },

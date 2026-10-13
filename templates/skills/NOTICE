@@ -58,7 +58,7 @@ the other supporting files remain unchanged obra/superpowers-origin content
 under MIT.
 
 Framework-authored skills shipped by hero-mmt-kit:
-  using-hero, hero-planning, hero-coding, hero-node, hero-reviewing,
+  using-hero, hero-planning, hero-coding, hero-node, hero-golang, hero-reviewing,
   hero-unit-test, hero-security, hero-mr-review, hero-gitflow, hero-strict, hero-report
 
 Design / visual-direction skills are NOT vendored — they are referenced in

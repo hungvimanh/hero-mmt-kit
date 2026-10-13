@@ -28,6 +28,7 @@ const SERENA_MEMOS = {
     'Human-led Claude Code workflow (hero-mmt-kit). Use the **using-hero** skill for the overview.\n\n' +
     'Core skills: hero-planning (implementation-only plan), hero-coding (implementation and requirement tracking only), ' +
     'hero-node (Node.js JavaScript/TypeScript specialization of the same hero-coding stage), ' +
+    'hero-golang (Go specialization of the same hero-coding stage; ownership, cancellation, and bounded formatting), ' +
     'hero-reviewing (read-only review and supplied-feedback assessment), hero-unit-test (post-implementation unit tests only), ' +
     'hero-mr-review (standalone review of a teammate\'s MR by commit/tag/branch), ' +
     'hero-gitflow (user-requested Git actions only; protects branches and .gitignore), ' +

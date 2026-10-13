@@ -1,6 +1,6 @@
 # hero-mmt-kit
 
-> A focused, human-led coding workflow for **Claude Code** — nine direct-use skills (planning, coding, Node.js coding, reviewing, unit testing, security, MR review, Gitflow, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
+> A focused, human-led coding workflow for **Claude Code** — ten direct-use skills (planning, coding, Node.js coding, Go coding, reviewing, unit testing, security, MR review, Gitflow, strict verification) plus an on-demand report writer, simple durable state, and soft safety hooks. Zero runtime dependencies.
 
 `hero-mmt-kit` installs a lightweight Claude Code workflow into new or existing repositories. It is designed for developers who stay in control: you choose the task, invoke the relevant skill, and keep the final judgment on plans, code, tests, reviews, and security checks.
 
@@ -8,7 +8,7 @@
 
 `hero-mmt-kit` is **documentation + direct-use skills + soft hooks + a zero-dependency CLI**. It does not route work automatically, enforce phases, or block normal development flow.
 
-- **Nine operative skills** (`hero-planning`, `hero-coding`, `hero-node`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-gitflow`, `hero-strict`) covering the lifecycle of a change. `hero-node` specializes the coding stage for Node.js; it does not add a stage. They define Hero-native stage contracts and, where useful, incorporate attributed methodology from proven vendored techniques. Each phase is done on its own — finishing one never auto-triggers the next.
+- **Ten operative skills** (`hero-planning`, `hero-coding`, `hero-node`, `hero-golang`, `hero-reviewing`, `hero-unit-test`, `hero-security`, `hero-mr-review`, `hero-gitflow`, `hero-strict`) covering the lifecycle of a change. `hero-node` and `hero-golang` specialize the coding stage for Node.js and Go; they do not add a stage. They define Hero-native stage contracts and, where useful, incorporate attributed methodology from proven vendored techniques. Each phase is done on its own — finishing one never auto-triggers the next.
 - **Report writing is on-demand** — `hero-coding`/`hero-reviewing`/`hero-unit-test` end with a concise chat summary; a written report is only produced when asked, via the separate `hero-report` skill.
 - **No router, no gates** — there is no task-classification doc and no hard PreToolUse enforcement. `using-hero` is a map, not a controller.
 - **Soft hooks only** — `git-guard` blocks a small set of genuinely dangerous git commands and reminds (never blocks) on ordinary commits; `stop-reminder` nudges you to update state when you stop with uncommitted changes; `active-state-bridge` injects `docs/ACTIVE_STATE.md` into context once per session start.
@@ -64,13 +64,14 @@ your-project/
 
 ## Workflow skills
 
-Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The nine operative skills:
+Invoke `using-hero` first for an overview — it explains which skill applies next and how workflow state carries across sessions. The ten operative skills:
 
 | Skill | Use when | Artifact / report |
 |---|---|---|
 | `hero-planning` | Clarifying non-trivial work through analysis and brainstorming, then writing an implementation-only plan. | `docs/plans/YYYY-MM-DD-slug.md` — always written; it's the deliverable, not a report |
 | `hero-coding` | Implementing every task and requirement in an approved plan, or a small bounded request. No testing or self-review. | `docs/coding-reports/YYYY-MM-DD-slug.md` — on request |
 | `hero-node` | Node.js JavaScript/TypeScript implementation with explicit conditions, field mapping, and typed models; inherits the same `hero-coding` stage. | Same coding report — on request |
+| `hero-golang` | Go implementation with ownership, cancellation, resource safety, and edited-file formatting; inherits the same `hero-coding` stage. | Same coding report — on request |
 | `hero-reviewing` | Single read-only entry point for a fresh implementation review, technical assessment of supplied feedback, or an explicit combination of both. | `docs/reviews/YYYY-MM-DD-slug.md` — on request |
 | `hero-unit-test` | Writing and running post-implementation unit tests from the approved requirements; no production-code fixes. | `docs/test-reports/YYYY-MM-DD-slug.md` — on request |
 | `hero-security` | You want an independent OWASP + AI/LLM security review of a sensitive surface. | `docs/security-reports/YYYY-MM-DD-slug.md` — always written for the security pass. |
@@ -82,9 +83,11 @@ A typical flow is `hero-planning` → `hero-coding` → `hero-unit-test` and/or 
 
 For Node.js services, CLIs, workers, or libraries written in JavaScript/TypeScript, invoke `hero-node` instead of generic `hero-coding` to apply explicit boolean comparisons (`=== true` / `=== false`, not `!value` or `!!`), business-accurate checks, explicit field mapping, and class-based domain entities/DTOs. It reads the parent contract and stays implementation-only; you do not need to invoke both skills. It does not automatically apply to frontend code merely because Node-based tooling is present, or authorize refactoring unrelated code.
 
+For Go services, CLIs, workers, or libraries, invoke `hero-golang` instead of generic `hero-coding`. It respects the module's supported Go version, existing dependencies, and architecture, and adds rules for error handling, context cancellation, goroutine/channel lifetime, buffer ownership, resource cleanup, and boundary validation. It may run `gofmt` (or the project's existing `goimports`) only on the Go files it edited; it never runs build, test, vet, or lint. It reads the parent contract and stays implementation-only; you do not need to invoke both skills.
+
 Choose review by source of truth. `hero-reviewing` is the one entry point for comparing a local or committed implementation with its Hero plan or explicit acceptance criteria and for validating supplied review feedback; optional fresh-review delegation happens internally. `hero-mr-review` sits outside that flow and reviews a teammate's committed MR range against MR intent, repository conventions, impact, and potential bugs. `hero-gitflow` is likewise independent: invoke it only for a specific Git action requested by the user. It never changes `.gitignore` or delivers into protected branches, and completing a step never authorizes the next one.
 
-`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A tenth, on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. Work done through `hero-node` uses the same coding-report convention with source stage `hero-coding`. `hero-security` and `hero-mr-review` are the exceptions: both are independent flows that always write their own standalone report (`docs/security-reports/...` and `docs/mr-reviews/...` respectively).
+`hero-coding`, `hero-reviewing`, and `hero-unit-test` don't write a report file by default — they end with a concise chat summary. A separate on-demand skill, `hero-report`, writes those report files when the user actually wants one, at the path convention the source skill defines. Work done through `hero-node` or `hero-golang` uses the same coding-report convention with source stage `hero-coding`. `hero-security` and `hero-mr-review` are the exceptions: both are independent flows that always write their own standalone report (`docs/security-reports/...` and `docs/mr-reviews/...` respectively).
 
 The kit also ships general-purpose vendored technique skills: `brainstorming`, `executing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `dispatching-parallel-agents`, `subagent-driven-development`, `using-git-worktrees`. They remain available for direct use, but their broader lifecycles must not override a Hero stage's hard boundary. All are bundled under `templates/skills/` and installed unconditionally into `.claude/skills/`, with attribution in `templates/skills/NOTICE`.
 
